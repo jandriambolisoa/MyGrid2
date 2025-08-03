@@ -1,0 +1,6 @@
+OPENF1_API_URL = "https://api.openf1.org/v1"
+OPENF1_API_EP_DRIVERS = "/drivers"
+OPENF1_API_EP_INTERVALS = "/intervals"
+OPENF1_API_EP_LAPS = "/laps"
+OPENF1_API_EP_POSITION = "/position"
+OPENF1_API_EP_SESSIONS = "/sessions"
