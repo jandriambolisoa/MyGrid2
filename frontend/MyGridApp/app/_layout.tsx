@@ -1,8 +1,8 @@
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useCallback } from 'react';
-import { View } from 'react-native';
 import { Stack } from 'expo-router';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -21,10 +21,10 @@ export default function Layout() {
   if (!fontsLoaded) return null;
 
   return (
-    <View onLayout={onLayoutRootView} style={{ flex: 1 }}>
+    <SafeAreaProvider onLayout={onLayoutRootView}>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="index" />
       </Stack>
-    </View>
+    </SafeAreaProvider>
   );
 }
