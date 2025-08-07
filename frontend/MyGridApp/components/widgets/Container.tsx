@@ -1,3 +1,4 @@
+import { Colors } from '@/constants/Colors';
 import { View, type ViewProps, StyleSheet } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -26,6 +27,6 @@ export function Container({ style, ...otherProps }: ViewProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#dddddd'
+    backgroundColor: Colors.light.background
   }
 })

@@ -1,4 +1,5 @@
 import { StyleSheet, Text, type TextProps } from 'react-native';
+import { Colors } from '@/constants/Colors';
 
 export type MainTextProps = TextProps & {
   type?: 'light' | 'dark';
@@ -26,11 +27,11 @@ export function MainText({
 
 const styles = StyleSheet.create({
   light: {
-    color: '#ffffff',
+    color: Colors.light.lightText,
     fontSize: 16
   },
   dark: {
-    color: '#000000',
+    color: Colors.light.darkText,
     fontSize: 16
   }
 })

@@ -1,3 +1,4 @@
+import { Colors } from '@/constants/Colors';
 import { View, type ViewProps, StyleSheet } from 'react-native';
 
 export function MainWidget({ style, ...otherProps }: ViewProps) {
@@ -13,7 +14,7 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: 4,
     borderWidth: 1,
-    borderColor: '#ffffff',
+    borderColor: Colors.light.borders,
     margin: 20,
     padding: 10
   }
