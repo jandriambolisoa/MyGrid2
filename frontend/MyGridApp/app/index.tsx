@@ -3,6 +3,7 @@ import { StyleSheet, View, Text } from "react-native";
 //import { BlurView } from "expo-blur";
 import Svg, { Defs, Stop, RadialGradient, Rect } from "react-native-svg";
 import { DeviceMotion } from "expo-sensors";
+import { MainText } from "@/components/widgets/MainText";
 
 export default function MainScreen () {
 
@@ -61,14 +62,12 @@ const screenVector = getScreenNormalVector(orientation.alpha, orientation.beta, 
     <View style={styles.container}>
         <View style={styles.widgetWrapper}>
           <View style={[StyleSheet.absoluteFill, styles.widget]}>
-            <Text>{orientation.alpha.toFixed(2)}</Text>
-            <Text>{orientation.beta.toFixed(2)}</Text>
-            <Text>{orientation.gamma.toFixed(2)}</Text>
+            <MainText>Salut</MainText>
             <View style={{borderWidth: 1, height: 100, width: 100, margin: 100, borderRadius: 4,
-              borderTopColor: getInterpolatedColor(orientation.beta),
-              borderBottomColor: getInterpolatedColor(orientation.beta, true),
-              borderRightColor: getInterpolatedColor(orientation.gamma, true),
-              borderLeftColor: getInterpolatedColor(orientation.gamma)}}/>
+              borderTopColor: getInterpolatedColor(orientation.beta, true),
+              borderBottomColor: getInterpolatedColor(orientation.beta),
+              borderRightColor: getInterpolatedColor(orientation.gamma),
+              borderLeftColor: getInterpolatedColor(orientation.gamma, true)}}/>
           </View>
           {/*
           <View style={{ borderRadius: 200, backgroundColor: 'yellow', position: 'absolute', height: 200, width: 200, top: '40%', right: '40%'}}/>
