@@ -1,0 +1,9 @@
+from fastapi import HTTPException, status
+
+from backend.texts import unexpected_message
+
+class UnexpectedError(HTTPException):
+    status_code = status.HTTP_404_NOT_FOUND
+    def __init__(self, language: str, **kwargs):
+        super().__init__(**kwargs)
+        self.detail = unexpected_message[language]
