@@ -27,3 +27,10 @@ banned_user_message = defaultdict(
         "fr": "Vous avez été banni et ne pouvez plus utiliser cette application. Pour toute demande, contactez-nous à l’adresse contact@mygrid.fun. Raison du bannissement : "
     }
 )
+
+no_user_found_message = defaultdict(
+    lambda: "No user found with that username.",
+    {
+        "fr": "Aucun utilisateur trouvé avec ce nom d'utilisateur."
+    }
+)

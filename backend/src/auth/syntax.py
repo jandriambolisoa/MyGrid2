@@ -10,7 +10,7 @@ from backend.src.auth.exceptions import NotAValidUsernameLengthError, NotAValidU
     NotAvailableUsernameError, NotAValidPasswordLength, NotAValidPasswordStrength
 
 
-def valid_username(username: str, language: str = "en") -> str:
+async def valid_username(username: str, language: str = "en") -> str:
     if len(username) > USERNAME_MAX_LENGTH or len(username) < USERNAME_MIN_LENGTH:
         raise NotAValidUsernameLengthError(language=language)
 

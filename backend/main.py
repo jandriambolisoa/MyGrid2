@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
 from backend.src.users import router as user_router
+from backend.src.auth import router as auth_router
 
 docs_urls = {
     "docs_url": "/docs" if settings.debug else None,
@@ -22,6 +23,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(auth_router.router)
 app.include_router(user_router.router)
 
 @app.get("/", response_class=RedirectResponse)

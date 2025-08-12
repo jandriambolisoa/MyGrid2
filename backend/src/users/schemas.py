@@ -20,9 +20,14 @@ class UserCreate(BaseModel):
     language: Optional[str] = Field(default= "en")
     image: Optional[str]
 
-class UserSelf(User):
+class UserSelf(BaseModel):
+    id: int
+    username: str
+    email: EmailStr
+    created: datetime
     modified: datetime
     language: str
+    image: Optional[str]
 
 class TokenData(BaseModel):
     username: str

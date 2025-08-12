@@ -14,14 +14,14 @@ router = APIRouter(
 
 
 @router.post("/signup", status_code=status.HTTP_201_CREATED, response_model=UserSelf)
-def signup_user(user: UserCreate, language: str = None, db: Database = Depends(get_db)):
+async def signup_user(user: UserCreate, language: str = None, db: Database = Depends(get_db)):
     # Removed the server maintenance condition
     # Me must worship a user initiative to sing-up and therefore
     # try our best to make it happen in any condition
     try:
         # Check credentials
-        valid_username(user.username, language=language)
-        valid_password(user.password, language=language)
+        await valid_username(user.username, language=language)
+        await valid_password(user.password, language=language)
 
         user.password = hash(user.password)
 
