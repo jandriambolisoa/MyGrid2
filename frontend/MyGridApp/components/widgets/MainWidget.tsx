@@ -5,19 +5,74 @@ import { Svg, Defs, LinearGradient, Stop, Rect } from 'react-native-svg';
 export function MainWidget({ style, ...otherProps }: ViewProps) {
   return (
     <View style={[styles.widget, style]} {...otherProps}>
-      <Svg height="100%" width="100%">
+      <Svg style={StyleSheet.absoluteFill}>
         <Defs>
-          <LinearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
-            <Stop offset="0%" stopColor="red" stopOpacity="1" />
-            <Stop offset="100%" stopColor="blue" stopOpacity="1" />
+          <LinearGradient id="grad" x1="0%" y1="0%" x2="0.3%" y2="100%">
+            <Stop offset="0%" stopColor="#000000" stopOpacity=".2" />
+            <Stop offset="100%" stopColor="#000000" stopOpacity="0" />
           </LinearGradient>
         </Defs>
         <Rect
           x="0"
           y="0"
           width="100%"
+          height={30}
+          fill="url(#grad)"
+          rx={3}
+          ry={3}
+        />
+      </Svg>
+      <Svg style={StyleSheet.absoluteFill}>
+        <Defs>
+          <LinearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0.04%">
+            <Stop offset="0%" stopColor="#000000" stopOpacity=".2" />
+            <Stop offset="100%" stopColor="#000000" stopOpacity="0" />
+          </LinearGradient>
+        </Defs>
+        <Rect
+          x="0"
+          y="0"
+          width={20}
           height="100%"
           fill="url(#grad)"
+          rx={3}
+          ry={3}
+        />
+      </Svg>
+      <Svg style={StyleSheet.absoluteFill}>
+        <Defs>
+          <LinearGradient id="grad" x1="100%" y1="100%" x2="99.95%" y2="0%">
+            <Stop offset="0%" stopColor="#ffffff" stopOpacity=".8" />
+            <Stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+          </LinearGradient>
+        </Defs>
+        <Rect
+          x="0"
+          y="100%"
+          width="100%"
+          height={12}
+          fill="url(#grad)"
+          rx={3}
+          ry={3}
+          transform="translate(0, -12)"
+        />
+      </Svg>
+      <Svg style={StyleSheet.absoluteFill}>
+        <Defs>
+          <LinearGradient id="grad" x1="100%" y1="100%" x2="0%" y2="99.995%">
+            <Stop offset="0%" stopColor="#ffffff" stopOpacity=".8" />
+            <Stop offset="100%" stopColor="#ffffff" stopOpacity="0" />
+          </LinearGradient>
+        </Defs>
+        <Rect
+          x="100%"
+          y="0"
+          width={8}
+          height="100%"
+          fill="url(#grad)"
+          rx={3}
+          ry={3}
+          transform="translate(-8, 0)"
         />
       </Svg>
     </View>
@@ -30,8 +85,8 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     borderWidth: 1,
     borderColor: Colors.light.borders,
-    margin: 20,
-    padding: 10
+    margin: 20
+    //padding: 10
   }
 })
 
