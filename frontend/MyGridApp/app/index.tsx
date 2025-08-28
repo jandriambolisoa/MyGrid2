@@ -7,9 +7,8 @@ export default function MainScreen () {
 
   return (
     <Container>
-      <MainWidget>
-        <MainText type="light">
-          Welcome to MyGridApp!</MainText>
+      <MainWidget borders={true} colors={["#ff6600", "#ff6600"]} style={{ alignItems: 'center', justifyContent: 'center' }}>
+        <MainText type="light" style={{ }}>Welcome to MyGridApp!</MainText>
       </MainWidget>
     </Container>
   )
