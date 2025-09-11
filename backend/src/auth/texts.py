@@ -43,3 +43,17 @@ not_available_email_message = defaultdict(
         "fr": "Cette adresse e-mail est déjà utilisée.",
     }
 )
+
+login_suspended_message = defaultdict(
+    lambda: "Too many failed attempts. Your login is suspended for {{ DURATION }} seconds.",
+    {
+        "fr": "Trop de tentatives échouées. Votre connexion est suspendue pendant {{ DURATION }} secondes.",
+    }
+)
+
+wrong_credentials_message = defaultdict(
+    lambda: "Incorrect username or password.",
+    {
+        "fr": "Nom d'utilisateur ou mot de passe incorrect.",
+    }
+)

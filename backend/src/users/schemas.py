@@ -28,7 +28,3 @@ class UserSelf(BaseModel):
     modified: datetime
     language: str
     image: Optional[str]
-
-class TokenData(BaseModel):
-    username: str
-    language: str

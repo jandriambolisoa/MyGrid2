@@ -1,7 +1,7 @@
 -- migrate:up
 CREATE TABLE IF NOT EXISTS public.appstatus
 (
-    id integer NOT NULL DEFAULT nextval('appstatus_id_seq'::regclass),
+    id serial NOT NULL,
     created timestamp with time zone NOT NULL DEFAULT now(),
     version character varying COLLATE pg_catalog."default" NOT NULL,
     maintenance boolean NOT NULL DEFAULT false,

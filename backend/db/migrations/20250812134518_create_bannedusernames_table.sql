@@ -1,7 +1,7 @@
 -- migrate:up
 CREATE TABLE IF NOT EXISTS public.bannedusernames
 (
-    id integer NOT NULL DEFAULT nextval('bannedusernames_id_seq'::regclass),
+    id serial NOT NULL,
     username character varying COLLATE pg_catalog."default" NOT NULL,
     created timestamp with time zone NOT NULL DEFAULT now(),
     by integer NOT NULL,

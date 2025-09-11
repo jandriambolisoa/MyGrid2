@@ -10,13 +10,10 @@ class Settings (BaseSettings):
 
     debug: int = 0
 
-    db_host:                        str
-    db_port:                        int
-    db_name:                        str
-    db_user:                        str
-    db_password:                    str
-    secretkey:                      str
-
+    secret_key: str
+    algorithm: str
+    token_expires_minutes: int
+    refresh_token_expires_minutes: int
     website_url: str
 
 settings = Settings()

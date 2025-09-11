@@ -8,9 +8,9 @@ failed_authorization_message = defaultdict(
 )
 
 expired_session_message = defaultdict(
-    lambda: "Session expired.",
+    lambda: "Session expired. Please log in again.",
     {
-        "fr": "La session a expiré.",
+        "fr": "Session expirée. Veuillez vous reconnecter.",
     }
 )
 
