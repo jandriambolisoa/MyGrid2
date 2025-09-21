@@ -45,8 +45,8 @@ class LoginSuspendedError(HTTPException):
     status_code = status.HTTP_403_FORBIDDEN
     def __init__(self, duration: int, language: str = "en", **kwargs):
         super().__init__(**kwargs)
-        jinja_env = Environment(loader= login_suspended_message[language]) # TODO Check Jinja code
-        self.detail = jinja_env.render(duration=duration)
+        jinja_template = Environment().from_string(login_suspended_message[language]) # TODO Check Jinja code
+        self.detail = jinja_template.render(duration=duration)
 
 class WrongCredentialsError(HTTPException):
     status_code = status.HTTP_401_UNAUTHORIZED
