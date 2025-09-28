@@ -42,7 +42,8 @@
             "./assets/fonts/AlteHaasGroteskBold.ttf"
           ]
         }
-      ]
+      ],
+      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true

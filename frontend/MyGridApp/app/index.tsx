@@ -1,22 +1,17 @@
 import { Container } from '@/components/widgets/Container';
+import { TouchableOpacity } from 'react-native';
+import { useRouter } from 'expo-router';
 import { MainText } from '@/components/widgets/MainText';
-import { MainWidget } from '@/components/widgets/MainWidget';
-import { StyleSheet, View } from 'react-native';
 
 export default function MainScreen () {
 
+  const router = useRouter();
+
   return (
-    <Container>
-      <MainWidget borders={true} colors={["#ff6600", "#ff6600"]} style={{ alignItems: 'center', justifyContent: 'center' }}>
-        <MainText type="light" style={{ }}>Welcome to MyGridApp!</MainText>
-      </MainWidget>
+    <Container style={{ justifyContent: 'center', alignItems: 'center' }}>
+      <TouchableOpacity onPress={() => router.push('/auth/login')} style={{borderWidth: 1, borderColor: 'white', padding: 10, borderRadius: 4}}>
+        <MainText>Sign in</MainText>
+      </TouchableOpacity>
     </Container>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#dddddd"
-  }
-})
