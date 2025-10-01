@@ -15,16 +15,22 @@ WebBrowser.maybeCompleteAuthSession();
 
 export default function Login () {
 
-  const [request, response, promptAsync] = Google.useAuthRequest({
+  const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
+    webClientId: "506627688155-vnssthto3rl9d12ts93o9nsnc0bhdobs.apps.googleusercontent.com",
+    iosClientId: "506627688155-gk31l5ohis7ded2596lm5447mcrc5apl.apps.googleusercontent.com",
+    scopes: ['openid', 'profile', 'email']
+  })
+
+  /*const [request, response, promptAsync] = Google.useAuthRequest({
     webClientId: "506627688155-vnssthto3rl9d12ts93o9nsnc0bhdobs.apps.googleusercontent.com",
     iosClientId: "506627688155-gk31l5ohis7ded2596lm5447mcrc5apl.apps.googleusercontent.com",
     scopes: ['profile', 'email']
-  })
+  })*/
 
   useEffect(() => {
     if (response?.type === 'success') {
-      const { authentication } = response;
-      console.log("Access token:", authentication?.accessToken);
+      //const { authentication } = response;
+      console.log("Auth:", response.params.id_token);
     }
   }, [response])
 
