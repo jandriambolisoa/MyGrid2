@@ -4,14 +4,32 @@ import { TouchableOpacity, StyleSheet, View } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { scopedI18n } from "@/translations/i18n";
 import * as AppleAuthentication from 'expo-apple-authentication';
+import * as Google from 'expo-auth-session/providers/google';
+import * as WebBrowser from 'expo-web-browser';
 import { SpotLight } from "@/components/widgets/SpotLight";
+import { useEffect } from "react";
 
 const t = scopedI18n('auth.login')
 
+WebBrowser.maybeCompleteAuthSession();
+
 export default function Login () {
 
-  async function handleGoogle () {
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    webClientId: "506627688155-vnssthto3rl9d12ts93o9nsnc0bhdobs.apps.googleusercontent.com",
+    iosClientId: "506627688155-gk31l5ohis7ded2596lm5447mcrc5apl.apps.googleusercontent.com",
+    scopes: ['profile', 'email']
+  })
 
+  useEffect(() => {
+    if (response?.type === 'success') {
+      const { authentication } = response;
+      console.log("Access token:", authentication?.accessToken);
+    }
+  }, [response])
+
+  async function handleGoogle () {
+    await promptAsync()
   }
 
   async function handleApple () {
