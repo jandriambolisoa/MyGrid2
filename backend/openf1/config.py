@@ -8,6 +8,8 @@ DOTENV = os.path.join(os.path.dirname(__file__), ".env")
 class Settings (BaseSettings):
     model_config = SettingsConfigDict(env_file=DOTENV)
 
+    debug: int = 0
+
     openf1_api_url: str = "https://api.openf1.org/"
     openf1_api_username: str
     openf1_api_password: str
