@@ -2,7 +2,7 @@ from backend.db.database import get_db, Database
 from backend.src.users import exceptions as user_exceptions
 from backend.utils import random_code
 
-def assign_user_referral(referral_code: str, user_id: int, language: str = "en"):
+async def assign_user_referral(referral_code: str, user_id: int, language: str = "en"):
     db = get_db()
     db.cursor.execute("""
         SELECT id FROM users
@@ -19,7 +19,7 @@ def assign_user_referral(referral_code: str, user_id: int, language: str = "en")
             db.conn.rollback()
             raise user_exceptions.NoUserFoundError(language=language)
 
-def create_unique_referral_code():
+async def create_unique_referral_code():
     """
     Create and return a unique referral code
     :return: str

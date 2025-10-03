@@ -6,3 +6,10 @@ unexpected_message = defaultdict(
         "fr": "Une erreur est survenue, veuillez réessayer.",
     }
 )
+
+forbidden_access_message = defaultdict(
+    lambda: "Forbidden access.",
+    {
+        "fr": "Accès interdit.",
+    }
+)

@@ -47,4 +47,3 @@ class NoUserFoundError(HTTPException):
     def __init__(self, language: str = "en", **kwargs):
         super().__init__(self.status_code, **kwargs)
         self.detail = no_user_found_message[language]
-
