@@ -9,7 +9,7 @@ from backend.openf1 import exceptions as openf1_exceptions
 from backend.openf1.schemas import Driver, DriverLive
 
 
-async def get_access_token(language: str = "en") -> str or None:
+def get_access_token(language: str = "en") -> str or None:
     """
     Returns access token with MyGrid credentials
     Returns:
@@ -29,8 +29,8 @@ async def get_access_token(language: str = "en") -> str or None:
     )
 
     if login_response.status_code == 200:
-        access_token = login_response.json()["access_token"]
-        return access_token
+        access_token = login_response.json()
+        return access_token["access_token"]
     else:
         raise openf1_exceptions.OpenF1CannotGetAccessTokenException(language=language)
 
@@ -55,7 +55,8 @@ def get_session_type(access_token: str) -> str or None:
     )
 
     if session.status_code == 200:
-        return session.json()["session_type"]
+        session_type = session.json()
+        return session_type[0]["session_type"]
     else:
         return None
 
@@ -123,8 +124,10 @@ class Leaderboard:
         :param drivers: list of Driver models
         :return: list of DriverLive
         """
-        driver_number_to_codename = {driver["number"]: driver["codename"] for driver in drivers}
+        driver_number_to_codename = {driver["driver_number"]: driver["name_acronym"] for driver in drivers}
         sorted_datas = []
+
+        print(f"# DEBUG - {self.datas}")
 
         for driver_number in self.datas:
             sorted_datas.append(DriverLive(
@@ -150,14 +153,17 @@ def on_connect(client, userdata, flags, rc, properties=None):
         "accept": "application/json",
         "Authorization": f"Bearer {userdata['access_token']}"
     }
-    response = requests.get(api_url, headers=headers)
 
-    if response.status_code == 200:
-        raw_datas = response.json()
-        for driver in raw_datas[:number_of_drivers]:
-            leaderboard.datas[driver["driver_number"]] = driver["position"]
-    else:
-        raise openf1_exceptions.OpenF1ConnectionFailed()
+    for driver in userdata["drivers"]:
+        response = requests.get(f"{api_url}&driver_number={driver['driver_number']}", headers=headers)
+        if response.status_code == 200:
+            raw_datas = response.json()
+            last_position = raw_datas[-1]["position"]
+            leaderboard.datas[driver["driver_number"]] = {
+                "position": last_position,
+                "lap_duration": None,
+                "interval": None
+            }
 
     # Subscribe to message types
     if rc == 0 and userdata["session_type"] == "Practice":
@@ -172,11 +178,13 @@ def on_connect(client, userdata, flags, rc, properties=None):
         raise openf1_exceptions.OpenF1ConnectionFailed() #TODO: logs system
 
 def on_message(client, userdata, msg):
+    print(f"# DEBUG - Received message : {msg.topic}")
+
     if msg.topic == "v1/position":
         for position in msg.payload.decode():
             leaderboard.datas[position["driver_number"]] = {"position": position["position"]}
 
-    elif msg.topic == "v1/laps" and userdata["session_type"] == "Qualifying":
+    elif msg.topic == "v1/laps":
         for lap in msg.payload.decode():
             if "lap_duration" not in leaderboard.datas[lap["driver_number"]]:
                 leaderboard.datas[lap["driver_number"]]["lap_duration"] = lap["lap_duration"]
@@ -185,7 +193,7 @@ def on_message(client, userdata, msg):
             else:
                 continue
 
-    elif msg.topic == "v1/intervals" and userdata["session_type"] == "Race":
+    elif msg.topic == "v1/intervals":
         for interval in msg.payload.decode():
             leaderboard.datas[interval["driver_number"]]["interval"] = interval["interval"]
 

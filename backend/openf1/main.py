@@ -5,7 +5,7 @@ from backend.openf1.dependencies import (
     get_access_token,
     get_drivers,
     get_session_type,
-    on_connect, on_message, LiveFetcher, leaderboard,
+    on_connect, on_message, leaderboard,
 )
 
 from fastapi import FastAPI, Depends
@@ -29,20 +29,21 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-def get_openf1_client(access_token: str = Depends(get_access_token())):
-    client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
-    client.username_pw_set(username=settings.openf1_api_username, password=access_token)
-    client.tls_set(cert_reqs=ssl.CERT_REQUIRED, tls_version=ssl.PROTOCOL_TLS_CLIENT)
+def get_openf1_client(access_token: str):
+    cli = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
+    cli.username_pw_set(username=settings.openf1_api_username, password=access_token)
+    cli.tls_set(cert_reqs=ssl.CERT_REQUIRED, tls_version=ssl.PROTOCOL_TLS_CLIENT)
     client_datas = {
         "access_token": access_token,
         "session_type": get_session_type(access_token),
         "drivers": get_drivers(access_token)
     }
-    client.user_data_set(client_datas)
+    cli.user_data_set(client_datas)
 
-    return client
+    return cli
 
-client = get_openf1_client()
+access_token = get_access_token()
+client = get_openf1_client(access_token)
 
 @app.get("/activate")
 async def activate():
@@ -62,6 +63,7 @@ async def deactivate():
 
 @app.get("/datas")
 async def datas():
-    return leaderboard.read()
+    drivers = get_drivers(access_token)
+    return leaderboard.read(drivers)
 
     #TODO: Mailing system
