@@ -1,19 +1,26 @@
-from fastapi import APIRouter, status, Depends, Request, Response
+from fastapi import APIRouter, status, Depends, Request
+from fastapi.responses import RedirectResponse
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
+
 from psycopg.errors import UniqueViolation
 
+from jose import jwt
+
 from backend import exceptions as app_exceptions
-from backend.src.auth import exceptions as auth_exceptions
 from backend.src.users import exceptions as user_exceptions
 
+from backend.config import settings as app_settings
+from backend.utils import hash, verify, random_code
 from backend.oauth2 import create_jwt_token, get_current_token, get_current_user, verify_refresh_token, \
     verify_access_token
+from backend.src.auth import exceptions as auth_exceptions
+from backend.src.auth import signals as auth_signals
+from backend.src.auth.referrals import assign_user_referral, create_unique_referral_code
 from backend.src.auth.schemas import LoginResponse, AccessToken, LoginRefreshTokenPost
-from backend.src.users.privileges import is_user_banned
-from backend.utils import hash, verify, random_code
 from backend.src.auth.security import get_login_cooldown_seconds, purge_user_login_attempts
 from backend.src.auth.syntax import valid_username, valid_password
-from backend.src.auth.referrals import assign_user_referral, create_unique_referral_code
+from backend.src.users import signals as users_signals
+from backend.src.users.privileges import is_user_banned
 from backend.src.users.schemas import UserCreate, UserSelf
 from backend.db.database import get_db, Database
 
@@ -48,12 +55,11 @@ async def signup_user(user: UserCreate, referral_code: str = None, language: str
 
         # TODO: add user in leaderboards
 
-        # TODO: include automatic email verification
-        #_send_verification_mail(user.username, user.email)
-
         # TODO include referral system
         if referral_code:
             assign_user_referral(referral_code, new_user["id"], language=language)
+
+        users_signals.created(UserSelf(**new_user))
 
         # TODO: include full profile return
         return new_user
@@ -65,7 +71,7 @@ async def signup_user(user: UserCreate, referral_code: str = None, language: str
 
 
 @router.post("/login-email", response_model=LoginResponse)
-def login_email(request: Request, language: str = "en", db: Database = Depends(get_db),
+async def login_email(request: Request, language: str = "en", db: Database = Depends(get_db),
           credentials: OAuth2PasswordRequestForm = Depends()):
     # TODO implement forgot password
     # TODO update Expo push token
@@ -124,7 +130,7 @@ def login_email(request: Request, language: str = "en", db: Database = Depends(g
 
 
 @router.post("/login-refresh-token", response_model=LoginResponse)
-def login_refresh_token(request: Request, tokens: LoginRefreshTokenPost, language: str = "en", db: Database = Depends(get_db)):
+async def login_refresh_token(request: Request, tokens: LoginRefreshTokenPost, language: str = "en", db: Database = Depends(get_db)):
 
     # Check if the ip address is in an incremental suspension
     cooldown_seconds = get_login_cooldown_seconds(request.client.host)
@@ -172,8 +178,9 @@ def login_refresh_token(request: Request, tokens: LoginRefreshTokenPost, languag
         "user": user
     }
 
+
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
-def logout(db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user), current_token: AccessToken = Depends(get_current_token)):
+async def logout(db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user), current_token: AccessToken = Depends(get_current_token)):
     db.cursor.execute("""
         SELECT *
         FROM refreshtokens
@@ -196,3 +203,33 @@ def logout(db: Database = Depends(get_db), current_user: UserSelf = Depends(get_
     db.conn.commit()
 
     return Response(status_code=status.HTTP_204_NO_CONTENT)
+
+
+@router.post("/confirm-email", status_code=status.HTTP_202_ACCEPTED, response_class=RedirectResponse)
+async def confirm_email(token: AccessToken, db: Database = Depends(get_db)):
+    # A very exceptional occasion where the token is read
+    # without validation to extract the user language
+    token_payload = jwt.decode(token, options={"verify_signature": False})
+    language = token_payload.get("language", "en")
+
+    datas = await verify_access_token(token.access_token, language=language, verify_exp=False)
+
+    try:
+        db.cursor.execute("""
+            UPDATE users
+            SET verified = true
+            WHERE username = %s AND email = %s
+            RETURNING *
+            """, (datas["username"], datas["email"]))
+        db.conn.commit()
+
+        user = db.cursor.fetchone()
+
+        auth_signals.validate_mail.send(UserSelf(**user))
+
+        return RedirectResponse(app_settings.confirmed_email_url)
+    except:
+        db.cursor.execute("ROLLBACK")
+        db.conn.commit()
+
+    raise app_exceptions.ForbiddenAccessException(language=language)

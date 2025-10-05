@@ -4,11 +4,12 @@ import smtplib
 
 from fastapi import APIRouter, status, Depends
 
-from backend.mailings.src.sending.schemas import EmailDatas
 from backend.mailings.config import settings as mailings_settings
 from backend.mailings.src.sending import exceptions as sending_exceptions
-from backend.mailings.src.writing.router import write_email
+from backend.mailings.src.sending import signals as sending_signals
+from backend.mailings.src.sending.schemas import EmailDatas
 from backend.mailings.src.templates.dependencies import valid_template_name
+from backend.mailings.src.writing.router import write_email
 
 router = APIRouter(
     prefix="/sending",
@@ -30,5 +31,6 @@ async def send_email(datas: EmailDatas, template_name: str = Depends(valid_templ
         with smtplib.SMTP_SSL(mailings_settings.mail_host, mailings_settings.mail_port) as server:
             server.login(mailings_settings.mail_login, mailings_settings.mail_password)
             server.send_message(msg)
+        sending_signals.sent.send()
     except smtplib.SMTPAuthenticationError:
         raise sending_exceptions.EmailAuthenticationException(language=language)

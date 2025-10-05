@@ -10,10 +10,17 @@ class Settings (BaseSettings):
 
     debug: int = 0
 
+    # Security related settings
     secret_key: str
     algorithm: str
     token_expires_minutes: int
     refresh_token_expires_minutes: int
+
+    # Redirections related settings
     website_url: str
+    confirmed_email_url: str
+
+    # Microservices related settings
+    ms_mailings_url: str
 
 settings = Settings()

@@ -17,7 +17,7 @@ from backend.src.users.privileges import is_user_banned
 
 oauth2_scheme = OAuth2PasswordBearer("login")
 
-def create_jwt_token(data: dict, expires_delta: timedelta = timedelta(minutes=app_settings.token_expires_minutes)):
+async def create_jwt_token(data: dict, expires_delta: timedelta = timedelta(minutes=app_settings.token_expires_minutes)):
     try:
         to_encode = data.copy()
 
@@ -30,7 +30,7 @@ def create_jwt_token(data: dict, expires_delta: timedelta = timedelta(minutes=ap
     except:
         raise JWTError()
 
-def verify_access_token(token: str, language: str = 'en', verify_exp: bool = True):
+async def verify_access_token(token: str, language: str = 'en', verify_exp: bool = True):
     if is_token_revoked(token):
         raise user_exceptions.FailedAuthorizationError(language=language)
 
@@ -49,7 +49,7 @@ def verify_access_token(token: str, language: str = 'en', verify_exp: bool = Tru
     except exceptions.ExpiredSignatureError:
         raise user_exceptions.SessionExpiredError(language=language)
 
-def verify_refresh_token(token: str, language: str = 'en'):
+async def verify_refresh_token(token: str, language: str = 'en'):
     if is_token_revoked(token):
         raise user_exceptions.FailedAuthorizationError(language=language)
 
@@ -66,14 +66,14 @@ def verify_refresh_token(token: str, language: str = 'en'):
     except exceptions.ExpiredSignatureError:
             raise user_exceptions.SessionExpiredError(language=language)
 
-def revoke_token(token: str):
+async def revoke_token(token: str):
     db = get_db()
     db.cursor.execute("""\
         INSERT INTO revokedtokens (token)
         VALUES (%s)""", (token,))
     db.conn.commit()
 
-def is_token_revoked(token: str) -> bool:
+async def is_token_revoked(token: str) -> bool:
     db = get_db()
     db.cursor.execute(""" \
         SELECT *
@@ -83,7 +83,7 @@ def is_token_revoked(token: str) -> bool:
         return True
     return False
 
-def get_current_user(token: str = Depends(oauth2_scheme), db: Database = Depends(get_db)):
+async def get_current_user(token: str = Depends(oauth2_scheme), db: Database = Depends(get_db)):
     """
     This depedency function gets the current user from the token. It will check in this order:
     If the token is valid, if the user exists, if the server is not on maintenance and if the
@@ -120,7 +120,7 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Database = Depends
 
     return current_user
 
-def get_current_token(token: str = Depends(oauth2_scheme)):
+async def get_current_token(token: str = Depends(oauth2_scheme)):
     token_data = verify_access_token(token)
     token = AccessToken(
         access_token=token,
