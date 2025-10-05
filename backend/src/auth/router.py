@@ -7,9 +7,12 @@ from psycopg.errors import UniqueViolation
 from jose import jwt
 
 from backend import exceptions as app_exceptions
+from backend.schemas import FrontEndWaitForAction
+from backend.src.auth.google import verify_google_token, google_automatic_password
 from backend.src.users import exceptions as user_exceptions
 
 from backend.config import settings as app_settings
+from backend.src.users.utils import get_user_id_from_email
 from backend.utils import hash, verify, random_code
 from backend.oauth2 import create_jwt_token, get_current_token, get_current_user, verify_refresh_token, \
     verify_access_token
@@ -17,7 +20,7 @@ from backend.src.auth import exceptions as auth_exceptions
 from backend.src.auth import signals as auth_signals
 from backend.src.auth.referrals import assign_user_referral, create_unique_referral_code
 from backend.src.auth.schemas import LoginResponse, AccessToken, LoginRefreshTokenPost
-from backend.src.auth.security import get_login_cooldown_seconds, purge_user_login_attempts
+from backend.src.auth.security import get_login_cooldown_seconds, purge_user_login_attempts, generate_safe_username
 from backend.src.auth.syntax import valid_username, valid_password
 from backend.src.users import signals as users_signals
 from backend.src.users.privileges import is_user_banned
@@ -57,7 +60,7 @@ async def signup_user(user: UserCreate, referral_code: str = None, language: str
 
         # TODO include referral system
         if referral_code:
-            assign_user_referral(referral_code, new_user["id"], language=language)
+            await assign_user_referral(referral_code, new_user["id"], language=language)
 
         users_signals.created(UserSelf(**new_user))
 
@@ -77,7 +80,7 @@ async def login_email(request: Request, language: str = "en", db: Database = Dep
     # TODO update Expo push token
 
     # Check if the ip address is in an incremental suspension
-    cooldown_seconds = get_login_cooldown_seconds(request.client.host)
+    cooldown_seconds = await get_login_cooldown_seconds(request.client.host)
     if cooldown_seconds > 0:
         raise auth_exceptions.LoginSuspendedError(cooldown_seconds, language=language)
 
@@ -91,7 +94,7 @@ async def login_email(request: Request, language: str = "en", db: Database = Dep
     if not user or not verify(credentials.password, user["password"]):
         raise auth_exceptions.WrongCredentialsError(language=language)
     else:
-        purge_user_login_attempts(user["id"])
+        await purge_user_login_attempts(user["id"])
 
     # Block banned users
     if is_user_banned(user["id"]):
@@ -133,12 +136,12 @@ async def login_email(request: Request, language: str = "en", db: Database = Dep
 async def login_refresh_token(request: Request, tokens: LoginRefreshTokenPost, language: str = "en", db: Database = Depends(get_db)):
 
     # Check if the ip address is in an incremental suspension
-    cooldown_seconds = get_login_cooldown_seconds(request.client.host)
+    cooldown_seconds = await get_login_cooldown_seconds(request.client.host)
     if cooldown_seconds > 0:
         raise auth_exceptions.LoginSuspendedError(cooldown_seconds, language=language)
 
-    refresh_token_data = verify_refresh_token(tokens.refresh_token.refresh_token, language=language)
-    token_data = verify_access_token(tokens.access_token.access_token, language=language, verify_exp=False)
+    refresh_token_data = await verify_refresh_token(tokens.refresh_token.refresh_token, language=language)
+    token_data = await verify_access_token(tokens.access_token.access_token, language=language, verify_exp=False)
 
     # Return current user datas
     db.cursor.execute(""" \
@@ -177,6 +180,81 @@ async def login_refresh_token(request: Request, tokens: LoginRefreshTokenPost, l
         },
         "user": user
     }
+
+
+@router.post("/login-google", response_model=LoginResponse)
+async def login_google(request: Request, credential: str, referral_code: str = None, language: str = "en", db: Database = Depends(get_db)):
+    datas = await verify_google_token(credential, language=language)
+
+    # Check if user has its email in the database
+    user_id = await get_user_id_from_email(datas.email)
+
+    # Check if the email has a @gmail.com suffix
+    # We trust the user by skipping password verification if his mail is a @gmail.com
+    # Google is authoritative if email has a @gmail.com suffix.
+    is_google_email = datas.email.endswith("@gmail.com")
+
+    # Manage a registered user that doesn't have a google id associated yet
+
+    # Manage a registered user
+    if user_id:
+
+
+    # Manage an unregistered user by creating a new user and associate its id to google id
+    if not user_id:
+        # Trust @gmail.com emails by skipping the password creation
+        # Else, create a temporary password that will be used
+        # to request new credentials while assuring the user identity.
+        if is_google_email:
+            password = hash(await google_automatic_password(datas.sub))
+        else:
+            password = random_code(64)
+
+        # Create a unique code for referral purpose
+        unique_referral_code = create_unique_referral_code()
+
+        try:
+            db.cursor.execute("""
+                INSERT INTO users (username, email, password, language, referralcode)
+                VALUES (%s, %s, %s, %s, %s)
+                RETURNING *""", (generate_safe_username(), datas.email, password, language, unique_referral_code))
+            new_user = db.cursor.fetchone()
+            db.conn.commit()
+
+        except UniqueViolation as err:
+            db.cursor.execute("ROLLBACK")
+            db.conn.commit()
+            raise app_exceptions.UnexpectedError(language=language)
+
+        if referral_code:
+            await assign_user_referral(referral_code, new_user["id"], language=language)
+
+        # Associate our user's MyGrid database id to the given Google id
+        try:
+            db.cursor.execute("""
+                INSERT INTO googleids (user_id, google_id)
+                VALUES (%s, %s)""", (new_user["id"], datas.sub))
+            db.conn.commit()
+
+        except UniqueViolation as err:
+            db.cursor.execute("ROLLBACK")
+            db.conn.commit()
+            raise app_exceptions.UnexpectedError(language=language)
+
+        if is_google_email:
+            return FrontEndWaitForAction(
+                message= "User must now be redirected to a 'Choose username' UI.",
+                redirection= f"/auth/{new_user['id']}/signup-register-username",
+                datas= UserSelf(**new_user)
+            )
+        else:
+            return FrontEndWaitForAction(
+                message="User must now be redirected to a 'Choose username and password' UI.",
+                redirection=f"/users/{new_user['id']}/signup-register-credentials?pw={password}",
+                datas=UserSelf(**new_user)
+            )
+
+
 
 
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)

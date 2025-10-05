@@ -57,3 +57,10 @@ wrong_credentials_message = defaultdict(
         "fr": "Nom d'utilisateur ou mot de passe incorrect.",
     }
 )
+
+google_sso_login_failed_message = defaultdict(
+    lambda: "Google authentification failed, please try again later.",
+    {
+        "fr": "L'authentification Google a échouée, veuillez réessayer plus tard.",
+    }
+)
