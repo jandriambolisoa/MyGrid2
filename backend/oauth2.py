@@ -92,7 +92,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Database = D
     :param db: The database
     :return: UserSelf pydantic model
     """
-    token_data = verify_access_token(token)
+    token_data = await verify_access_token(token)
 
     # Return current user datas
     db.cursor.execute("""\

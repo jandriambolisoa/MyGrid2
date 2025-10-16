@@ -7,6 +7,7 @@ CREATE TABLE public.sessions
     event_id integer NOT NULL,
     competitive boolean NOT NULL,
     PRIMARY KEY (id),
+    UNIQUE (name, event_id),
     CONSTRAINT sessions_events_fkey FOREIGN KEY (event_id)
         REFERENCES public.events (id) MATCH SIMPLE
         ON UPDATE CASCADE

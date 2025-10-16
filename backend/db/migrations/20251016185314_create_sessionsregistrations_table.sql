@@ -6,6 +6,7 @@ CREATE TABLE public.sessionsregistrations
     team_id integer NOT NULL,
     prediction integer NOT NULL,
     PRIMARY KEY (session_id, driver_id),
+    UNIQUE (session_id, prediction),
     CONSTRAINT sessionsregistrations_sessions_fkey FOREIGN KEY (session_id)
         REFERENCES public.sessions (id) MATCH SIMPLE
         ON UPDATE CASCADE
