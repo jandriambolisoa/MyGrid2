@@ -3,6 +3,7 @@ CREATE TABLE public.referrals
 (
     user_id integer NOT NULL,
     referral integer NOT NULL,
+    created timestamp with time zone NOT NULL DEFAULT now(),
     PRIMARY KEY (user_id),
     CONSTRAINT referrals_users_fkey1 FOREIGN KEY (user_id)
         REFERENCES public.users (id) MATCH SIMPLE
