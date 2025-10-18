@@ -1,6 +1,7 @@
 import json
 import ssl
 import requests
+import time
 
 import paho.mqtt.client as mqtt
 
@@ -128,9 +129,17 @@ class Leaderboard:
         sorted_datas = []
 
         for driver_number in self.datas.keys():
+            if self.datas[driver_number]["lap_duration"]:
+                seconds = self.datas[driver_number]["lap_duration"]
+                minutes = int(seconds/60)
+                seconds = "%.3f" %seconds
+                laptime = f"{minutes}:{seconds}"
+            else:
+                laptime = self.datas[driver_number]["lap_duration"]
+
             sorted_datas.append(DriverLive(
                 position=self.datas[driver_number]["position"],
-                lap_duration=self.datas[driver_number]["lap_duration"],
+                lap_duration=laptime,
                 interval=self.datas[driver_number]["interval"],
                 driver=Driver(
                     number=driver_number,
@@ -164,16 +173,19 @@ def on_connect(client, userdata, flags, rc, properties=None):
             }
 
     # Subscribe to message types
-    if rc == 0 and userdata["session_type"] == "Practice":
-        client.subscribe("v1/position")
-    if rc == 0 and userdata["session_type"] == "Qualifying":
-        client.subscribe("v1/position")
-        client.subscribe("v1/laps")
-    if rc == 0 and userdata["session_type"] == "Race":
-        client.subscribe("v1/position")
-        client.subscribe("v1/intervals")
-    else:
-        raise openf1_exceptions.OpenF1ConnectionFailed() #TODO: logs system
+    try:
+        if rc == 0 and userdata["session_type"] == "Practice":
+            client.subscribe("v1/position")
+        if rc == 0 and userdata["session_type"] == "Qualifying":
+            client.subscribe("v1/position")
+            client.subscribe("v1/laps")
+        if rc == 0 and userdata["session_type"] == "Race":
+            client.subscribe("v1/position")
+            client.subscribe("v1/intervals")
+    except Exception as e:
+        print(e)
+    # else:
+    #     raise openf1_exceptions.OpenF1ConnectionFailed() #TODO: logs system
 
 def on_message(client, userdata, msg):
     data = json.loads(msg.payload.decode('utf8'))
@@ -181,8 +193,8 @@ def on_message(client, userdata, msg):
     if msg.topic == "v1/position":
         leaderboard.datas[data["driver_number"]]["position"] = data["position"]
 
-    elif msg.topic == "v1/laps":
-        if "lap_duration" not in leaderboard.datas[data["driver_number"]]:
+    elif msg.topic == "v1/laps" and data["lap_duration"]:
+        if leaderboard.datas[data["driver_number"]]["lap_duration"] == None:
             leaderboard.datas[data["driver_number"]]["lap_duration"] = data["lap_duration"]
         elif leaderboard.datas[data["driver_number"]]["lap_duration"] > data["lap_duration"]:
             leaderboard.datas[data["driver_number"]]["lap_duration"] = data["lap_duration"]
