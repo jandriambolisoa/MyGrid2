@@ -132,7 +132,7 @@ class Leaderboard:
             if self.datas[driver_number]["lap_duration"]:
                 seconds = self.datas[driver_number]["lap_duration"]
                 minutes = int(seconds/60)
-                seconds = "%.3f" %seconds
+                seconds = "%.3f" %(seconds-(minutes*60))
                 laptime = f"{minutes}:{seconds}"
             else:
                 laptime = self.datas[driver_number]["lap_duration"]
@@ -149,6 +149,9 @@ class Leaderboard:
 
         sorted_datas.sort(key=lambda x: x.position)
         return sorted_datas
+
+    def reset(self):
+        self.datas.clear()
 
 leaderboard = Leaderboard()
 
