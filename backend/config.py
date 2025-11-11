@@ -22,5 +22,6 @@ class Settings (BaseSettings):
 
     # Microservices related settings
     ms_mailings_url: str
+    ms_openf1_url: str
 
 settings = Settings()
