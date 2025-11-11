@@ -4,14 +4,16 @@ from backend.openf1.config import settings
 from backend.openf1.dependencies import (
     get_access_token,
     get_drivers,
-    get_session_type,
-    on_connect, on_message, leaderboard,
+    get_session,
+    on_connect, on_message, leaderboard, get_results,
 )
 
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, status, Response
 from fastapi.middleware.cors import CORSMiddleware
 
 import paho.mqtt.client as mqtt
+
+from backend.openf1.schemas import DriverLive
 
 docs_urls = {
     "docs_url": "/docs" if settings.debug else None,
@@ -33,9 +35,11 @@ def get_openf1_client(access_token: str):
     cli = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
     cli.username_pw_set(username=settings.openf1_api_username, password=access_token)
     cli.tls_set(cert_reqs=ssl.CERT_REQUIRED, tls_version=ssl.PROTOCOL_TLS_CLIENT)
+    session = get_session(access_token)
     client_datas = {
         "access_token": access_token,
-        "session_type": get_session_type(access_token),
+        "session_type": session["session_type"],
+        "session_key": session["session_key"],
         "drivers": get_drivers(access_token)
     }
     cli.user_data_set(client_datas)
@@ -53,18 +57,22 @@ async def activate():
     client.connect(settings.openf1_mqtt_broker, settings.openf1_mqtt_port, 60)
     client.loop_start()
 
-    #TODO: Mailing system
 
 @app.get("/deactivate")
 async def deactivate():
     client.disconnect()
     leaderboard.reset()
 
-    # TODO: Mailing system
 
-@app.get("/datas")
+@app.get("/datas", response_model=list[DriverLive])
 async def datas():
-    drivers = get_drivers(access_token)
-    return leaderboard.read(drivers)
+    return leaderboard.read(client.user_data_get()["drivers"])
 
-    #TODO: Mailing system
+
+@app.get("/results", response_model=list[DriverLive])
+async def results():
+    return get_results(
+        access_token,
+        client.user_data_get()["session_key"],
+        client.user_data_get()["drivers"]
+    ) if not None else Response(status_code=status.HTTP_204_NO_CONTENT)

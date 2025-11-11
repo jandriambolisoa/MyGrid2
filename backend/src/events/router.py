@@ -42,9 +42,10 @@ async def create_championship(championship: ChampionshipCreate, language: str = 
 
         db.conn.commit()
     except UniqueViolation:
+        db.conn.rollback()
         raise ChampionshipAlreadyExistsError(language=language)
 
-    events_signal.create_championship.send(created, user=current_user)
+    await events_signal.create_championship.send(created, user=current_user)
     return created
 
 
@@ -69,9 +70,10 @@ async def create_event(to_create: EventCreate, language: str = "en", db: Databas
 
         db.conn.commit()
     except UniqueViolation:
+        db.conn.rollback()
         raise EventAlreadyExistsError(language=language)
 
-    events_signal.create_event.send(created, user=current_user)
+    await events_signal.create_event.send(created, user=current_user)
     return created
 
 @router.post("/sessions", status_code=status.HTTP_201_CREATED, response_model=Session)
@@ -83,9 +85,9 @@ async def create_session(to_create: SessionCreate, language: str = "en", db: Dat
 
     try:
         db.cursor.execute("""
-            INSERT INTO sessions (name, datetime, event_id)
-            VALUES (%s, %s, %s)
-            RETURNING *""", (to_create.name["en"].title(), to_create.datetime, to_create.event_id))
+            INSERT INTO sessions (name, datetime, event_id, competitive)
+            VALUES (%s, %s, %s, %s)
+            RETURNING *""", (to_create.name["en"].title(), to_create.datetime, to_create.event_id, to_create.competitive))
         created = db.cursor.fetchone()
 
         for lang in translations:
@@ -95,9 +97,10 @@ async def create_session(to_create: SessionCreate, language: str = "en", db: Dat
 
         db.conn.commit()
     except UniqueViolation:
+        db.conn.rollback()
         raise SessionAlreadyExistsError(language=language)
 
-    events_signal.create_session.send(created, user=current_user)
+    await events_signal.create_session.send(Session(**created), user=current_user)
     return created
 
 
@@ -277,7 +280,7 @@ async def delete_championship(id: int = Depends(valid_championship_id), language
     to_delete = db.cursor.fetchone()
 
     db.conn.commit()
-    events_signal.delete_championship.send(to_delete, user = current_user)
+    await events_signal.delete_championship.send(to_delete, user = current_user)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
@@ -293,7 +296,7 @@ async def delete_session(id: int = Depends(valid_session_id), language: str = "e
     to_delete = db.cursor.fetchone()
 
     db.conn.commit()
-    events_signal.delete_session.send(to_delete, user = current_user)
+    await events_signal.delete_session.send(Session(**to_delete), user = current_user)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
@@ -309,6 +312,6 @@ async def delete_event(id: int = Depends(valid_event_id), language: str = "en", 
     to_delete = db.cursor.fetchone()
 
     db.conn.commit()
-    events_signal.delete_event.send(to_delete, user = current_user)
+    await events_signal.delete_event.send(to_delete, user = current_user)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 

@@ -35,11 +35,11 @@ def get_access_token(language: str = "en") -> str or None:
     else:
         raise openf1_exceptions.OpenF1CannotGetAccessTokenException(language=language)
 
-def get_session_type(access_token: str) -> str or None:
+def get_session(access_token: str) -> dict or None:
     """
-    Returns the current session type.
+    Returns the current session.
     Returns:
-        str: 'Practice', 'Qualifying' or 'Race'
+        dict: {"session_type": str, "session_key": str}
         None: None if the authentification failed
     """
     params = {
@@ -56,8 +56,47 @@ def get_session_type(access_token: str) -> str or None:
     )
 
     if session.status_code == 200:
-        session_type = session.json()
-        return session_type[0]["session_type"]
+        session_datas = session.json()
+        return {
+            "session_type": session_datas[0]["session_type"],
+            "session_key": session_datas[0]["session_key"]
+        }
+    else:
+        return None
+
+def get_results(access_token: str, session_key: int, drivers: list[Driver]) -> dict or None:
+    params = {
+        "session_key": "latest"
+    }
+    headers = {
+        "accept": "application/json",
+        "Authorization": f"Bearer {access_token}"
+    }
+    response = requests.get(
+        settings.openf1_api_url+"v1/session_result",
+        params=params,
+        headers=headers
+    )
+
+    if response.status_code == 200:
+        driver_number_to_codename = {driver["driver_number"]: driver["name_acronym"] for driver in drivers}
+
+        results_datas = response.json()
+        if results_datas[0]["session_key"] == session_key:
+            results = list()
+            for result in results_datas:
+                results.append({
+                    "position": result["position"],
+                    "lap_duration": None,
+                    "interval": None,
+                    "driver": {
+                        "number": result["driver_number"],
+                        "codename": driver_number_to_codename[result["driver_number"]]
+                    }
+                })
+            return results
+        else:
+            return None
     else:
         return None
 

@@ -11,7 +11,7 @@ from backend.src.events.dependencies import valid_session_id, valid_session_id_n
 from backend.src.predictions.exceptions import DriverNotRegisteredForSessionError
 from backend.src.scores.algorithms import compute_score
 from backend.src.scores.router import get_score_parameters_of_a_championship
-from backend.src.users.dependencies import ValidUserId, valid_user_id
+from backend.src.users.dependencies import valid_user_id
 from backend.src.users.privileges import is_user_moderator_or_admin
 from backend.src.users.schemas import UserSelf
 from backend.src.scores import algorithms

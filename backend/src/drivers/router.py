@@ -46,7 +46,7 @@ async def create_driver(driver: DriverCreate, language: str = "en", db: Database
     except UniqueViolation:
         raise DriverAlreadyExistsError(language=language)
 
-    drivers_signals.create_driver.send(driver)
+    await drivers_signals.create_driver.send(driver)
     return created_driver
 
 
@@ -69,7 +69,7 @@ async def create_team(team: TeamCreate, language: str = "en", db: Database = Dep
     except UniqueViolation:
         raise TeamAlreadyExistsError(language=language)
 
-    drivers_signals.create_team.send(team)
+    await drivers_signals.create_team.send(team)
     return created_team
 
 
@@ -268,6 +268,6 @@ async def delete_team(id: int, language: str = "en", db: Database = Depends(get_
         raise TeamNotFoundError(language=language)
 
     db.conn.commit()
-    drivers_signals.delete_team.send(team=to_delete)
+    await drivers_signals.delete_team.send(team=to_delete)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 

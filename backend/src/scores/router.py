@@ -7,6 +7,7 @@ from backend.oauth2 import get_current_user
 from backend.src.events.dependencies import valid_session_id, valid_championship_id
 from backend.src.results.exceptions import NoResultsFoundError, InvalidSessionResultsAttemptError
 from backend.src.results.schemas import ResultSession, ResultPost
+from backend.src.scores.core import score_parameters_of_a_championship
 from backend.src.scores.exceptions import NoParametersFoundError
 from backend.src.scores.schemas import ScoresParameters
 from backend.src.users.privileges import is_user_moderator_or_admin
@@ -27,21 +28,7 @@ async def get_score_parameters_of_a_championship(championship_id: int = Depends(
     if not await is_user_moderator_or_admin(current_user.id):
         raise app_exceptions.ForbiddenAccessException(language=language)
 
-    db.cursor.execute("""
-        SELECT * 
-        FROM scoresparameters 
-        WHERE championship_id = %s""", (championship_id,))
-    parameters = db.cursor.fetchall()
-
-    if not parameters:
-        raise NoParametersFoundError(language=language)
-
-    # Convert query results into ScoresParameters model
-    scores_parameters = dict()
-    for param in parameters:
-        scores_parameters[param["param"]] = [param[key] for key in list(param.keys()) if "value" in key]
-
-    return scores_parameters
+    return await score_parameters_of_a_championship(championship_id, db, language)
 
 
 @router.post("/parameters/{championship_id}", status_code=status.HTTP_201_CREATED)

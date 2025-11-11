@@ -54,23 +54,23 @@ session_not_found_message = defaultdict(
 )
 
 championship_does_not_exists_message = defaultdict(
-    lambda: "Championship of id {{ CHAMPIONSHIP_ID }} does not exist.",
+    lambda: "Championship of id {{ championship_id }} does not exist.",
     {
-        "fr": "Le championnat à l'id {{ CHAMPIONSHIP_ID }} n'existe pas.",
+        "fr": "Le championnat à l'id {{ championship_id }} n'existe pas.",
     }
 )
 
 event_does_not_exists_message = defaultdict(
-    lambda: "Event of id {{ EVENT_ID }} does not exist.",
+    lambda: "Event of id {{ event_id }} does not exist.",
     {
-        "fr": "L'évènement à l'id {{ EVENT_ID }} n'existe pas.",
+        "fr": "L'évènement à l'id {{ event_id }} n'existe pas.",
     }
 )
 
 session_does_not_exists_message = defaultdict(
-    lambda: "Session of id {{ SESSION_ID }} does not exist.",
+    lambda: "Session of id {{ session_id }} does not exist.",
     {
-        "fr": "La session à l'id {{ SESSION_ID }} n'existe pas.",
+        "fr": "La session à l'id {{ session_id }} n'existe pas.",
     }
 )
 

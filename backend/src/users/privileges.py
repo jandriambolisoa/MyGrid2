@@ -20,7 +20,7 @@ async def is_user_banned(user_id: int) -> bool:
 
 async def is_user_verified(user_id: int) -> bool:
     # Ignore privilege if the user is banned
-    if is_user_banned(user_id):
+    if await is_user_banned(user_id):
         return False
 
     db = get_db()
@@ -41,7 +41,7 @@ async def is_user_verified(user_id: int) -> bool:
 
 async def is_user_moderator(user_id: int) -> bool:
     # Ignore privilege if the user is banned
-    if is_user_banned(user_id):
+    if await is_user_banned(user_id):
         return False
 
     db = get_db()
@@ -62,7 +62,7 @@ async def is_user_moderator(user_id: int) -> bool:
 
 async def is_user_admin(user_id: int) -> bool:
     # Ignore privilege if the user is banned
-    if is_user_banned(user_id):
+    if await is_user_banned(user_id):
         return False
 
     db = get_db()
@@ -83,7 +83,7 @@ async def is_user_admin(user_id: int) -> bool:
 
 async def is_user_moderator_or_admin(user_id: int) -> bool:
     # Ignore privilege if the user is banned
-    if is_user_banned(user_id):
+    if await is_user_banned(user_id):
         return False
 
     db = get_db()
