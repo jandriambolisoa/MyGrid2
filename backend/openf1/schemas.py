@@ -7,6 +7,6 @@ class Driver(BaseModel):
 
 class DriverLive(BaseModel):
     position: int
-    lap_duration: Optional[float] #in seconds
+    lap_duration: Optional[str] #formated as minute:seconds.milliseconds
     interval: Optional[float] #in seconds
     driver: Driver

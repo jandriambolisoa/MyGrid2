@@ -58,6 +58,7 @@ async def activate():
 @app.get("/deactivate")
 async def deactivate():
     client.disconnect()
+    leaderboard.reset()
 
     # TODO: Mailing system
 

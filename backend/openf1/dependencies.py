@@ -1,6 +1,7 @@
 import json
 import ssl
 import requests
+import time
 
 import paho.mqtt.client as mqtt
 
@@ -127,12 +128,18 @@ class Leaderboard:
         driver_number_to_codename = {driver["driver_number"]: driver["name_acronym"] for driver in drivers}
         sorted_datas = []
 
-        print(f"# DEBUG - {self.datas}")
+        for driver_number in self.datas.keys():
+            if self.datas[driver_number]["lap_duration"]:
+                seconds = self.datas[driver_number]["lap_duration"]
+                minutes = int(seconds/60)
+                seconds = "%.3f" %(seconds-(minutes*60))
+                laptime = f"{minutes}:{seconds}"
+            else:
+                laptime = self.datas[driver_number]["lap_duration"]
 
-        for driver_number in self.datas:
             sorted_datas.append(DriverLive(
                 position=self.datas[driver_number]["position"],
-                lap_duration=self.datas[driver_number]["lap_duration"],
+                lap_duration=laptime,
                 interval=self.datas[driver_number]["interval"],
                 driver=Driver(
                     number=driver_number,
@@ -142,6 +149,9 @@ class Leaderboard:
 
         sorted_datas.sort(key=lambda x: x.position)
         return sorted_datas
+
+    def reset(self):
+        self.datas.clear()
 
 leaderboard = Leaderboard()
 
@@ -166,36 +176,34 @@ def on_connect(client, userdata, flags, rc, properties=None):
             }
 
     # Subscribe to message types
-    if rc == 0 and userdata["session_type"] == "Practice":
-        client.subscribe("v1/position")
-    if rc == 0 and userdata["session_type"] == "Qualifying":
-        client.subscribe("v1/position")
-        client.subscribe("v1/laps")
-    if rc == 0 and userdata["session_type"] == "Race":
-        client.subscribe("v1/position")
-        client.subscribe("v1/intervals")
-    else:
-        raise openf1_exceptions.OpenF1ConnectionFailed() #TODO: logs system
+    try:
+        if rc == 0 and userdata["session_type"] == "Practice":
+            client.subscribe("v1/position")
+        if rc == 0 and userdata["session_type"] == "Qualifying":
+            client.subscribe("v1/position")
+            client.subscribe("v1/laps")
+        if rc == 0 and userdata["session_type"] == "Race":
+            client.subscribe("v1/position")
+            client.subscribe("v1/intervals")
+    except Exception as e:
+        print(e)
+    # else:
+    #     raise openf1_exceptions.OpenF1ConnectionFailed() #TODO: logs system
 
 def on_message(client, userdata, msg):
-    print(f"# DEBUG - Received message : {msg.topic}")
+    data = json.loads(msg.payload.decode('utf8'))
 
     if msg.topic == "v1/position":
-        for position in msg.payload.decode():
-            leaderboard.datas[position["driver_number"]] = {"position": position["position"]}
+        leaderboard.datas[data["driver_number"]]["position"] = data["position"]
 
-    elif msg.topic == "v1/laps":
-        for lap in msg.payload.decode():
-            if "lap_duration" not in leaderboard.datas[lap["driver_number"]]:
-                leaderboard.datas[lap["driver_number"]]["lap_duration"] = lap["lap_duration"]
-            elif leaderboard.datas[lap["driver_number"]]["lap_duration"] > lap["lap_duration"]:
-                leaderboard.datas[lap["driver_number"]]["lap_duration"] = lap["lap_duration"]
-            else:
-                continue
+    elif msg.topic == "v1/laps" and data["lap_duration"]:
+        if leaderboard.datas[data["driver_number"]]["lap_duration"] == None:
+            leaderboard.datas[data["driver_number"]]["lap_duration"] = data["lap_duration"]
+        elif leaderboard.datas[data["driver_number"]]["lap_duration"] > data["lap_duration"]:
+            leaderboard.datas[data["driver_number"]]["lap_duration"] = data["lap_duration"]
 
     elif msg.topic == "v1/intervals":
-        for interval in msg.payload.decode():
-            leaderboard.datas[interval["driver_number"]]["interval"] = interval["interval"]
+        leaderboard.datas[data["driver_number"]]["interval"] = data["interval"]
 
 def on_disconnect(client, userdata, disconnect_flags, reason_code, properties):
     pass
