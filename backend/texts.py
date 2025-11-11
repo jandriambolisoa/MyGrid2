@@ -13,3 +13,10 @@ forbidden_access_message = defaultdict(
         "fr": "Accès interdit.",
     }
 )
+
+missing_english_translation_message = defaultdict(
+    lambda: "The mandatory english translation is missing ({name: {'en': 'example'}}).",
+    {
+        "fr": "La traduction anglaise obligatoire est manquante ({name: {'en': 'example'}}).",
+    }
+)

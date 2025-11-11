@@ -4,8 +4,8 @@ import psycopg
 from psycopg.rows import dict_row
 from psycopg.cursor import Cursor
 
-from .config import settings
-from ..config import settings as global_settings
+from backend.db.config import settings as db_settings
+from backend.config import settings as global_settings
 
 class Database:
     conn = None
@@ -42,11 +42,11 @@ def init_db(
 def get_db():
     if not Database.conn:
         init_db(
-            db_host=settings.db_host,
-            db_port=settings.db_port,
-            db_name=settings.db_name if not global_settings.debug else settings.db_name+"tests",
-            db_user=settings.db_user,
-            db_password=settings.db_password
+            db_host=db_settings.db_host,
+            db_port=db_settings.db_port,
+            db_name=db_settings.db_name, #if not global_settings.debug else db_settings.db_name+"tests",
+            db_user=db_settings.db_user,
+            db_password=db_settings.db_password
         )
     db = Database()
     db.cursor = Database.conn.cursor()

@@ -9,7 +9,6 @@ from backend.src.auth import constants
 class User(BaseModel):
     id: int
     username: str
-    email: EmailStr
     created: datetime
     image: Optional[str]
 
