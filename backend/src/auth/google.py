@@ -12,9 +12,9 @@ from backend.src.users.utils import get_user_id_from_email
 
 async def verify_google_token(token: str, language: str = "en"):
     """
-    Return True if the token is valid and signed by Google, False otherwise.
+    Return datas (email, email_verified, sub) of the token if valid and signed by Google.
     :param token: A jwt token.
-    :return: bool
+    :return: GoogleTokenData schema
     """
     # This verification use Google's public keys
     # Note that Google keys regularly rotate, making
@@ -72,3 +72,16 @@ async def get_google_id_from_email(email: str):
             return None
 
     return None
+
+async def get_user_id_from_google_id(google_id: int) -> int | None:
+    db = get_db()
+    db.cursor.execute("""\
+        SELECT user_id
+        FROM googleids
+        WHERE google_id = %s""", (google_id,))
+    user_id = db.cursor.fetchone()
+
+    if not user_id:
+        return None
+
+    return int(user_id["user_id"])

@@ -20,3 +20,17 @@ missing_english_translation_message = defaultdict(
         "fr": "La traduction anglaise obligatoire est manquante ({name: {'en': 'example'}}).",
     }
 )
+
+obligation_newname = defaultdict(
+    lambda: "You have to change your username before continuing.",
+    {
+        "fr": "Vous devez changer votre pseudo avant de continuer.",
+    }
+)
+
+obligation_newpwd = defaultdict(
+    lambda: "You have to create a password before continuing.",
+    {
+        "fr": "Vous devez créer un mot de passe avant de continuer.",
+    }
+)

@@ -1,3 +1,5 @@
+import datetime
+
 from fastapi import APIRouter, status, Depends, Request
 from fastapi.responses import RedirectResponse
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
@@ -5,10 +7,12 @@ from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 from psycopg.errors import UniqueViolation
 
 from jose import jwt
+from starlette.responses import Response
 
 from backend import exceptions as app_exceptions
+from backend.obligations import create_obligation
 from backend.schemas import FrontEndWaitForAction
-from backend.src.auth.google import verify_google_token, google_automatic_password
+from backend.src.auth.google import verify_google_token, google_automatic_password, get_user_id_from_google_id
 from backend.src.users import exceptions as user_exceptions
 
 from backend.config import settings as app_settings
@@ -110,7 +114,7 @@ async def login_email(request: Request, language: str = "en", db: Database = Dep
     refresh_token = await create_jwt_token({
         "user_id": user["id"],
         "makeunique": random_code(32)
-    })
+    }, datetime.timedelta(minutes=app_settings.refresh_token_expires_minutes))
 
     # Register the refresh token in the database to
     # be able to revoke it when logging out
@@ -184,58 +188,33 @@ async def login_refresh_token(request: Request, tokens: LoginRefreshTokenPost, l
     }
 
 
-@router.post("/login-google", response_model=LoginResponse)
-async def login_google(request: Request, credential: str, referral_code: str = None, language: str = "en", db: Database = Depends(get_db)):
+@router.post("/login-google", response_model=LoginResponse | FrontEndWaitForAction)
+async def login_google(credential: str, referral_code: str = None, language: str = "en", db: Database = Depends(get_db)):
     datas = await verify_google_token(credential, language=language)
 
     # Check if user has its email in the database
     user_id = await get_user_id_from_email(datas.email)
+
+    # Check if a user is already assigned to this google_id
+    has_google_id = await get_user_id_from_google_id(datas.sub) is not None
 
     # Check if the email has a @gmail.com suffix
     # We trust the user by skipping password verification if his mail is a @gmail.com
     # Google is authoritative if email has a @gmail.com suffix.
     is_google_email = datas.email.endswith("@gmail.com")
 
+    # Google is authoritative if this is a professional Google paid service (Google Workspace) email
+    # 'hd' claim is not absent if this is a Google Workspace email
+    if not is_google_email:
+        is_google_email = datas.hd is not None
+
     # Manage a registered user that doesn't have a google id associated yet
-
-    # Manage a registered user
-    if user_id:
-
-
-    # Manage an unregistered user by creating a new user and associate its id to google id
-    if not user_id:
-        # Trust @gmail.com emails by skipping the password creation
-        # Else, create a temporary password that will be used
-        # to request new credentials while assuring the user identity.
-        if is_google_email:
-            password = hash(await google_automatic_password(datas.sub))
-        else:
-            password = random_code(64)
-
-        # Create a unique code for referral purpose
-        unique_referral_code = create_unique_referral_code()
-
-        try:
-            db.cursor.execute("""
-                INSERT INTO users (username, email, password, language, referralcode)
-                VALUES (%s, %s, %s, %s, %s)
-                RETURNING *""", (generate_safe_username(), datas.email, password, language, unique_referral_code))
-            new_user = db.cursor.fetchone()
-            db.conn.commit()
-
-        except UniqueViolation as err:
-            db.cursor.execute("ROLLBACK")
-            db.conn.commit()
-            raise app_exceptions.UnexpectedError(language=language)
-
-        if referral_code:
-            await assign_user_referral(referral_code, new_user["id"], language=language)
-
+    if user_id and not has_google_id:
         # Associate our user's MyGrid database id to the given Google id
         try:
-            db.cursor.execute("""
+            db.cursor.execute("""\
                 INSERT INTO googleids (user_id, google_id)
-                VALUES (%s, %s)""", (new_user["id"], datas.sub))
+                VALUES (%s, %s)""", (user_id, datas.sub))
             db.conn.commit()
 
         except UniqueViolation as err:
@@ -243,20 +222,116 @@ async def login_google(request: Request, credential: str, referral_code: str = N
             db.conn.commit()
             raise app_exceptions.UnexpectedError(language=language)
 
-        if is_google_email:
-            return FrontEndWaitForAction(
-                message= "User must now be redirected to a 'Choose username' UI.",
-                redirection= f"/auth/{new_user['id']}/signup-register-username",
-                datas= UserSelf(**new_user)
-            )
-        else:
-            return FrontEndWaitForAction(
-                message="User must now be redirected to a 'Choose username and password' UI.",
-                redirection=f"/users/{new_user['id']}/signup-register-credentials?pw={password}",
-                datas=UserSelf(**new_user)
-            )
+        # Return the LoginResponse schema : access_token, refresh_token and user datas
+        db.cursor.execute("""\
+            SELECT * FROM users
+            WHERE id = %s""", (user_id,))
+        user = db.cursor.fetchone()
+
+        access_token = await create_jwt_token({
+            "user_id": user["id"],
+            "username": user["username"],
+            "language": language
+        })
+
+        refresh_token = await create_jwt_token({
+            "user_id": user["id"],
+            "makeunique": random_code(32)
+        }, datetime.timedelta(minutes=app_settings.refresh_token_expires_minutes))
+
+        return {
+            "access_token": {
+                "access_token": access_token,
+                "token_type": "bearer"
+            },
+            "refresh_token": {
+                "refresh_token": refresh_token,
+                "token_type": "bearer"
+            },
+            "user": user
+        }
 
 
+    # Manage a registered user
+    if user_id and has_google_id:
+        # Return the LoginResponse schema : access_token, refresh_token and user datas
+        db.cursor.execute("""\
+            SELECT * FROM users
+            WHERE id = %s""", (user_id,))
+        user = db.cursor.fetchone()
+
+        access_token = await create_jwt_token({
+            "user_id": user["id"],
+            "username": user["username"],
+            "language": language
+        })
+
+        refresh_token = await create_jwt_token({
+            "user_id": user["id"],
+            "makeunique": random_code(32)
+        })
+
+        return {
+            "access_token": {
+                "access_token": access_token,
+                "token_type": "bearer"
+            },
+            "refresh_token": {
+                "refresh_token": refresh_token,
+                "token_type": "bearer"
+            },
+            "user": user
+        }
+
+    # In none of the conditions above matched, we assume user_id is None
+
+    # Manage an unregistered user by creating a new user and associate its id to google id
+
+    # Trust @gmail.com emails by skipping the password creation
+    # Else, create a temporary password that will be used
+    # to request new credentials while assuring the user identity.
+    if is_google_email:
+        password = hash(await google_automatic_password(datas.sub))
+    else:
+        password = random_code(64)
+
+    # Create a unique code for referral purpose
+    unique_referral_code = create_unique_referral_code()
+
+    try:
+        db.cursor.execute("""
+            INSERT INTO users (username, email, password, language, referralcode, verified)
+            VALUES (%s, %s, %s, %s, %s, true)
+            RETURNING *""", (generate_safe_username(), datas.email, password, language, unique_referral_code))
+        new_user = db.cursor.fetchone()
+        db.conn.commit()
+
+    except UniqueViolation as err:
+        db.cursor.execute("ROLLBACK")
+        db.conn.commit()
+        raise app_exceptions.UnexpectedError(language=language)
+
+    if referral_code:
+        await assign_user_referral(referral_code, new_user["id"], language=language)
+
+    # Associate our user's MyGrid database id to the given Google id
+    try:
+        db.cursor.execute("""
+            INSERT INTO googleids (user_id, google_id)
+            VALUES (%s, %s)""", (new_user["id"], datas.sub))
+        db.conn.commit()
+
+    except UniqueViolation as err:
+        db.cursor.execute("ROLLBACK")
+        db.conn.commit()
+        raise app_exceptions.UnexpectedError(language=language)
+
+    # Create a new username and, if not a google_email, a new password
+    await create_obligation(code= "newname", user_id= new_user["id"], language= language)
+    if not is_google_email:
+        await create_obligation(code= "newpwd", user_id= new_user["id"], language= language)
+
+    return Response(status_code= status.HTTP_202_ACCEPTED)
 
 
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)

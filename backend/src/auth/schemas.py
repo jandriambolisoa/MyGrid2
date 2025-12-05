@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel
 
 from backend.src.users.schemas import UserSelf
@@ -31,3 +33,4 @@ class GoogleTokenData(BaseModel):
     email: str
     email_verified: bool
     sub: str
+    hd: Optional[str] = None

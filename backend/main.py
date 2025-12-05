@@ -1,6 +1,9 @@
+from starlette import status
+from starlette.responses import Response
+
 from backend.config import settings
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import RedirectResponse
 
