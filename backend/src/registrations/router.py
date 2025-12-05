@@ -100,7 +100,7 @@ async def override_session_registrations(registrations: list[RegistrationPost], 
 
         db.conn.commit()
 
-        registrations_signals.updated_session_registrations.send(session_id=session_id, user=current_user)
+        await registrations_signals.updated_session_registrations.send(session_id=session_id, user=current_user)
 
     except ForeignKeyViolation:
         db.conn.rollback()
@@ -174,7 +174,7 @@ async def swap_a_driver_with_an_unregistered_driver(
         AND session_id = %s""", (newpilot.pilot_id, oldpilot_id, id))
     db.conn.commit()
 
-    registrations_signals.updated_session_registrations.send(session_id=session_id, user=current_user)
+    await registrations_signals.updated_session_registrations.send(session_id=session_id, user=current_user)
 
 
 @router.put("/{session_id}/swap-teams", status_code=status.HTTP_200_OK)
@@ -211,4 +211,4 @@ async def swap_teams_between_two_drivers(
         WHERE session_id = %s AND driver_id = %s;""",(driver_1["team_id"], session_id, drivers.driver_id_1, driver_2["team_id"], session_id, drivers.driver_id_2))
     db.conn.commit()
 
-    registrations_signals.updated_session_registrations.send(session_id=session_id, user=current_user)
+    await registrations_signals.updated_session_registrations.send(session_id=session_id, user=current_user)

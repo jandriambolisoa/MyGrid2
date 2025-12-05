@@ -1,9 +1,10 @@
-from backend.images.config import settings
+from backend.assets.config import settings
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.images.src.crud import router as crud_router
+from backend.assets.src.images import router as images_router
+from backend.assets.src.glb import router as glb_router
 
 docs_urls = {
     "docs_url": "/docs" if settings.debug else None,
@@ -21,4 +22,5 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(crud_router.router)
+app.include_router(images_router.router)
+app.include_router(glb_router.router)

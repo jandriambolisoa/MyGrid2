@@ -10,98 +10,179 @@ from backend.openf1 import exceptions as openf1_exceptions
 from backend.openf1.schemas import Driver, DriverLive
 
 
-def get_access_token(language: str = "en") -> str or None:
-    """
-    Returns access token with MyGrid credentials
-    Returns:
-        str or None: None if the login failed
-    """
-    payload = {
-        "username": settings.openf1_api_username,
-        "password": settings.openf1_api_password
-    }
-    headers = {
-        "Content-Type": "application/x-www-form-urlencoded"
-    }
-    login_response = requests.post(
-        settings.openf1_token_url,
-        data=payload,
-        headers=headers
-    )
+class OpenF1Interface:
 
-    if login_response.status_code == 200:
-        access_token = login_response.json()
-        return access_token["access_token"]
-    else:
-        raise openf1_exceptions.OpenF1CannotGetAccessTokenException(language=language)
+    client = None
 
-def get_session_type(access_token: str) -> str or None:
-    """
-    Returns the current session type.
-    Returns:
-        str: 'Practice', 'Qualifying' or 'Race'
-        None: None if the authentification failed
-    """
-    params = {
-        "session_key": "latest"
-    }
-    headers = {
-        "accept": "application/json",
-        "Authorization": f"Bearer {access_token}"
-    }
-    session = requests.get(
-        settings.openf1_api_url+"v1/sessions",
-        params=params,
-        headers=headers
-    )
+    def __init__(self):
+        pass
 
-    if session.status_code == 200:
-        session_type = session.json()
-        return session_type[0]["session_type"]
-    else:
-        return None
+    @classmethod
+    def get_client(cls):
+        access_token = cls.get_access_token()
+        cli = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
+        cli.username_pw_set(username=settings.openf1_api_username, password=access_token)
+        cli.tls_set(cert_reqs=ssl.CERT_REQUIRED, tls_version=ssl.PROTOCOL_TLS_CLIENT)
+        session = cls.get_session(access_token)
+        client_datas = {
+            "access_token": access_token,
+            "session_type": session["session_type"],
+            "session_key": session["session_key"],
+            "drivers": cls.get_drivers(access_token)
+        }
+        cli.user_data_set(client_datas)
 
-def get_drivers(access_token: str) -> list[dict] or None:
-    """
-    Returns the list of registered drivers for
-    the current session. Format:
-    [
-      {
-        "broadcast_name": "M VERSTAPPEN",
-        "country_code": "NED",
-        "driver_number": 1,
-        "first_name": "Max",
-        "full_name": "Max VERSTAPPEN",
-        "headshot_url": "https://www.formula1.com/content/dam/fom-website/drivers/M/MAXVER01_Max_Verstappen/maxver01.png.transform/1col/image.png",
-        "last_name": "Verstappen",
-        "meeting_key": 1219,
-        "name_acronym": "VER",
-        "session_key": 9158,
-        "team_colour": "3671C6",
-        "team_name": "Red Bull Racing"
-      }
-    ]
-    Returns:
-        list[dict]: registered drivers
-        None: None if the authentification failed
-    """
-    params = {
-        "session_key": "latest"
-    }
-    headers = {
-        "accept": "application/json",
-        "Authorization": f"Bearer {access_token}"
-    }
-    drivers = requests.get(
-        settings.openf1_api_url+"v1/drivers",
-        params=params,
-        headers=headers
-    )
+        return cli
 
-    if drivers.status_code == 200:
-        return drivers.json()
-    else:
-        return None
+    @staticmethod
+    def get_access_token(language: str = "en") -> str or None:
+        """
+        Returns access token with MyGrid credentials
+        Returns:
+            str or None: None if the login failed
+        """
+        payload = {
+            "username": settings.openf1_api_username,
+            "password": settings.openf1_api_password
+        }
+        headers = {
+            "Content-Type": "application/x-www-form-urlencoded"
+        }
+        login_response = requests.post(
+            settings.openf1_token_url,
+            data=payload,
+            headers=headers
+        )
+
+        if login_response.status_code == 200:
+            access_token = login_response.json()
+            return access_token["access_token"]
+        else:
+            raise openf1_exceptions.OpenF1CannotGetAccessTokenException(language=language)
+
+
+    @staticmethod
+    def get_session(access_token: str) -> dict or None:
+        """
+        Returns the current session.
+        Returns:
+            dict: {"session_type": str, "session_key": str}
+            None: None if the authentification failed
+        """
+        params = {
+            "session_key": "latest"
+        }
+        headers = {
+            "accept": "application/json",
+            "Authorization": f"Bearer {access_token}"
+        }
+        session = requests.get(
+            settings.openf1_api_url+"v1/sessions",
+            params=params,
+            headers=headers
+        )
+
+        if session.status_code == 200:
+            session_datas = session.json()
+            return {
+                "session_type": session_datas[0]["session_type"],
+                "session_key": session_datas[0]["session_key"]
+            }
+        else:
+            return None
+
+
+    @staticmethod
+    def get_results(access_token: str, session_key: int, drivers: list) -> dict or None:
+        params = {
+            "session_key": "latest"
+        }
+        headers = {
+            "accept": "application/json",
+            "Authorization": f"Bearer {access_token}"
+        }
+        response = requests.get(
+            settings.openf1_api_url+"v1/session_result",
+            params=params,
+            headers=headers
+        )
+
+
+        if response.status_code == 200:
+            if not response.json():
+                return None
+
+            driver_number_to_codename = {driver["driver_number"]: driver["name_acronym"] for driver in drivers}
+
+            results_datas = response.json()
+            if results_datas[0]["session_key"] == session_key:
+                results = list()
+                for result in results_datas:
+                    results.append({
+                        "position": result["position"],
+                        "lap_duration": None,
+                        "interval": None,
+                        "driver": {
+                            "number": result["driver_number"],
+                            "codename": driver_number_to_codename[result["driver_number"]]
+                        }
+                    })
+                return results
+            else:
+                return None
+        else:
+            return None
+
+
+    @staticmethod
+    def get_drivers(access_token: str) -> list[dict] or None:
+        """
+        Returns the list of registered drivers for
+        the current session. Format:
+        [
+          {
+            "broadcast_name": "M VERSTAPPEN",
+            "country_code": "NED",
+            "driver_number": 1,
+            "first_name": "Max",
+            "full_name": "Max VERSTAPPEN",
+            "headshot_url": "https://www.formula1.com/content/dam/fom-website/drivers/M/MAXVER01_Max_Verstappen/maxver01.png.transform/1col/image.png",
+            "last_name": "Verstappen",
+            "meeting_key": 1219,
+            "name_acronym": "VER",
+            "session_key": 9158,
+            "team_colour": "3671C6",
+            "team_name": "Red Bull Racing"
+          }
+        ]
+        Returns:
+            list[dict]: registered drivers
+            None: None if the authentification failed
+        """
+        params = {
+            "session_key": "latest"
+        }
+        headers = {
+            "accept": "application/json",
+            "Authorization": f"Bearer {access_token}"
+        }
+        drivers = requests.get(
+            settings.openf1_api_url+"v1/drivers",
+            params=params,
+            headers=headers
+        )
+
+        if drivers.status_code == 200:
+            return drivers.json()
+        else:
+            return None
+
+
+def get_openf1_client():
+    if OpenF1Interface.client is None:
+        OpenF1Interface.client = OpenF1Interface.get_client()
+
+    return OpenF1Interface.client
 
 
 class Leaderboard:

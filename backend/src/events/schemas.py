@@ -38,6 +38,7 @@ class SessionCreate(BaseModel):
     name: dict # {language: translation}
     datetime: datetime
     event_id: int
+    competitive: bool
 
 class SessionUpdate(BaseModel):
     name: Optional[dict] = None # {language: translation}

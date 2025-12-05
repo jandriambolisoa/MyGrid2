@@ -2,8 +2,6 @@
 This file list signals to be used for secondary actions.
 """
 
-from blinker import Namespace
+from backend.signals import Signal
 
-registrations_namespace = Namespace()
-
-updated_session_registrations = registrations_namespace.signal("updated_sessions_registrations")
+updated_session_registrations = Signal("updated_sessions_registrations")

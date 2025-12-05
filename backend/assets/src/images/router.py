@@ -5,19 +5,19 @@ from fastapi.responses import FileResponse
 
 from PIL import Image
 
-from backend.images.src.crud import exceptions as images_exceptions
-from backend.images.src.crud.dependencies import valid_image_uniqueness, get_images_folder, valid_image_name, \
-    valid_filename
-from backend.images.src.crud.constants import IMAGE_MAX_SIZE, SEARCH_LIMIT
+from backend.assets.src.images import exceptions as images_exceptions
+from backend.assets.src.images.dependencies import valid_image_name_uniqueness, get_images_folder, valid_image_filename
+from backend.assets.src.images.constants import IMAGE_MAX_SIZE
+from backend.assets.constants import SEARCH_LIMIT
 
 router = APIRouter(
-    prefix="/crud",
-    tags= ["crud"]
+    prefix="/images",
+    tags= ["images"]
 )
 
 
 @router.post("/{image_name}", status_code=status.HTTP_201_CREATED)
-async def upload_image(file: UploadFile, image_name: str = Depends(valid_image_uniqueness), max_size: int = IMAGE_MAX_SIZE, extension: str = ".jpg", language = "en"):
+async def upload_image(file: UploadFile, image_name: str = Depends(valid_image_name_uniqueness), max_size: int = IMAGE_MAX_SIZE, extension: str = ".jpg", language ="en"):
     # Format extension in the right way
     extension = extension if extension.startswith(".") else "." + extension
 
@@ -59,12 +59,12 @@ async def search_images(limit: int = SEARCH_LIMIT, page: int = 0, language = "en
 
 
 @router.get("/{filename}", status_code=status.HTTP_200_OK, response_class=FileResponse)
-async def read_image(filename: str = Depends(valid_filename), language: str = "en"):
+async def read_image(filename: str = Depends(valid_image_filename), language: str = "en"):
     filepath = os.path.join(get_images_folder(), filename)
     return FileResponse(filepath)
 
 
 @router.delete("/{filename}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_image(filename: str = Depends(valid_filename), language: str = "en"):
+async def delete_image(filename: str = Depends(valid_image_filename), language: str = "en"):
     filepath = os.path.join(get_images_folder(), filename)
     os.remove(filepath)

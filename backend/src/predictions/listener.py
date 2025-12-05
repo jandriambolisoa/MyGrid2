@@ -5,7 +5,6 @@ from backend.src.users.schemas import UserSelf
 from backend.src.scores.algorithms import compute_score
 
 
-@updated_session_registrations.connect
 async def update_users_predictions_potential(session_id: int, user: UserSelf):
     db = get_db()
 
@@ -58,3 +57,6 @@ async def update_users_predictions_potential(session_id: int, user: UserSelf):
             AND driver_id = %s""", (new_potential, session_id, prediction["user_id"], prediction["driver_id"]))
 
     db.conn.commit()
+
+def init_listener():
+    updated_session_registrations.connect(update_users_predictions_potential)

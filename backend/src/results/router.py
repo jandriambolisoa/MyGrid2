@@ -90,7 +90,7 @@ async def override_session_results(results: list[ResultPost], session_id: int = 
 
         db.conn.commit()
 
-        results_signals.updated_session_results.send(session_id=session_id, user=current_user)
+        await results_signals.updated_session_results.send(session_id=session_id, user=current_user)
 
     except ForeignKeyViolation:
         db.conn.rollback()
@@ -107,4 +107,4 @@ async def remove_session_results(session_id: int = Depends(valid_session_id), la
         WHERE session_id = %s""", (session_id,))
     db.conn.commit()
 
-    results_signals.delete_session_results.send(session_id=session_id, user=current_user)
+    await results_signals.delete_session_results.send(session_id=session_id, user=current_user)

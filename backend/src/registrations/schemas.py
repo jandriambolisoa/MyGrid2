@@ -13,7 +13,6 @@ class RegistrationPost(BaseModel):
 class RegistrationDriver(RegistrationPost):
     driver: Driver
     team: Team
-    prediction: int
 
 class RegistrationSession(BaseModel):
     session_name: str

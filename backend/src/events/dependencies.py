@@ -4,52 +4,52 @@ from backend.db.database import get_db
 from backend.src.drivers.constants import CODENAME_LENGTH
 from backend.src.drivers.exceptions import NotAValidCodenameLengthError, NotAValidColorError, DriverNotFoundError, \
     DriverDoesNotExistsError
-from backend.src.events.exceptions import ChampionshipDoesNotExistsError, SessionStartedError
+from backend.src.events.exceptions import ChampionshipDoesNotExistsError, SessionStartedError, SessionDoesNotExistsError
 
 
-async def valid_championship_id(championship_id: int, language: str = "en") -> int:
+async def valid_championship_id(id: int, language: str = "en") -> int:
     db = get_db()
     db.cursor.execute("""
         SELECT id FROM championships
-        WHERE id = %s""", (championship_id,))
+        WHERE id = %s""", (id,))
     championship = db.cursor.fetchone()
     if not championship:
-        raise ChampionshipDoesNotExistsError(language=language, championship_id=championship_id)
+        raise ChampionshipDoesNotExistsError(language=language, championship_id=id)
 
-    return championship_id
+    return id
 
 
-async def valid_event_id(event_id: int, language: str = "en") -> int:
+async def valid_event_id(id: int, language: str = "en") -> int:
     db = get_db()
     db.cursor.execute("""
         SELECT id FROM events
-        WHERE id = %s""", (event_id,))
+        WHERE id = %s""", (id,))
     event = db.cursor.fetchone()
     if not event:
-        raise ChampionshipDoesNotExistsError(language=language, event_id=event_id)
+        raise ChampionshipDoesNotExistsError(language=language, event_id=id)
 
-    return event_id
+    return id
 
 
-async def valid_session_id(session_id: int, language: str = "en") -> int:
+async def valid_session_id(id: int, language: str = "en") -> int:
     db = get_db()
     db.cursor.execute("""
         SELECT id FROM sessions
-        WHERE id = %s""", (session_id,))
+        WHERE id = %s""", (id,))
     session = db.cursor.fetchone()
     if not session:
-        raise ChampionshipDoesNotExistsError(language=language, session_id=session_id)
+        raise SessionDoesNotExistsError(language=language, session_id=id)
 
-    return session_id
+    return id
 
-async def valid_session_id_not_started(session_id: Depends(valid_session_id), language: str = "en"):
+async def valid_session_id_not_started(id: Depends(valid_session_id), language: str = "en"):
     db = get_db()
     db.cursor.execute("""
         SELECT sessions.datetime
         FROM sessions
         WHERE sessions.id = %s
         AND datetime > NOW()
-    """, (session_id,))
+    """, (id,))
     valid_session = db.cursor.fetchone()
 
     if not valid_session:

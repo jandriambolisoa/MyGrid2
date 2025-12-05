@@ -1,12 +1,11 @@
 from backend.db.database import get_db
 from backend.src.scores.algorithms import compute_score
-from backend.src.scores.router import get_score_parameters_of_a_championship
+from backend.src.scores.core import score_parameters_of_a_championship
 from backend.src.scores.signals import updated_championship_scores
 from backend.src.users.schemas import UserSelf
 from backend.src.results.signals import updated_session_results, delete_session_results
 
 
-@updated_session_results.connect
 async def compute_session_score(session_id: int, user: UserSelf):
     db = get_db()
     db.cursor.execute("""
@@ -38,7 +37,7 @@ async def compute_session_score(session_id: int, user: UserSelf):
         WHERE sessions.id = %s;""", (session_id,))
     championship = db.cursor.fetchone()
 
-    score_parameters = await get_score_parameters_of_a_championship(
+    score_parameters = await score_parameters_of_a_championship(
         championship["id"],
         db = db,
         current_user=user
@@ -64,10 +63,9 @@ async def compute_session_score(session_id: int, user: UserSelf):
 
     db.conn.commit()
 
-    updated_championship_scores.send(championship_id=championship["id"], user=user)
+    await updated_championship_scores.send(championship_id=championship["id"], user=user)
 
 
-@delete_session_results.connect
 async def delete_session_score(session_id: int, user: UserSelf):
     db = get_db()
     db.cursor.execute("""
@@ -83,4 +81,8 @@ async def delete_session_score(session_id: int, user: UserSelf):
         WHERE sessions.id = %s;""", (session_id,))
     championship = db.cursor.fetchone()
 
-    updated_championship_scores.send(championship_id=championship["id"], user=user)
+    await updated_championship_scores.send(championship_id=championship["id"], user=user)
+
+def init_listener():
+    updated_session_results.connect(compute_session_score)
+    delete_session_results.connect(delete_session_score)
