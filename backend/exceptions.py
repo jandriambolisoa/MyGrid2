@@ -13,3 +13,9 @@ class ForbiddenAccessException(HTTPException):
     def __init__(self, language: str, **kwargs):
         super().__init__(self.status_code, **kwargs)
         self.detail = forbidden_access_message[language]
+
+class MissingEnglishTranslationError(HTTPException):
+    status_code = status.HTTP_406_NOT_ACCEPTABLE
+    def __init__(self, language: str = "en", **kwargs):
+        super().__init__(self.status_code, **kwargs)
+        self.detail = missing_english_translation_message[language]

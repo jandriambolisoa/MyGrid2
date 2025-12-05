@@ -6,7 +6,7 @@ from pydantic_settings import SettingsConfigDict
 DOTENV = os.path.join(os.path.dirname(__file__), ".env")
 
 class Settings (BaseSettings):
-    model_config = SettingsConfigDict(env_file=DOTENV)
+    model_config = SettingsConfigDict(env_file=DOTENV, extra='ignore')
 
     debug: int = 0
 
@@ -28,5 +28,6 @@ class Settings (BaseSettings):
 
     # Microservices related settings
     ms_mailings_url: str
+    ms_openf1_url: str
 
 settings = Settings()

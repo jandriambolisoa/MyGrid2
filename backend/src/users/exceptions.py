@@ -39,7 +39,10 @@ class BannedUserException(HTTPException):
             ORDER BY created DESC""", (user_id,))
         last_user_ban_record = db.cursor.fetchone()
 
-        self.detail = banned_user_message[language]+last_user_ban_record["reason"]
+        if last_user_ban_record:
+            self.detail = banned_user_message[language]+last_user_ban_record["reason"]
+        else:
+            self.detail = banned_user_message[language]
 
 class NoUserFoundError(HTTPException):
     status_code = status.HTTP_404_NOT_FOUND

@@ -5,7 +5,7 @@ from backend.config import settings as app_settings
 from backend.src.auth.constants import LOGIN_SUSPENSION_DURATION, INCREMENTAL_SUSPENSION_DURATIONS
 
 async def get_login_cooldown_seconds(address) -> int:
-    if app_settings.DEBUG:
+    if app_settings.debug:
         return -1
 
     # Get a delta time from now and set this as the furthest
@@ -30,13 +30,18 @@ async def get_login_cooldown_seconds(address) -> int:
 
     return -1
 
+<<<<<<< HEAD
 async def purge_user_login_attempts(user_id: int) -> None:
+=======
+def purge_user_login_attempts(address: str) -> None:
+>>>>>>> dev
     db = get_db()
     db.cursor.execute("""\
         DELETE FROM loginattempts
-        WHERE user_id = %s""", (user_id,))
+        WHERE address = %s""", (address,))
     db.conn.commit()
 
+<<<<<<< HEAD
 async def purge_user_refresh_tokens(user_id: int) -> None:
     db = get_db()
     db.cursor.execute("""\
@@ -59,3 +64,11 @@ async def generate_safe_username(user_id: int = None) -> str:
             new_username = "user%09d" % tmp_id
 
     return new_username
+=======
+def purge_user_refresh_tokens(address: str) -> None:
+    db = get_db()
+    db.cursor.execute("""\
+        DELETE FROM refreshtokens
+        WHERE address = %s""", (address,))
+    db.conn.commit()
+>>>>>>> dev

@@ -3,7 +3,6 @@ CREATE TABLE IF NOT EXISTS public.bannedusernames
 (
     id serial NOT NULL,
     username character varying COLLATE pg_catalog."default" NOT NULL,
-    created timestamp with time zone NOT NULL DEFAULT now(),
     by integer NOT NULL,
     comment character varying COLLATE pg_catalog."default",
     CONSTRAINT bannedusernames_pkey PRIMARY KEY (id),

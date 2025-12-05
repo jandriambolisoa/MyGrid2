@@ -31,17 +31,19 @@ async def create_jwt_token(data: dict, expires_delta: timedelta = timedelta(minu
         raise JWTError()
 
 async def verify_access_token(token: str, language: str = 'en', verify_exp: bool = True):
-    if is_token_revoked(token):
+    if await is_token_revoked(token):
         raise user_exceptions.FailedAuthorizationError(language=language)
 
     try:
         payload = jwt.decode(token, app_settings.secret_key, app_settings.algorithm, options={"verify_exp": verify_exp})
+        user_id = payload.get("user_id")
         username = payload.get("username")
         language = payload.get("language")
         if not username:
             raise user_exceptions.FailedAuthorizationError(language=language)
 
         return AccessTokenData(
+            user_id=user_id,
             username=username,
             language=language
         )
@@ -50,7 +52,7 @@ async def verify_access_token(token: str, language: str = 'en', verify_exp: bool
         raise user_exceptions.SessionExpiredError(language=language)
 
 async def verify_refresh_token(token: str, language: str = 'en'):
-    if is_token_revoked(token):
+    if await is_token_revoked(token):
         raise user_exceptions.FailedAuthorizationError(language=language)
 
     try:
@@ -92,7 +94,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Database = D
     :param db: The database
     :return: UserSelf pydantic model
     """
-    token_data = verify_access_token(token)
+    token_data = await verify_access_token(token)
 
     # Return current user datas
     db.cursor.execute("""\
@@ -105,11 +107,11 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Database = D
         raise user_exceptions.FailedAuthorizationError(language=token_data.language)
 
     # Block request when server is on maintenance
-    if is_server_on_maintenance():
+    if await is_server_on_maintenance():
         raise app_exceptions.MaintenanceServerError(language=token_data.language)
 
     # Block banned users
-    if is_user_banned(token_data.user_id):
+    if await is_user_banned(token_data.user_id):
         raise user_exceptions.BannedUserException(user_id=token_data.user_id, language=token_data.language)
 
     current_user = UserSelf(
@@ -121,7 +123,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Database = D
     return current_user
 
 async def get_current_token(token: str = Depends(oauth2_scheme)):
-    token_data = verify_access_token(token)
+    token_data = await verify_access_token(token)
     token = AccessToken(
         access_token=token,
         token_type="bearer"

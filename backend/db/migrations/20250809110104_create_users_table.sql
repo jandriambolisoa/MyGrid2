@@ -11,7 +11,10 @@ CREATE TABLE public.users
     image character varying,
     referralcode character varying NOT NULL,
     verified boolean NOT NULL DEFAULT false,
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    CONSTRAINT users_email_unique UNIQUE (email),
+    CONSTRAINT users_username_unique UNIQUE (username),
+    CONSTRAINT users_referralcode_unique UNIQUE (referralcode)
 );
 
 -- migrate:down

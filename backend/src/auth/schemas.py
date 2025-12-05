@@ -16,6 +16,7 @@ class LoginResponse(BaseModel):
     user: UserSelf
 
 class AccessTokenData(BaseModel):
+    user_id: int
     username: str
     language: str
 

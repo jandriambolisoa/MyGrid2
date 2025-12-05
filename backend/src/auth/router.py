@@ -92,20 +92,22 @@ async def login_email(request: Request, language: str = "en", db: Database = Dep
     user = db.cursor.fetchone()
 
     if not user or not verify(credentials.password, user["password"]):
+        #TODO Increment the loginattempt table
         raise auth_exceptions.WrongCredentialsError(language=language)
     else:
         await purge_user_login_attempts(user["id"])
 
     # Block banned users
-    if is_user_banned(user["id"]):
+    if await is_user_banned(user["id"]):
         raise user_exceptions.BannedUserException(user_id=user["id"], language=language)
 
-    access_token = create_jwt_token({
+    access_token = await create_jwt_token({
+        "user_id": user["id"],
         "username": user["username"],
         "language": language
     })
 
-    refresh_token = create_jwt_token({
+    refresh_token = await create_jwt_token({
         "user_id": user["id"],
         "makeunique": random_code(32)
     })
@@ -113,14 +115,14 @@ async def login_email(request: Request, language: str = "en", db: Database = Dep
     # Register the refresh token in the database to
     # be able to revoke it when logging out
     db.cursor.execute("""\
-        INSERT INTO refreshtokens (user_id, refresh_token)
+        INSERT INTO refreshtokens (user_id, token)
         VALUES (%s, %s)""", (user["id"], refresh_token))
     db.conn.commit()
 
     # TODO : return full profile
 
     return {
-        "token": {
+        "access_token": {
             "access_token": access_token,
             "token_type": "bearer"
         },
@@ -303,7 +305,7 @@ async def confirm_email(token: AccessToken, db: Database = Depends(get_db)):
 
         user = db.cursor.fetchone()
 
-        auth_signals.validate_mail.send(UserSelf(**user))
+        await auth_signals.validate_mail.send(UserSelf(**user))
 
         return RedirectResponse(app_settings.confirmed_email_url)
     except:

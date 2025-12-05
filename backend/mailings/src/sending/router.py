@@ -31,6 +31,6 @@ async def send_email(datas: EmailDatas, template_name: str = Depends(valid_templ
         with smtplib.SMTP_SSL(mailings_settings.mail_host, mailings_settings.mail_port) as server:
             server.login(mailings_settings.mail_login, mailings_settings.mail_password)
             server.send_message(msg)
-        sending_signals.sent.send()
+        await sending_signals.sent.send()
     except smtplib.SMTPAuthenticationError:
         raise sending_exceptions.EmailAuthenticationException(language=language)

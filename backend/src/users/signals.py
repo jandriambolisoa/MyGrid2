@@ -2,16 +2,14 @@
 This file list signals to be used for secondary actions.
 """
 
-from blinker import Namespace
-
-users_namespace = Namespace()
+from backend.signals import Signal
 
 # CRUD signals
-created = users_namespace.signal("created")
-read = users_namespace.signal("read")
-updated = users_namespace.signal("updated")
-deleted = users_namespace.signal("deleted")
+created = Signal("created")
+read = Signal("read")
+updated = Signal("updated")
+deleted = Signal("deleted")
 
 # Connexions signals
-connects = users_namespace.signal("connects")
-disconnects = users_namespace.signal("disconnects")
+connects = Signal("connects")
+disconnects = Signal("disconnects")
