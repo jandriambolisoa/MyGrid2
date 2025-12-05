@@ -1,4 +1,6 @@
 LOGIN_SUSPENSION_DURATION = 7200 #seconds
+GOOGLE_PUBLIC_KEYS_JWK_URL = "https://www.googleapis.com/oauth2/v3/certs"
+GOOGLE_TOKEN_ISSUERS = ["https://accounts.google.com", "accounts.google.com"]
 INCREMENTAL_SUSPENSION_DURATIONS = [0, 0, 0, 5, 10, 15, 30, 60, 120, 300, 600, 900, 1800, 3600]
 USERNAME_MAX_LENGTH = 24
 USERNAME_MIN_LENGTH = 6
