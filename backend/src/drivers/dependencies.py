@@ -68,8 +68,9 @@ async def get_driver_registration_from_codename(session_id: int, codename: str) 
     result = db.cursor.fetchone()
 
     if result:
-        driver = {k.removeprefix("driver_"): v for k, v in result if k.startswith("driver_")}
-        team = {k.removeprefix("team_"): v for k, v in result if k.startswith("team_")}
+        print("# DEBUG - get_driver_from_codename : %s | %s"%(session_id, codename))
+        driver = {k.removeprefix("driver_"): result[k] for k in list(result.keys()) if k.startswith("driver_")}
+        team = {k.removeprefix("team_"): result[k] for k in list(result.keys()) if k.startswith("team_")}
         return RegistrationDriver(
             driver_id=driver["driver_id"],
             team_id=team["team_id"],
