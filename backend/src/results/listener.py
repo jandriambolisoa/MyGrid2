@@ -36,6 +36,13 @@ async def update_session_results_from_live_session(session_id: int, user: UserSe
     # Stop OpenF1 microservice
     requests.get(f"{app_settings.ms_openf1_url}/deactivate")
 
+
+async def stop_openf1_microservice():
+    # Stop OpenF1 microservice
+    requests.get(f"{app_settings.ms_openf1_url}/deactivate")
+
+
 def init_listener():
-    live_signals.closed.connect(update_session_results_from_live_session)
+    # live_signals.closed.connect(update_session_results_from_live_session)
+    live_signals.closed.connect(stop_openf1_microservice())
 

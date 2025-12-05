@@ -1,3 +1,4 @@
+import asyncio
 from datetime import datetime, UTC
 from typing import Union
 
@@ -46,9 +47,9 @@ async def listen_to_f1(
         db:Database = Depends(get_db)):
     current_user = await get_current_user(token, db)
 
-    live_session = await get_live_session()
+    live_session = get_live_session()
 
-    if not live_session.session_id:
+    if not live_session or not live_session.session_id:
         raise NoLiveSessionError(language=language)
 
     await live_session.connect(current_user.id, websocket)
@@ -65,8 +66,8 @@ async def listen_to_f1(
 
 
 @router.get("/f1/open_session")
-async def open_live_session(session_id: int, language: str = "en", current_user: UserSelf = Depends(get_current_user)):
-    if not is_user_moderator_or_admin(current_user.id):
+def open_live_session(session_id: int, language: str = "en", current_user: UserSelf = Depends(get_current_user)):
+    if not asyncio.run(is_user_moderator_or_admin(current_user.id)):
         app_exceptions.forbidden_access_message(language)
 
     # Run OpenF1 microservice
@@ -74,27 +75,24 @@ async def open_live_session(session_id: int, language: str = "en", current_user:
     if activation.status_code != 200:
         raise OpenF1MicroserviceError(language=language)
 
-    live_session = await get_live_session(session_id)
+    live_session = get_live_session(session_id)
 
     try:
-        await engine(live_session)
+        asyncio.run(engine(live_session))
     except OpenF1MicroserviceError:
-        await live_signals.error.send()
+        live_signals.error.send()
 
 
 @router.get("/f1/close_session")
-async def close_live_session(language: str = "en", current_user: UserSelf = Depends(get_current_user)):
-    if not is_user_moderator_or_admin(current_user.id):
+def close_live_session(language: str = "en", current_user: UserSelf = Depends(get_current_user)):
+    if not asyncio.run(is_user_moderator_or_admin(current_user.id)):
         app_exceptions.forbidden_access_message(language)
 
-    live_session = await get_live_session()
+    live_session = get_live_session()
 
-    for connection in live_session.users_ws:
-        live_session.disconnect(connection)
+    if live_session:
+        live_session.disconnect_all()
 
-    await closed.send(live_session.session_id, user=current_user) # OpenF1 microservice is stopped here
-    live_session.session_id = None
-    del live_session
-
-
-
+        closed.send(live_session.session_id, user=current_user) # OpenF1 microservice is stopped here
+        live_session.session_id = None
+        del live_session.instance

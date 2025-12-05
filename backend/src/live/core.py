@@ -21,14 +21,17 @@ class LiveSession:
         self.users_ws["user%07d" % user_id] = websocket
 
     def disconnect(self, user_id: int):
-        del self.users_ws["user%07d" % user_id]
+        del self.users_ws["user%07d" %int(user_id)]
+
+    def disconnect_all(self):
+        del self.users_ws
 
     async def send(self, datas: list):
         for user_id in self.users_ws:
             await self.users_ws[user_id].send_json(datas)
 
 
-async def get_live_session(session_id: int = None) -> LiveSession | None:
+def get_live_session(session_id: int = None) -> LiveSession | None:
     """
     Returns a LiveSession instance. If no args, returns the instance or None if no instance.
     :param session_id: (int) the live session id from MyGrid database
@@ -49,9 +52,7 @@ async def engine(live_session: LiveSession):
     :args: :class:`LiveSession` instance
     :return: None
     """
-    session_results = None
-
-    while session_results is None:
+    while live_session.instance is not None:
         # Get datas
         response = requests.get(f"{app_settings.ms_openf1_url}/datas")
         to_send = list()
@@ -72,19 +73,22 @@ async def engine(live_session: LiveSession):
         # Cooldown
         await asyncio.sleep(WEBSOCKET_COOLDOWN_SECONDS)
 
-        # Get session results
-        session_results = requests.get(f"{app_settings.ms_openf1_url}/results")
-
-        if session_results.status_code == 200:
-            to_send.clear()
-            for data in session_results.json():
-                driver = await get_driver_registration_from_codename(live_session.session_id, data["driver"]["codename"])
-                to_send.append({
-                    "position": data["position"],
-                    "lap_duration": data["lap_duration"],
-                    "interval": data["interval"],
-                    "driver": driver.driver,
-                    "team": driver.team,
-                    "prediction": driver.prediction
-                })
-            await live_session.send(to_send)
+        # # Get session results
+        # session_results = requests.get(f"{app_settings.ms_openf1_url}/results")
+        #
+        # if session_results.status_code == 200:
+        #     print("# DEBUG - results - %s"%session_results.json())
+        #     if not session_results.json():
+        #         continue
+        #     to_send.clear()
+        #     for data in session_results.json():
+        #         driver = await get_driver_registration_from_codename(live_session.session_id, data["driver"]["codename"])
+        #         to_send.append({
+        #             "position": data["position"],
+        #             "lap_duration": data["lap_duration"],
+        #             "interval": data["interval"],
+        #             "driver": driver.driver,
+        #             "team": driver.team,
+        #             "prediction": driver.prediction
+        #         })
+        #     await live_session.send(to_send)
