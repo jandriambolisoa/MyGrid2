@@ -52,26 +52,30 @@ async def engine(live_session: LiveSession):
     :args: :class:`LiveSession` instance
     :return: None
     """
-    while live_session.instance is not None:
-        # Get datas
-        response = requests.get(f"{app_settings.ms_openf1_url}/datas")
-        to_send = list()
-        for data in response.json():
-            driver = await get_driver_registration_from_codename(live_session.session_id, data["driver"]["codename"])
-            to_send.append({
-                "position": data["position"],
-                "lap_duration": data["lap_duration"],
-                "interval": data["interval"],
-                "driver": driver.driver,
-                "team": driver.team,
-                "prediction": driver.prediction
-            })
+    while True:
+        try:
+            # Get datas
+            response = requests.get(f"{app_settings.ms_openf1_url}/datas")
+            to_send = list()
+            for data in response.json():
+                driver = await get_driver_registration_from_codename(live_session.session_id, data["driver"]["codename"])
+                to_send.append({
+                    "position": data["position"],
+                    "lap_duration": data["lap_duration"],
+                    "interval": data["interval"],
+                    "driver": driver.driver.model_dump(mode="json"),
+                    "team": driver.team.model_dump(mode="json"),
+                    "prediction": driver.prediction
+                })
 
-        # Send them to the websocket
-        await live_session.send(to_send)
+            # Send them to the websocket
+            await live_session.send(to_send)
 
-        # Cooldown
-        await asyncio.sleep(WEBSOCKET_COOLDOWN_SECONDS)
+            # Cooldown
+            await asyncio.sleep(WEBSOCKET_COOLDOWN_SECONDS)
+
+        except Exception as error:
+            break
 
         # # Get session results
         # session_results = requests.get(f"{app_settings.ms_openf1_url}/results")
