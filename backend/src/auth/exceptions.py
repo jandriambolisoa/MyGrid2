@@ -1,9 +1,7 @@
 from fastapi import HTTPException, status
 from jinja2 import Environment
 
-from backend.src.auth.texts import not_a_valid_username_length_message, not_a_valid_username_characters_message, \
-    not_available_username_message, not_a_valid_password_length_message, not_a_valid_password_strength_message, \
-    not_available_email_message, login_suspended_message, wrong_credentials_message
+from backend.src.auth.texts import *
 
 class NotAValidUsernameLengthError(HTTPException):
     status_code = status.HTTP_406_NOT_ACCEPTABLE
@@ -53,3 +51,9 @@ class WrongCredentialsError(HTTPException):
     def __init__(self, language: str = "en", **kwargs):
         super().__init__(self.status_code, **kwargs)
         self.detail = wrong_credentials_message[language]
+
+class GoogleSSOLoginFailedError(HTTPException):
+    status_code = status.HTTP_401_UNAUTHORIZED
+    def __init__(self, language: str = "en", **kwargs):
+        super().__init__(self.status_code, **kwargs)
+        self.detail = google_sso_login_failed_message[language]

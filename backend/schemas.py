@@ -8,3 +8,8 @@ class ScheduledJob(BaseModel):
     id: str
     name: str
     datetime: str # User friendly datetime
+
+class FrontEndWaitForAction(BaseModel):
+    message: str
+    redirection: str
+    datas: Optional[dict]

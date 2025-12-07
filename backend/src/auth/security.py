@@ -4,7 +4,7 @@ from backend.db.database import get_db
 from backend.config import settings as app_settings
 from backend.src.auth.constants import LOGIN_SUSPENSION_DURATION, INCREMENTAL_SUSPENSION_DURATIONS
 
-def get_login_cooldown_seconds(address) -> int:
+async def get_login_cooldown_seconds(address) -> int:
     if app_settings.debug:
         return -1
 
@@ -30,16 +30,45 @@ def get_login_cooldown_seconds(address) -> int:
 
     return -1
 
+<<<<<<< HEAD
+async def purge_user_login_attempts(user_id: int) -> None:
+=======
 def purge_user_login_attempts(address: str) -> None:
+>>>>>>> dev
     db = get_db()
     db.cursor.execute("""\
         DELETE FROM loginattempts
         WHERE address = %s""", (address,))
     db.conn.commit()
 
+<<<<<<< HEAD
+async def purge_user_refresh_tokens(user_id: int) -> None:
+    db = get_db()
+    db.cursor.execute("""\
+        DELETE FROM refreshtokens
+        WHERE user_id = %s""", (user_id,))
+    db.conn.commit()
+
+async def generate_safe_username(user_id: int = None) -> str:
+    new_username = "user%09d" % user_id if user_id else None
+
+    if not user_id:
+        db = get_db()
+        db.cursor.execute("""\
+            SELECT username FROM users""")
+        existing_usernames = db.cursor.fetchall()
+        tmp_id = 999999999
+        new_username = "user%09d" % tmp_id
+        while new_username in existing_usernames:
+            tmp_id = tmp_id -1
+            new_username = "user%09d" % tmp_id
+
+    return new_username
+=======
 def purge_user_refresh_tokens(address: str) -> None:
     db = get_db()
     db.cursor.execute("""\
         DELETE FROM refreshtokens
         WHERE address = %s""", (address,))
     db.conn.commit()
+>>>>>>> dev

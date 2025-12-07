@@ -10,11 +10,17 @@ class Settings (BaseSettings):
 
     debug: int = 0
 
+    # dbmate related settings
+    database_url: str
+
     # Security related settings
     secret_key: str
     algorithm: str
     token_expires_minutes: int
     refresh_token_expires_minutes: int
+    google_auth_expo_client_id: str
+    google_auth_android_client_id: str
+    google_auth_ios_client_id: str
 
     # Redirections related settings
     website_url: str

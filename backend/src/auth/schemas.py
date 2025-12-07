@@ -26,3 +26,8 @@ class RefreshTokenData(BaseModel):
 class LoginRefreshTokenPost(BaseModel):
     access_token: AccessToken
     refresh_token: RefreshToken
+
+class GoogleTokenData(BaseModel):
+    email: str
+    email_verified: bool
+    sub: str
