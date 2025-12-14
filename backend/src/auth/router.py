@@ -11,25 +11,25 @@ from starlette.responses import Response
 
 from backend import exceptions as app_exceptions
 from backend.obligations import create_obligation
-from backend.schemas import FrontEndWaitForAction
-from backend.src.auth.google import verify_google_token, google_automatic_password, get_user_id_from_google_id
-from backend.src.users import exceptions as user_exceptions
 
+from backend.db.database import get_db, Database
 from backend.config import settings as app_settings
-from backend.src.users.utils import get_user_id_from_email
 from backend.utils import hash, verify, random_code
 from backend.oauth2 import create_jwt_token, get_current_token, get_current_user, verify_refresh_token, \
     verify_access_token
 from backend.src.auth import exceptions as auth_exceptions
 from backend.src.auth import signals as auth_signals
+from backend.src.auth.apple import validate_apple_token, verify_apple_id_token, get_user_id_from_apple_id
+from backend.src.auth.google import verify_google_token, google_automatic_password, get_user_id_from_google_id
 from backend.src.auth.referrals import assign_user_referral, create_unique_referral_code
 from backend.src.auth.schemas import LoginResponse, AccessToken, LoginRefreshTokenPost
 from backend.src.auth.security import get_login_cooldown_seconds, purge_user_login_attempts, generate_safe_username
 from backend.src.auth.syntax import valid_username, valid_password
 from backend.src.users import signals as users_signals
+from backend.src.users import exceptions as user_exceptions
 from backend.src.users.privileges import is_user_banned
 from backend.src.users.schemas import UserCreate, UserSelf
-from backend.db.database import get_db, Database
+from backend.src.users.utils import get_user_id_from_email
 
 router = APIRouter(
     prefix="/auth",
@@ -188,7 +188,7 @@ async def login_refresh_token(request: Request, tokens: LoginRefreshTokenPost, l
     }
 
 
-@router.post("/login-google", response_model=LoginResponse | FrontEndWaitForAction)
+@router.post("/login-google", response_model=LoginResponse)
 async def login_google(credential: str, referral_code: str = None, language: str = "en", db: Database = Depends(get_db)):
     datas = await verify_google_token(credential, language=language)
 
@@ -330,6 +330,146 @@ async def login_google(credential: str, referral_code: str = None, language: str
     await create_obligation(code= "newname", user_id= new_user["id"], language= language)
     if not is_google_email:
         await create_obligation(code= "newpwd", user_id= new_user["id"], language= language)
+
+    return Response(status_code= status.HTTP_202_ACCEPTED)
+
+
+@router.post("/login-apple", response_model=LoginResponse)
+async def login_apple(credential: str, nonce: str, referral_code: str = None, language: str = "en", db: Database = Depends(get_db)):
+    datas = await validate_apple_token(authorization_code= credential, language=language)
+
+    id_token = datas["id_token"]
+    # access_token = datas["access_token"]
+    # refresh_token = datas["refresh_token"]
+
+    id_token_datas = await verify_apple_id_token(id_token, nonce= nonce)
+
+    # Check if user has its email in the database
+    if id_token_datas.email:
+        user_id = await get_user_id_from_email(id_token_datas.email)
+        email = id_token_datas.email
+    else:
+        user_id = None
+        email = "apple@nomail.com"
+
+    # Check if a user is already assigned to this apple_id
+    has_apple_id = await get_user_id_from_apple_id(id_token_datas.sub) is not None
+
+    # Manage a registered user that doesn't have an apple id associated yet
+    if user_id and not has_apple_id:
+        # Associate our user's MyGrid database id to the given Google id
+        try:
+            db.cursor.execute("""\
+                INSERT INTO appleids (user_id, apple_id)
+                VALUES (%s, %s)""", (user_id, id_token_datas.sub))
+            db.conn.commit()
+
+        except UniqueViolation as err:
+            db.cursor.execute("ROLLBACK")
+            db.conn.commit()
+            raise app_exceptions.UnexpectedError(language=language)
+
+        # Return the LoginResponse schema : access_token, refresh_token and user datas
+        db.cursor.execute("""\
+            SELECT * FROM users
+            WHERE id = %s""", (user_id,))
+        user = db.cursor.fetchone()
+
+        access_token = await create_jwt_token({
+            "user_id": user["id"],
+            "username": user["username"],
+            "language": language
+        })
+
+        refresh_token = await create_jwt_token({
+            "user_id": user["id"],
+            "makeunique": random_code(32)
+        }, datetime.timedelta(minutes=app_settings.refresh_token_expires_minutes))
+
+        return {
+            "access_token": {
+                "access_token": access_token,
+                "token_type": "bearer"
+            },
+            "refresh_token": {
+                "refresh_token": refresh_token,
+                "token_type": "bearer"
+            },
+            "user": user
+        }
+
+
+    # Manage a registered user
+    if user_id and has_apple_id:
+        # Return the LoginResponse schema : access_token, refresh_token and user datas
+        db.cursor.execute("""\
+            SELECT * FROM users
+            WHERE id = %s""", (user_id,))
+        user = db.cursor.fetchone()
+
+        access_token = await create_jwt_token({
+            "user_id": user["id"],
+            "username": user["username"],
+            "language": language
+        })
+
+        refresh_token = await create_jwt_token({
+            "user_id": user["id"],
+            "makeunique": random_code(32)
+        })
+
+        return {
+            "access_token": {
+                "access_token": access_token,
+                "token_type": "bearer"
+            },
+            "refresh_token": {
+                "refresh_token": refresh_token,
+                "token_type": "bearer"
+            },
+            "user": user
+        }
+
+    # In none of the conditions above matched, we assume user_id is None
+
+    # Manage an unregistered user by creating a new user and associate its id to apple id
+
+    # Trust @gmail.com emails by skipping the password creation
+    password = random_code(64)
+
+    # Create a unique code for referral purpose
+    unique_referral_code = create_unique_referral_code()
+
+    try:
+        db.cursor.execute("""
+            INSERT INTO users (username, email, password, language, referralcode, verified)
+            VALUES (%s, %s, %s, %s, %s, true)
+            RETURNING *""", (generate_safe_username(), email, password, language, unique_referral_code))
+        new_user = db.cursor.fetchone()
+        db.conn.commit()
+
+    except UniqueViolation as err:
+        db.cursor.execute("ROLLBACK")
+        db.conn.commit()
+        raise app_exceptions.UnexpectedError(language=language)
+
+    if referral_code:
+        await assign_user_referral(referral_code, new_user["id"], language=language)
+
+    # Associate our user's MyGrid database id to the given Google id
+    try:
+        db.cursor.execute("""
+            INSERT INTO appleids (user_id, apple_id)
+            VALUES (%s, %s)""", (new_user["id"], id_token_datas.sub))
+        db.conn.commit()
+
+    except UniqueViolation as err:
+        db.cursor.execute("ROLLBACK")
+        db.conn.commit()
+        raise app_exceptions.UnexpectedError(language=language)
+
+    # Create a new username and, if not a google_email, a new password
+    await create_obligation(code= "newname", user_id= new_user["id"], language= language)
 
     return Response(status_code= status.HTTP_202_ACCEPTED)
 

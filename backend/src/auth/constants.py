@@ -1,5 +1,8 @@
 LOGIN_SUSPENSION_DURATION = 7200 #seconds
-GOOGLE_PUBLIC_KEYS_JWK_URL = "https://www.googleapis.com/oauth2/v3/certs"
+APPLE_TOKEN_ISSUER = "https://appleid.apple.com"
+APPLE_TOKEN_VALIDATION_ENDPOINT = "https://appleid.apple.com/auth/token"
+APPLE_PUBLIC_KEYS_URL= "https://appleid.apple.com/auth/keys"
+GOOGLE_PUBLIC_KEYS_URL = "https://www.googleapis.com/oauth2/v3/certs"
 GOOGLE_TOKEN_ISSUERS = ["https://accounts.google.com", "accounts.google.com"]
 INCREMENTAL_SUSPENSION_DURATIONS = [0, 0, 0, 5, 10, 15, 30, 60, 120, 300, 600, 900, 1800, 3600]
 USERNAME_MAX_LENGTH = 24

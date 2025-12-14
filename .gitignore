@@ -282,3 +282,7 @@ __marimo__/
 
 # Bruno related stuffs
 bruno-*
+
+# Private secret keys
+*.p8
+/pem

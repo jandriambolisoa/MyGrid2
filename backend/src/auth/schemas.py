@@ -34,3 +34,14 @@ class GoogleTokenData(BaseModel):
     email_verified: bool
     sub: str
     hd: Optional[str] = None
+
+class AppleTokenData(BaseModel):
+    access_token: str
+    token_type: str
+    expires_in: int
+    refresh_token: Optional[str] = None
+    id_token: str
+
+class AppleIdTokenData(BaseModel):
+    email: str
+    sub: str

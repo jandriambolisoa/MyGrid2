@@ -4,7 +4,7 @@ from jose import jwt
 
 from backend.config import settings as app_settings
 from backend.db.database import get_db
-from backend.src.auth.constants import GOOGLE_PUBLIC_KEYS_JWK_URL, GOOGLE_TOKEN_ISSUERS
+from backend.src.auth.constants import GOOGLE_PUBLIC_KEYS_URL, GOOGLE_TOKEN_ISSUERS
 from backend.src.auth.exceptions import GoogleSSOLoginFailedError
 from backend.src.auth.schemas import GoogleTokenData
 from backend.src.users.utils import get_user_id_from_email
@@ -19,7 +19,7 @@ async def verify_google_token(token: str, language: str = "en"):
     # This verification use Google's public keys
     # Note that Google keys regularly rotate, making
     # this function short-term valid only.
-    response = requests.get(GOOGLE_PUBLIC_KEYS_JWK_URL)
+    response = requests.get(GOOGLE_PUBLIC_KEYS_URL)
     json_response = response.json()
 
     try:

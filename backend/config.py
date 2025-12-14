@@ -18,6 +18,13 @@ class Settings (BaseSettings):
     algorithm: str
     token_expires_minutes: int
     refresh_token_expires_minutes: int
+    apple_dev_nonce_secret: str
+    apple_app_iss: str
+    apple_app_iss: str
+    apple_client_id: str
+    apple_dev_kid: str
+    apple_dev_private_key: str
+    apple_dev_sub: str
     google_auth_expo_client_id: str
     google_auth_android_client_id: str
     google_auth_ios_client_id: str
