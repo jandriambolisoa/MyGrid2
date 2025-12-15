@@ -13,3 +13,8 @@ class FrontEndWaitForAction(BaseModel):
     message: str
     redirection: str
     datas: Optional[dict]
+
+class ObligationResponse(BaseModel):
+    message: str
+    redirection: str
+    fields: dict

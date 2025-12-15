@@ -64,3 +64,10 @@ google_sso_login_failed_message = defaultdict(
         "fr": "L'authentification Google a échouée, veuillez réessayer plus tard.",
     }
 )
+
+apple_sso_login_failed_message = defaultdict(
+    lambda: "Apple authentification failed, please try again later.",
+    {
+        "fr": "L'authentification Apple a échouée, veuillez réessayer plus tard.",
+    }
+)

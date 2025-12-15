@@ -6,11 +6,13 @@ from fastapi import Depends
 from jose import jwt, exceptions
 from jose.exceptions import JWTError
 
+from backend.obligations import Obligation
 from backend.src.appstatus import exceptions as app_exceptions
 from backend.db.database import Database, get_db
 from backend.src.appstatus.server import is_server_on_maintenance
 from backend.src.users import exceptions as user_exceptions
 from backend.config import settings as app_settings
+from backend.src.users.exceptions import NotAUserError
 from backend.src.users.schemas import UserSelf
 from backend.src.auth.schemas import AccessTokenData, AccessToken, RefreshTokenData
 from backend.src.users.privileges import is_user_banned
@@ -88,8 +90,8 @@ async def is_token_revoked(token: str) -> bool:
 async def get_current_user(token: str = Depends(oauth2_scheme), db: Database = Depends(get_db)):
     """
     This depedency function gets the current user from the token. It will check in this order:
-    If the token is valid, if the user exists, if the server is not on maintenance and if the
-    user is not banned.
+    If the token is valid, if the user exists, if the server is not on maintenance, if the
+    user is not banned and if the user has an obligation.
     :param token: The token in headers request
     :param db: The database
     :return: UserSelf pydantic model
@@ -114,11 +116,21 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Database = D
     if await is_user_banned(token_data.user_id):
         raise user_exceptions.BannedUserException(user_id=token_data.user_id, language=token_data.language)
 
+    # Return obligation if the user has any
+    db.cursor.execute("""\
+        SELECT obligation
+        FROM userobligations
+        WHERE user_id = %s""", (token_data.user_id,))
+    obligation = db.cursor.fetchone()
+
+    if obligation:
+        raise Obligation(obligation["obligation"], language=token_data.language)
+
+    #TODO Block users who are not visible in the Online Manager
+
     current_user = UserSelf(
         **current_user
     )
-
-    #TODO Block users who are not visible in the Online Manager
 
     return current_user
 
@@ -129,3 +141,16 @@ async def get_current_token(token: str = Depends(oauth2_scheme)):
         token_type="bearer"
     )
     return token
+
+async def is_user_email_verified(user_id: int, language: str= "en"):
+    db = get_db()
+    db.cursor.execute("""\
+        SELECT verified 
+        FROM users
+        WHERE user_id = %s""", (user_id,))
+    email_verified = db.cursor.fetchone()
+
+    if not email_verified:
+        raise NotAUserError(language= language)
+
+    return email_verified["verified"]

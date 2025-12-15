@@ -4,7 +4,7 @@ from jose import jwt
 
 from backend.config import settings as app_settings
 from backend.db.database import get_db
-from backend.src.auth.constants import GOOGLE_PUBLIC_KEYS_JWK_URL, GOOGLE_TOKEN_ISSUERS
+from backend.src.auth.constants import GOOGLE_PUBLIC_KEYS_URL, GOOGLE_TOKEN_ISSUERS
 from backend.src.auth.exceptions import GoogleSSOLoginFailedError
 from backend.src.auth.schemas import GoogleTokenData
 from backend.src.users.utils import get_user_id_from_email
@@ -12,14 +12,14 @@ from backend.src.users.utils import get_user_id_from_email
 
 async def verify_google_token(token: str, language: str = "en"):
     """
-    Return True if the token is valid and signed by Google, False otherwise.
+    Return datas (email, email_verified, sub) of the token if valid and signed by Google.
     :param token: A jwt token.
-    :return: bool
+    :return: GoogleTokenData schema
     """
     # This verification use Google's public keys
     # Note that Google keys regularly rotate, making
     # this function short-term valid only.
-    response = requests.get(GOOGLE_PUBLIC_KEYS_JWK_URL)
+    response = requests.get(GOOGLE_PUBLIC_KEYS_URL)
     json_response = response.json()
 
     try:
@@ -72,3 +72,16 @@ async def get_google_id_from_email(email: str):
             return None
 
     return None
+
+async def get_user_id_from_google_id(google_id: int) -> int | None:
+    db = get_db()
+    db.cursor.execute("""\
+        SELECT user_id
+        FROM googleids
+        WHERE google_id = %s""", (google_id,))
+    user_id = db.cursor.fetchone()
+
+    if not user_id:
+        return None
+
+    return int(user_id["user_id"])
