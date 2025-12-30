@@ -1,7 +1,10 @@
+import asyncio
+
 import requests
 
 from backend.config import settings as app_settings
 from backend.db.database import get_db
+from backend.exceptions import MicroservicesAreOffException
 from backend.src.drivers.dependencies import get_driver_registration_from_codename
 from backend.src.live import signals as live_signals
 from backend.src.results.router import override_session_results
@@ -9,6 +12,9 @@ from backend.src.users.schemas import UserSelf
 from backend.src.events.constants import CHAMPIONSHIP_POINTS
 
 async def update_session_results_from_live_session(session_id: int, user: UserSelf):
+    if app_settings.ms == 0:
+        raise MicroservicesAreOffException()
+
     db = get_db()
     db.cursor.execute("""
         SELECT championships.id AS championship_id
@@ -38,11 +44,12 @@ async def update_session_results_from_live_session(session_id: int, user: UserSe
 
 
 async def stop_openf1_microservice():
+    if app_settings.ms == 0:
+        raise MicroservicesAreOffException()
     # Stop OpenF1 microservice
     requests.get(f"{app_settings.ms_openf1_url}/deactivate")
 
 
 def init_listener():
     # live_signals.closed.connect(update_session_results_from_live_session)
-    live_signals.closed.connect(stop_openf1_microservice())
-
+    live_signals.closed.connect(stop_openf1_microservice)

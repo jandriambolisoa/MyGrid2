@@ -13,11 +13,10 @@ class User(BaseModel):
     image: Optional[str]
 
 class UserCreate(BaseModel):
-    username: str = Field(min_length= constants.USERNAME_MIN_LENGTH, max_length=constants.USERNAME_MAX_LENGTH)
-    password: str = Field(min_length= constants.PW_MIN_LENGTH)
-    email: EmailStr
-    language: Optional[str] = Field(default= "en")
-    image: Optional[str]
+    username: str
+    password: str
+    email: str
+    image: Optional[str] = None
 
 class UserSelf(BaseModel):
     id: int
@@ -25,5 +24,5 @@ class UserSelf(BaseModel):
     email: EmailStr
     created: datetime
     modified: datetime
-    language: str
-    image: Optional[str]
+    language: Optional[str] = "en"
+    image: Optional[str] = None

@@ -8,6 +8,7 @@ from starlette.websockets import WebSocket, WebSocketDisconnect
 
 from backend.config import settings as app_settings
 from backend.db.database import Database, get_db
+from backend.exceptions import MicroservicesAreOffException
 from backend.oauth2 import get_current_user
 from backend import exceptions as app_exceptions
 from backend.src.live.core import get_live_session, engine
@@ -69,6 +70,9 @@ async def listen_to_f1(
 def open_live_session(session_id: int, language: str = "en", current_user: UserSelf = Depends(get_current_user)):
     if not asyncio.run(is_user_moderator_or_admin(current_user.id)):
         app_exceptions.forbidden_access_message(language)
+
+    if app_settings.ms == 0:
+        raise MicroservicesAreOffException(language=language)
 
     # Run OpenF1 microservice
     activation = requests.get(f"{app_settings.ms_openf1_url}/activate")

@@ -8,7 +8,7 @@ DOTENV = os.path.join(os.path.dirname(__file__), ".env")
 class Settings (BaseSettings):
     model_config = SettingsConfigDict(env_file=DOTENV)
 
-    debug: int = 0
+    debug: int = 1
 
     mail_host: str
     mail_cryptage: str

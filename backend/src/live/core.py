@@ -4,6 +4,7 @@ import requests
 from fastapi import WebSocket
 
 from backend.config import settings as app_settings
+from backend.exceptions import MicroservicesAreOffException
 from backend.src.drivers.dependencies import get_driver_registration_from_codename
 from backend.src.live.constants import WEBSOCKET_COOLDOWN_SECONDS
 
@@ -52,6 +53,9 @@ async def engine(live_session: LiveSession):
     :args: :class:`LiveSession` instance
     :return: None
     """
+    if app_settings.ms == 0:
+        raise MicroservicesAreOffException()
+
     while True:
         try:
             # Get datas

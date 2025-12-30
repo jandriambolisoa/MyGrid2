@@ -37,6 +37,13 @@ not_a_valid_password_strength_message = defaultdict(
     }
 )
 
+not_a_valid_email_message = defaultdict(
+    lambda: "Your email is not valid. It must include a @ symbol.",
+    {
+        "fr": "Votre email n'est pas valide. Il devrait contenir un symbole @.",
+    }
+)
+
 not_available_email_message = defaultdict(
     lambda: "This email address is already in use.",
     {

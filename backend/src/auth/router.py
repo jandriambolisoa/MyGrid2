@@ -24,7 +24,7 @@ from backend.src.auth.google import verify_google_token, google_automatic_passwo
 from backend.src.auth.referrals import assign_user_referral, create_unique_referral_code
 from backend.src.auth.schemas import LoginResponse, AccessToken, LoginRefreshTokenPost
 from backend.src.auth.security import get_login_cooldown_seconds, purge_user_login_attempts, generate_safe_username
-from backend.src.auth.syntax import valid_username, valid_password
+from backend.src.auth.syntax import valid_username, valid_password, valid_email
 from backend.src.users import signals as users_signals
 from backend.src.users import exceptions as user_exceptions
 from backend.src.users.privileges import is_user_banned
@@ -46,11 +46,12 @@ async def signup_user(user: UserCreate, referral_code: str = None, language: str
         # Check credentials
         await valid_username(user.username, language=language)
         await valid_password(user.password, language=language)
+        await valid_email(user.email, language=language)
 
         user.password = hash(user.password)
 
         # Create a unique code for referral purpose
-        unique_referral_code = create_unique_referral_code()
+        unique_referral_code = await create_unique_referral_code()
 
         # TODO: include add image at creation
         db.cursor.execute("""
@@ -66,7 +67,7 @@ async def signup_user(user: UserCreate, referral_code: str = None, language: str
         if referral_code:
             await assign_user_referral(referral_code, new_user["id"], language=language)
 
-        users_signals.created(UserSelf(**new_user))
+        await users_signals.created.send(UserSelf(**new_user))
 
         # TODO: include full profile return
         return new_user

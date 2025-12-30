@@ -25,6 +25,11 @@ def init_db(
         db_password: str
     ):
 
+    # Init a test DB if app_settings.DEBUG = 1
+    if global_settings.debug == 1:
+        db_name = f"{db_name}test"
+        print("DATABASE: Switched to database test")
+
     while True:
         print("DATABASE: Connecting...")
 

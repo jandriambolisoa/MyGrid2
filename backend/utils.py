@@ -14,6 +14,9 @@ def random_code(length: int, digits: bool = True, letters: bool = True) -> str:
         raise ValueError("At least one of 'digits' or 'letters' must be True.")
     return ''.join(random.choices(pool, k=length))
 
+def random_color():
+    return "#{:06x}".format(random.randint(0, 0xFFFFFF))
+
 pwd_context = CryptContext(["bcrypt"], deprecated="auto")
 
 def hash(input: str):

@@ -21,6 +21,13 @@ missing_english_translation_message = defaultdict(
     }
 )
 
+microservices_are_off_message = defaultdict(
+    lambda: "Microservices are off. Please contact admins.",
+    {
+        "fr": "Les micro-services sont désactivés. Veuillez contacter un administrateur.",
+    }
+)
+
 obligation_newname = defaultdict(
     lambda: "You have to change your username before continuing.",
     {
