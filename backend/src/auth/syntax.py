@@ -7,7 +7,7 @@ from backend.db.database import get_db
 from backend.src.users.schemas import UserCreate
 from backend.src.auth.constants import USERNAME_MAX_LENGTH, USERNAME_MIN_LENGTH, PW_MIN_LENGTH
 from backend.src.auth.exceptions import NotAValidUsernameLengthError, NotAValidUsernameCharactersError, \
-    NotAvailableUsernameError, NotAValidPasswordLength, NotAValidPasswordStrength
+    NotAvailableUsernameError, NotAValidPasswordLength, NotAValidPasswordStrength, NotAValidEmailError
 
 
 async def valid_username(username: str, language: str = "en") -> str:
@@ -62,5 +62,15 @@ async def valid_password(input: str, language: str = "en") -> str:
 
     if [has_lower, has_upper, has_digit, has_special].count(False) > 1:
         raise NotAValidPasswordStrength(language=language)
+
+    return input
+
+async def valid_email(input: str, language: str = "en") -> str:
+    if not "@" in input:
+        raise NotAValidEmailError(language=language)
+
+    email_elements = input.split("@")
+    if len(email_elements[0]) == 0 or len(email_elements[1]) == 0:
+        raise NotAValidEmailError(language=language)
 
     return input

@@ -34,6 +34,7 @@ class Settings (BaseSettings):
     confirmed_email_url: str
 
     # Microservices related settings
+    ms: int = 1 # 0 is off
     ms_mailings_url: str
     ms_openf1_url: str
 

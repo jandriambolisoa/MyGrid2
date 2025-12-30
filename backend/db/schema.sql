@@ -1,4 +1,4 @@
-\restrict U9KyiZkncQo3bTzJmCr73PtgmaxsIqgmFEB3YpLb6LJdgqcSF9UEdw2chB4FMMi
+\restrict x3d5IKNIs6AcvJUd3r4thmEMCB4cAic6reBkZiOmYnl7LaGsYIFeMYV75tD7Kpu
 
 -- Dumped from database version 18.1
 -- Dumped by pg_dump version 18.1
@@ -32,6 +32,16 @@ COMMENT ON EXTENSION citext IS 'data type for case-insensitive character strings
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
+
+--
+-- Name: appleids; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.appleids (
+    user_id integer NOT NULL,
+    apple_id character varying NOT NULL
+);
+
 
 --
 -- Name: appstatus; Type: TABLE; Schema: public; Owner: -
@@ -578,6 +588,37 @@ ALTER SEQUENCE public.teams_id_seq OWNED BY public.teams.id;
 
 
 --
+-- Name: userobligations; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.userobligations (
+    id integer NOT NULL,
+    user_id integer NOT NULL,
+    obligation character varying NOT NULL
+);
+
+
+--
+-- Name: userobligations_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.userobligations_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: userobligations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.userobligations_id_seq OWNED BY public.userobligations.id;
+
+
+--
 -- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -668,10 +709,25 @@ ALTER TABLE ONLY public.teams ALTER COLUMN id SET DEFAULT nextval('public.teams_
 
 
 --
+-- Name: userobligations id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.userobligations ALTER COLUMN id SET DEFAULT nextval('public.userobligations_id_seq'::regclass);
+
+
+--
 -- Name: users id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
+
+
+--
+-- Name: appleids appleids_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.appleids
+    ADD CONSTRAINT appleids_pkey PRIMARY KEY (user_id);
 
 
 --
@@ -915,6 +971,14 @@ ALTER TABLE ONLY public.teams
 
 
 --
+-- Name: userobligations userobligations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.userobligations
+    ADD CONSTRAINT userobligations_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: users users_email_unique; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -944,6 +1008,14 @@ ALTER TABLE ONLY public.users
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_username_unique UNIQUE (username);
+
+
+--
+-- Name: appleids appleids_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.appleids
+    ADD CONSTRAINT appleids_users_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -1147,10 +1219,18 @@ ALTER TABLE ONLY public.sessionstranslations
 
 
 --
+-- Name: userobligations userobligations_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.userobligations
+    ADD CONSTRAINT userobligations_users_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
 -- PostgreSQL database dump complete
 --
 
-\unrestrict U9KyiZkncQo3bTzJmCr73PtgmaxsIqgmFEB3YpLb6LJdgqcSF9UEdw2chB4FMMi
+\unrestrict x3d5IKNIs6AcvJUd3r4thmEMCB4cAic6reBkZiOmYnl7LaGsYIFeMYV75tD7Kpu
 
 
 --
@@ -1184,4 +1264,6 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20251026175506'),
     ('20251105212600'),
     ('20251108095319'),
-    ('20251108095327');
+    ('20251108095327'),
+    ('20251205204059'),
+    ('20251214144418');

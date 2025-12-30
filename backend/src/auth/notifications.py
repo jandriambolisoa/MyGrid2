@@ -1,6 +1,7 @@
 import requests
 
 from backend.constants import MAIL_VERIFICATION, MAIL_WELCOME
+from backend.exceptions import MicroservicesAreOffException
 from backend.src.auth import signals as auth_signals
 from backend.src.users.schemas import UserSelf
 from backend.src.users import signals as users_signals
@@ -8,6 +9,9 @@ from backend.config import settings as app_settings
 from backend.oauth2 import create_jwt_token
 
 async def send_verification_email(user: UserSelf):
+    if app_settings.ms == 0:
+        raise MicroservicesAreOffException()
+
     token_datas = {
         "username": user.username,
         "email": user.email,
@@ -32,6 +36,9 @@ async def send_verification_email(user: UserSelf):
 users_signals.created.connect(send_verification_email)
 
 async def send_welcome_email(user: UserSelf):
+    if app_settings.ms == 0:
+        raise MicroservicesAreOffException()
+
     fields = {
         "username": user.username
     }

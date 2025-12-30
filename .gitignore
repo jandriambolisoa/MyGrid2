@@ -286,3 +286,6 @@ bruno-*
 # Private secret keys
 *.p8
 /pem
+
+# Docker dev
+docker-compose-dev.yml

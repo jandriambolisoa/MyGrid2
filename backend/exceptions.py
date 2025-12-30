@@ -19,3 +19,8 @@ class MissingEnglishTranslationError(HTTPException):
     def __init__(self, language: str = "en", **kwargs):
         super().__init__(self.status_code, **kwargs)
         self.detail = missing_english_translation_message[language]
+
+class MicroservicesAreOffException(HTTPException):
+    def __init__(self, language: str = "en", status_code = status.HTTP_200_OK, **kwargs):
+        super().__init__(status_code, **kwargs)
+        self.detail = microservices_are_off_message[language]

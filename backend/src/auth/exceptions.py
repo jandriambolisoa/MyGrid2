@@ -33,6 +33,12 @@ class NotAValidPasswordStrength(HTTPException):
         super().__init__(self.status_code, **kwargs)
         self.detail = not_a_valid_password_strength_message[language]
 
+class NotAValidEmailError(HTTPException):
+    status_code = status.HTTP_406_NOT_ACCEPTABLE
+    def __init__(self, language: str = "en", **kwargs):
+        super().__init__(self.status_code, **kwargs)
+        self.detail = not_a_valid_email_message[language]
+
 class NotAvailableEmailError(HTTPException):
     status_code = status.HTTP_406_NOT_ACCEPTABLE
     def __init__(self, language: str = "en", **kwargs):
