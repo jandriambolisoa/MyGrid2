@@ -6,14 +6,17 @@ from starlette.testclient import TestClient
 from backend.db.database import get_db
 from backend.main import app
 from backend.oauth2 import create_jwt_token
-from backend.src.users.schemas import User
+from backend.src.users.schemas import User, UserSelf
 from backend.utils import random_code
 
 class TestUser(BaseModel):
-    user: User
+    user: UserSelf
     client: TestClient
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
+
+def predictable_password(username):
+    return f"password123{username}*"
 
 def create_random_user(client: TestClient, authorized: bool = False, moderator: bool = False, banned: bool = False):
     """
@@ -32,7 +35,7 @@ def create_random_user(client: TestClient, authorized: bool = False, moderator: 
     user_data = {
         "username": name,
         "email":    f"{name}@example.com",
-        "password": f"password123{name}*"
+        "password": predictable_password(name)
     }
 
     client.post("/auth/signup", json=user_data)
@@ -57,8 +60,8 @@ def create_random_user(client: TestClient, authorized: bool = False, moderator: 
     # Register the user role if he's a moderator
     if moderator:
         db.cursor.execute("""
-            INSERT INTO promotedhistory (user_id, moderator, by)
-            VALUES (%s, %s, %s)""", (new_user["id"], True, new_user["id"]))
+            INSERT INTO promotedhistory (user_id, moderator, admin, by)
+            VALUES (%s, %s, %s, %s)""", (new_user["id"], True, False, new_user["id"]))
         db.conn.commit()
 
     # Register the user in the banned users list if he's banned

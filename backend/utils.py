@@ -1,8 +1,12 @@
 import string
 import random
+import hashlib
+from argon2 import PasswordHasher
+from argon2.exceptions import VerifyMismatchError
 
 from passlib.context import CryptContext
-from passlib.hash import sha256_crypt
+from passlib.exc import UnknownHashError
+
 
 def random_code(length: int, digits: bool = True, letters: bool = True) -> str:
     pool = ''
@@ -19,11 +23,34 @@ def random_color():
 
 pwd_context = CryptContext(["bcrypt"], deprecated="auto")
 
-def hash(input: str):
-    return pwd_context.hash(input)
+# Initialize the Argon2 hasher
+ph = PasswordHasher()
 
-def nonce_hash(input: str, salt: str):
-    return sha256_crypt.using(salt=salt).hash(input)
+def hash_password(password: str) -> str:
+    return ph.hash(password)
 
-def verify(input: str, target: str):
-    return pwd_context.verify(input, target)
+def hash_fast(data: str, salt: str) -> str:
+    """
+    Use this for fast hashing of tokens, keys, or data integrity.
+    Uses keyed BLAKE2b (effectively a fast MAC).
+    """
+    return hashlib.blake2b(data.encode(), salt=salt.encode()).hexdigest()
+
+def verify(password: str, target: str):
+    """
+    Takes a password as input and verifies it against the target hash.
+    Args:
+        password: the password to verify
+        target: the hash to verify against
+
+    Returns:
+        :bool: True if the password matches the hash, False otherwise
+    """
+    try:
+        result = pwd_context.verify(password, target)
+        return result
+    except UnknownHashError:
+        try:
+            return ph.verify(target, password)
+        except VerifyMismatchError:
+            return False

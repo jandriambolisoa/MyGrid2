@@ -53,8 +53,8 @@ async def verify_google_token(token: str, language: str = "en"):
     except jwt.JWTError:
         raise GoogleSSOLoginFailedError(language=language)
 
-async def google_automatic_password(sub):
-    return app_settings.secret_key[:32] + sub
+async def google_automatic_password(sub: int):
+    return app_settings.secret_key[:32] + str(sub)
 
 async def get_google_id_from_email(email: str):
     user_id = get_user_id_from_email(email)

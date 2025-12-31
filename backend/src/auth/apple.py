@@ -10,7 +10,7 @@ from backend.src.auth.constants import APPLE_TOKEN_ISSUER, APPLE_TOKEN_VALIDATIO
 from backend.src.auth import exceptions as auth_exceptions
 from backend.src.auth.exceptions import AppleSSOLoginFailedError
 from backend.src.auth.schemas import AppleIdTokenData, AppleTokenData
-from backend.utils import nonce_hash
+from backend.utils import hash_fast
 
 
 async def create_apple_client_secret(expires_delta: timedelta = timedelta(minutes=app_settings.token_expires_minutes)):
@@ -104,7 +104,7 @@ async def verify_apple_id_token(id_token: str, nonce: str, language: str = "en")
     key = next(k for k in json_response["keys"] if k['kid'] == kid) or None
 
     # Check if the nonce is correct
-    if not token_claims["nonce"] == nonce_hash(nonce, app_settings.apple_dev_nonce_secret):
+    if not token_claims["nonce"] == hash_fast(nonce, app_settings.apple_dev_nonce_secret):
         raise AppleSSOLoginFailedError(language=language)
 
     try:
