@@ -14,7 +14,7 @@ class RefreshToken(BaseModel):
 
 class LoginResponse(BaseModel):
     access_token: AccessToken
-    refresh_token: RefreshToken
+    refresh_token: Optional[RefreshToken] = None
     user: UserSelf
 
 class AccessTokenData(BaseModel):

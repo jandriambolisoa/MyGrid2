@@ -7,4 +7,4 @@ async def get_user_id_from_email(email: str) -> int:
         SELECT id FROM users
         WHERE email = %s""", (email,))
     user_id = db.cursor.fetchone()
-    return user_id if user_id else None
+    return user_id["id"] if user_id else None

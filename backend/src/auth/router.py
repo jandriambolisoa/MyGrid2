@@ -14,7 +14,7 @@ from backend.obligations import create_obligation
 
 from backend.db.database import get_db, Database
 from backend.config import settings as app_settings
-from backend.utils import hash, verify, random_code
+from backend.utils import hash_password, verify, random_code
 from backend.oauth2 import create_jwt_token, get_current_token, get_current_user, verify_refresh_token, \
     verify_access_token
 from backend.src.auth import exceptions as auth_exceptions
@@ -48,7 +48,7 @@ async def signup_user(user: UserCreate, referral_code: str = None, language: str
         await valid_password(user.password, language=language)
         await valid_email(user.email, language=language)
 
-        user.password = hash(user.password)
+        user.password = hash_password(user.password)
 
         # Create a unique code for referral purpose
         unique_referral_code = await create_unique_referral_code()
@@ -100,7 +100,7 @@ async def login_email(request: Request, language: str = "en", db: Database = Dep
         #TODO Increment the loginattempt table
         raise auth_exceptions.WrongCredentialsError(language=language)
     else:
-        await purge_user_login_attempts(user["id"])
+        await purge_user_login_attempts(user["id"], request.client.host)
 
     # Block banned users
     if await is_user_banned(user["id"]):
@@ -164,7 +164,7 @@ async def login_refresh_token(request: Request, tokens: LoginRefreshTokenPost, l
         raise user_exceptions.FailedAuthorizationError(language=language)
 
     # Block banned users
-    if is_user_banned(user["id"]):
+    if await is_user_banned(user["id"]):
         raise user_exceptions.BannedUserException(user_id=user["id"], language=language)
 
     # Revoke current token
@@ -175,13 +175,13 @@ async def login_refresh_token(request: Request, tokens: LoginRefreshTokenPost, l
         """, (tokens.access_token.access_token,))
     db.conn.commit()
 
-    access_token = create_jwt_token({
+    access_token = await create_jwt_token({
         "username": user["username"],
         "language": language
     })
 
     return {
-        "token": {
+        "access_token": {
             "access_token": access_token,
             "token_type": "bearer"
         },
@@ -189,7 +189,7 @@ async def login_refresh_token(request: Request, tokens: LoginRefreshTokenPost, l
     }
 
 
-@router.post("/login-google", response_model=LoginResponse)
+@router.post("/login-google", response_model=LoginResponse, status_code= status.HTTP_202_ACCEPTED)
 async def login_google(credential: str, referral_code: str = None, language: str = "en", db: Database = Depends(get_db)):
     datas = await verify_google_token(credential, language=language)
 
@@ -208,6 +208,11 @@ async def login_google(credential: str, referral_code: str = None, language: str
     # 'hd' claim is not absent if this is a Google Workspace email
     if not is_google_email:
         is_google_email = datas.hd is not None
+
+    # Block banned users
+    if user_id:
+        if await is_user_banned(user_id):
+            raise user_exceptions.BannedUserException(user_id=user_id, language=language)
 
     # Manage a registered user that doesn't have a google id associated yet
     if user_id and not has_google_id:
@@ -292,18 +297,18 @@ async def login_google(credential: str, referral_code: str = None, language: str
     # Else, create a temporary password that will be used
     # to request new credentials while assuring the user identity.
     if is_google_email:
-        password = hash(await google_automatic_password(datas.sub))
+        password = hash_password(await google_automatic_password(datas.sub))
     else:
         password = random_code(64)
 
     # Create a unique code for referral purpose
-    unique_referral_code = create_unique_referral_code()
+    unique_referral_code = await create_unique_referral_code()
 
     try:
         db.cursor.execute("""
             INSERT INTO users (username, email, password, language, referralcode, verified)
             VALUES (%s, %s, %s, %s, %s, true)
-            RETURNING *""", (generate_safe_username(), datas.email, password, language, unique_referral_code))
+            RETURNING *""", (await generate_safe_username(), datas.email, password, language, unique_referral_code))
         new_user = db.cursor.fetchone()
         db.conn.commit()
 
@@ -335,7 +340,7 @@ async def login_google(credential: str, referral_code: str = None, language: str
     return Response(status_code= status.HTTP_202_ACCEPTED)
 
 
-@router.post("/login-apple", response_model=LoginResponse)
+@router.post("/login-apple", response_model=LoginResponse, status_code= status.HTTP_202_ACCEPTED)
 async def login_apple(credential: str, nonce: str, referral_code: str = None, language: str = "en", db: Database = Depends(get_db)):
     datas = await validate_apple_token(authorization_code= credential, language=language)
 
@@ -352,6 +357,11 @@ async def login_apple(credential: str, nonce: str, referral_code: str = None, la
     else:
         user_id = None
         email = "apple@nomail.com"
+
+    # Block banned users
+    if user_id:
+        if await is_user_banned(user_id):
+            raise user_exceptions.BannedUserException(user_id=user_id, language=language)
 
     # Check if a user is already assigned to this apple_id
     has_apple_id = await get_user_id_from_apple_id(id_token_datas.sub) is not None
@@ -439,13 +449,13 @@ async def login_apple(credential: str, nonce: str, referral_code: str = None, la
     password = random_code(64)
 
     # Create a unique code for referral purpose
-    unique_referral_code = create_unique_referral_code()
+    unique_referral_code = await create_unique_referral_code()
 
     try:
         db.cursor.execute("""
             INSERT INTO users (username, email, password, language, referralcode, verified)
             VALUES (%s, %s, %s, %s, %s, true)
-            RETURNING *""", (generate_safe_username(), email, password, language, unique_referral_code))
+            RETURNING *""", (await generate_safe_username(), email, password, language, unique_referral_code))
         new_user = db.cursor.fetchone()
         db.conn.commit()
 
@@ -478,12 +488,10 @@ async def login_apple(credential: str, nonce: str, referral_code: str = None, la
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
 async def logout(db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user), current_token: AccessToken = Depends(get_current_token)):
     db.cursor.execute("""
-        SELECT *
-        FROM refreshtokens
-        WHERE user_id = %s;
         DELETE
         FROM refreshtokens
-        WHERE user_id = %s;""", (current_user.id, current_user.id))
+        WHERE user_id = %s
+        RETURNING *""", (current_user.id,))
     refresh_tokens = db.cursor.fetchall()
     db.conn.commit()
 
@@ -505,7 +513,7 @@ async def logout(db: Database = Depends(get_db), current_user: UserSelf = Depend
 async def confirm_email(token: AccessToken, db: Database = Depends(get_db)):
     # A very exceptional occasion where the token is read
     # without validation to extract the user language
-    token_payload = jwt.decode(token, options={"verify_signature": False})
+    token_payload = jwt.decode(token.access_token, app_settings.secret_key, app_settings.algorithm, options={"verify_signature": False})
     language = token_payload.get("language", "en")
 
     datas = await verify_access_token(token.access_token, language=language, verify_exp=False)
@@ -516,7 +524,7 @@ async def confirm_email(token: AccessToken, db: Database = Depends(get_db)):
             SET verified = true
             WHERE username = %s AND email = %s
             RETURNING *
-            """, (datas["username"], datas["email"]))
+            """, (datas.username, datas.email))
         db.conn.commit()
 
         user = db.cursor.fetchone()

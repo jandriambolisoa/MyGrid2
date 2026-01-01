@@ -30,7 +30,7 @@ async def get_login_cooldown_seconds(address) -> int:
 
     return -1
 
-async def purge_user_login_attempts(user_id: int) -> None:
+async def purge_user_login_attempts(user_id: int, address) -> None:
     db = get_db()
     db.cursor.execute("""\
         DELETE FROM loginattempts

@@ -1,7 +1,14 @@
+import random
+from unittest.mock import AsyncMock, patch, MagicMock
+
 import pytest
 from starlette import status
+from starlette.responses import RedirectResponse
 
+from backend.db.database import get_db
+from backend.src.auth.schemas import LoginResponse, AppleTokenData, AppleIdTokenData
 from backend.src.users.schemas import UserSelf
+from tests.test_backend.datas.users import predictable_password, create_random_user
 
 
 @pytest.mark.parametrize("username, email, password, status_code", [
@@ -22,9 +29,9 @@ from backend.src.users.schemas import UserSelf
     ("BADPW-10", "password10@example.com", "20242000", status.HTTP_406_NOT_ACCEPTABLE),
     ("BADPW-11", "password11@example.com", "$$**/&#€-_", status.HTTP_406_NOT_ACCEPTABLE),
 ])
-def test_signup_user(username: str, email: str, password: str, status_code, unauthorized_user):
+def test_signup_user(username: str, email: str, password: str, status_code, client):
     # Create the user
-    res = unauthorized_user.client.post("/auth/signup", json={
+    res = client.post("/auth/signup", json={
         "username": username,
         "email": email,
         "password": password
@@ -37,10 +44,107 @@ def test_signup_user(username: str, email: str, password: str, status_code, unau
         assert current_user.email == email
 
         # Try to recreate the same user
-        res = unauthorized_user.client.post("/auth/signup/", json={
+        res = client.post("/auth/signup/", json={
             "username": username,
             "email": email,
             "password": password
         })
         assert res.status_code == status.HTTP_406_NOT_ACCEPTABLE
 
+def mocking_login_email(user_obj):
+    password = predictable_password(user_obj.user.username)
+    # Try login with email and username
+    res = user_obj.client.post("/auth/login-email", data={
+        "username": user_obj.user.username,
+        "password": password
+    })
+
+    yield res.status_code
+
+    res = user_obj.client.post("/auth/login-email", data={
+        "username": user_obj.user.email,
+        "password": password
+    })
+
+    yield res.status_code
+
+def test_login_email(unauthorized_user, authorized_user, moderator_user, banned_user):
+    assert tuple(mocking_login_email(unauthorized_user)) == (status.HTTP_200_OK, status.HTTP_200_OK)
+    assert tuple(mocking_login_email(authorized_user)) == (status.HTTP_200_OK, status.HTTP_200_OK)
+    assert tuple(mocking_login_email(moderator_user)) == (status.HTTP_200_OK, status.HTTP_200_OK)
+    assert tuple(mocking_login_email(banned_user)) == (status.HTTP_401_UNAUTHORIZED, status.HTTP_401_UNAUTHORIZED)
+
+def mocking_login_refresh_token(user_obj, status_code):
+    password = predictable_password(user_obj.user.username)
+    res = user_obj.client.post("/auth/login-email", data={
+        "username": user_obj.user.username,
+        "password": password
+    })
+
+    yield res.status_code
+
+    if res.status_code == status.HTTP_200_OK:
+        tokens = LoginResponse(**res.json())
+        tokens = {
+            "access_token": {
+                "access_token": tokens.access_token.access_token,
+                "token_type": "bearer"
+            },
+            "refresh_token": {
+                "refresh_token": tokens.refresh_token.refresh_token,
+                "token_type": "bearer"
+            }
+        }
+
+        res = user_obj.client.post("/auth/login-refresh-token", json=tokens)
+
+        yield res.status_code
+        print(res.json())
+
+    else:
+        yield res.status_code
+
+def test_login_refresh_token(unauthorized_user, authorized_user, moderator_user, banned_user):
+    assert tuple(mocking_login_refresh_token(unauthorized_user, status.HTTP_200_OK)) == (status.HTTP_200_OK, status.HTTP_200_OK)
+    assert tuple(mocking_login_refresh_token(authorized_user, status.HTTP_200_OK)) == (status.HTTP_200_OK, status.HTTP_200_OK)
+    assert tuple(mocking_login_refresh_token(moderator_user, status.HTTP_200_OK)) == (status.HTTP_200_OK, status.HTTP_200_OK)
+    assert tuple(mocking_login_refresh_token(banned_user, status.HTTP_401_UNAUTHORIZED)) == (status.HTTP_401_UNAUTHORIZED, status.HTTP_401_UNAUTHORIZED)
+
+
+def test_logout(test_npc_users, test_appstatus):
+    user_obj = random.choice(test_npc_users)
+    token = user_obj.client.headers["Authorization"].split(" ")[1]
+
+    res = user_obj.client.post("/auth/logout")
+
+    assert res.status_code == status.HTTP_204_NO_CONTENT
+
+    db = get_db()
+    db.cursor.execute("""\
+        SELECT *
+        FROM revokedtokens
+        WHERE token = %s""", (token,))
+    assert db.cursor.fetchone()
+
+
+def test_confirm_email(client):
+    mock_unauthorized_user = create_random_user(client, authorized=False, moderator=False, banned=False)
+
+    mock_token = MagicMock()
+    mock_token.user_id = mock_unauthorized_user.user.id
+    mock_token.username = mock_unauthorized_user.user.username
+    mock_token.email = mock_unauthorized_user.user.email
+    mock_token.language = mock_unauthorized_user.user.language
+
+    mock_payload = {"language": "en"}
+
+    with patch("backend.src.auth.router.verify_access_token", return_value=mock_token), \
+            patch("backend.src.auth.router.jwt.decode", return_value=mock_payload):
+
+        res = mock_unauthorized_user.client.post("/auth/confirm-email", json=
+            {
+                "access_token": "mock.token.jwt",
+                "token_type": "bearer"
+            }, follow_redirects=False
+        )
+        assert res.status_code == status.HTTP_307_TEMPORARY_REDIRECT
