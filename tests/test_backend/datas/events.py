@@ -35,7 +35,7 @@ def create_session(name: str, event_id: int, competitive: bool, upcoming: bool =
 
     db = get_db()
     db.cursor.execute("""
-        INSERT INTO events (name, datetime, event_id, competitive)
+        INSERT INTO sessions (name, datetime, event_id, competitive)
         VALUES (%s, %s, %s, %s)
         RETURNING *
         """, (name, random_datetime, event_id, competitive))
