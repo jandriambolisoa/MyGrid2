@@ -74,7 +74,7 @@ def test_login_email(unauthorized_user, authorized_user, moderator_user, banned_
     assert tuple(mocking_login_email(moderator_user)) == (status.HTTP_200_OK, status.HTTP_200_OK)
     assert tuple(mocking_login_email(banned_user)) == (status.HTTP_401_UNAUTHORIZED, status.HTTP_401_UNAUTHORIZED)
 
-def mocking_login_refresh_token(user_obj, status_code):
+def mocking_login_refresh_token(user_obj):
     password = predictable_password(user_obj.user.username)
     res = user_obj.client.post("/auth/login-email", data={
         "username": user_obj.user.username,
@@ -97,18 +97,16 @@ def mocking_login_refresh_token(user_obj, status_code):
         }
 
         res = user_obj.client.post("/auth/login-refresh-token", json=tokens)
-
         yield res.status_code
-        print(res.json())
 
     else:
         yield res.status_code
 
 def test_login_refresh_token(unauthorized_user, authorized_user, moderator_user, banned_user):
-    assert tuple(mocking_login_refresh_token(unauthorized_user, status.HTTP_200_OK)) == (status.HTTP_200_OK, status.HTTP_200_OK)
-    assert tuple(mocking_login_refresh_token(authorized_user, status.HTTP_200_OK)) == (status.HTTP_200_OK, status.HTTP_200_OK)
-    assert tuple(mocking_login_refresh_token(moderator_user, status.HTTP_200_OK)) == (status.HTTP_200_OK, status.HTTP_200_OK)
-    assert tuple(mocking_login_refresh_token(banned_user, status.HTTP_401_UNAUTHORIZED)) == (status.HTTP_401_UNAUTHORIZED, status.HTTP_401_UNAUTHORIZED)
+    assert tuple(mocking_login_refresh_token(unauthorized_user)) == (status.HTTP_200_OK, status.HTTP_200_OK)
+    assert tuple(mocking_login_refresh_token(authorized_user)) == (status.HTTP_200_OK, status.HTTP_200_OK)
+    assert tuple(mocking_login_refresh_token(moderator_user)) == (status.HTTP_200_OK, status.HTTP_200_OK)
+    assert tuple(mocking_login_refresh_token(banned_user)) == (status.HTTP_401_UNAUTHORIZED, status.HTTP_401_UNAUTHORIZED)
 
 
 def test_logout(test_npc_users, test_appstatus):

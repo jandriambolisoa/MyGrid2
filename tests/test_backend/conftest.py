@@ -14,7 +14,7 @@ from tests.test_backend.datas import drivers as drivers_utils, appstatus as apps
 def client():
     yield TestClient(app)
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="session", autouse=True)
 def test_appstatus():
     appstatus_utils.create_appstatus(maintenance= False)
 
@@ -110,7 +110,7 @@ def test_registrations(test_teams, test_drivers, test_upcoming_events, test_pass
                 prediction = next(predictions)
                 db.cursor.execute("""\
                     INSERT INTO sessionsregistrations (session_id, driver_id, team_id, prediction)
-                    VALUES (%s, %s, %s, %s)""", (session.id, driver_id, team_id, prediction))
+                    VALUES (%s, %s, %s, %s)""", (session["id"], driver_id, team_id, prediction))
 
             db.conn.commit()
 

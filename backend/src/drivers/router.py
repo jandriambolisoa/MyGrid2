@@ -249,7 +249,7 @@ async def delete_driver(id: int, language: str = "en", db: Database = Depends(ge
         raise DriverNotFoundError(language=language)
 
     db.conn.commit()
-    drivers_signals.delete_driver.send(driver=to_delete)
+    await drivers_signals.delete_driver.send(driver=to_delete)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 

@@ -9,7 +9,7 @@ from backend.oauth2 import create_jwt_token
 from backend.src.users.schemas import User, UserSelf
 from backend.utils import random_code
 
-class TestUser(BaseModel):
+class MockUser(BaseModel):
     user: UserSelf
     client: TestClient
 
@@ -85,4 +85,4 @@ def create_random_user(client: TestClient, authorized: bool = False, moderator: 
         "Authorization": f"Bearer {access_token}"
     }
 
-    return TestUser(user=new_user, client=new_client)
+    return MockUser(user=new_user, client=new_client)
