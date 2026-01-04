@@ -1,10 +1,13 @@
+from datetime import datetime, UTC
+
 from fastapi.params import Depends
 
 from backend.db.database import get_db
 from backend.src.drivers.constants import CODENAME_LENGTH
 from backend.src.drivers.exceptions import NotAValidCodenameLengthError, NotAValidColorError, DriverNotFoundError, \
     DriverDoesNotExistsError
-from backend.src.events.exceptions import ChampionshipDoesNotExistsError, SessionStartedError, SessionDoesNotExistsError
+from backend.src.events.exceptions import ChampionshipDoesNotExistsError, SessionStartedError, \
+    SessionDoesNotExistsError, InvalidDatetimeForSessionCreationError
 
 
 async def valid_championship_id(id: int, language: str = "en") -> int:
@@ -55,3 +58,8 @@ async def valid_session_id_not_started(id: Depends(valid_session_id), language: 
     if not valid_session:
         raise SessionStartedError(language=language)
 
+async def valid_session_creation_datetime(datetime: datetime, language: str = "en"):
+    if datetime < datetime.now(UTC):
+        raise InvalidDatetimeForSessionCreationError(language=language)
+
+    return datetime

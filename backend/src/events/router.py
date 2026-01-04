@@ -8,7 +8,8 @@ from backend.exceptions import ForbiddenAccessException
 from backend.oauth2 import get_current_user
 from backend import exceptions as app_exceptions
 from backend.constants import QUERY_LIMIT
-from backend.src.events.dependencies import valid_championship_id, valid_session_id, valid_event_id
+from backend.src.events.dependencies import valid_championship_id, valid_session_id, valid_event_id, \
+    valid_session_creation_datetime
 from backend.src.events.exceptions import ChampionshipAlreadyExistsError, EventAlreadyExistsError, \
     SessionAlreadyExistsError, EventNotFoundError, ChampionshipNotFoundError, SessionNotFoundError
 from backend.src.events.schemas import Championship, ChampionshipCreate, Event, EventCreate, Session, SessionCreate, \
@@ -81,13 +82,14 @@ async def create_session(to_create: SessionCreate, language: str = "en", db: Dat
     if not await is_user_moderator_or_admin(current_user.id):
         raise ForbiddenAccessException(language=language)
 
+    datetime = await valid_session_creation_datetime(to_create.datetime, language=language)
     translations = await valid_translations(to_create.name, language=language)
 
     try:
         db.cursor.execute("""
             INSERT INTO sessions (name, datetime, event_id, competitive)
             VALUES (%s, %s, %s, %s)
-            RETURNING *""", (to_create.name["en"].title(), to_create.datetime, to_create.event_id, to_create.competitive))
+            RETURNING *""", (to_create.name["en"].title(), datetime, to_create.event_id, to_create.competitive))
         created = db.cursor.fetchone()
 
         for lang in translations:
@@ -164,7 +166,7 @@ async def search_event(db:Database = Depends(get_db),
     return list(search_results.values())
 
 
-@router.put("/championship/{id}", response_model=Championship)
+@router.put("/championships/{id}", response_model=Championship)
 async def update_championship(datas: ChampionshipUpdate, id: int = Depends(valid_championship_id), language: str = "en", db:Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     if not await is_user_moderator_or_admin(current_user.id):
         raise ForbiddenAccessException(language=language)
@@ -208,10 +210,12 @@ async def update_session(datas: SessionUpdate, id: int = Depends(valid_session_i
     orig = db.cursor.fetchone()
 
     # Get default values
+    translations = None
     if not datas.name:
-        datas.name = orig["name"]
+        datas.name["en"] = orig["name"]
     else:
-        datas.name = orig["name"] | datas.name
+        translations = await valid_translations(datas.name, language=language)
+        datas.name["en"] =  datas.name.get("en", orig["name"])
     if not datas.datetime:
         datas.datetime = orig["datetime"]
 
@@ -221,8 +225,15 @@ async def update_session(datas: SessionUpdate, id: int = Depends(valid_session_i
             SET name = %s, datetime = %s
             WHERE id = %s
             RETURNING *
-            """, (datas.name, datas.datetime, id))
+            """, (datas.name["en"], datas.datetime, id))
         updated = db.cursor.fetchone()
+
+        for lang in translations:
+            db.cursor.execute("""
+                UPDATE sessionstranslations
+                SET name = %s
+                WHERE session_id = %s AND language = %s""", (translations[lang].title(), id, lang))
+
         db.conn.commit()
 
     except UniqueViolation:
@@ -244,10 +255,12 @@ async def update_event(datas: EventUpdate, id: int = Depends(valid_event_id), la
     orig = db.cursor.fetchone()
 
     # Get default values
+    translations = None
     if not datas.name:
-        datas.name = orig["name"]
+        datas.name["en"] = orig["name"]
     else:
-        datas.name = orig["name"] | datas.name
+        translations = await valid_translations(datas.name, language=language)
+        datas.name["en"] = datas.name.get("en", orig["name"])
     if not datas.color:
         datas.color = orig["color"]
 
@@ -257,8 +270,15 @@ async def update_event(datas: EventUpdate, id: int = Depends(valid_event_id), la
             SET name = %s, color = %s
             WHERE id = %s
             RETURNING *
-            """, (datas.name, datas.color, id))
+            """, (datas.name["en"], datas.color, id))
         updated = db.cursor.fetchone()
+
+        for lang in translations:
+            db.cursor.execute("""
+                UPDATE eventstranslations
+                SET name = %s
+                WHERE event_id = %s AND language = %s""", (translations[lang].title(), id, lang))
+
         db.conn.commit()
 
     except UniqueViolation:

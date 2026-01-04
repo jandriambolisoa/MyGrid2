@@ -32,6 +32,13 @@ invalid_datetime_string_message = defaultdict(
     }
 )
 
+invalid_datetime_for_session_creation_message = defaultdict(
+    lambda: "The datetime can not be in the past.",
+    {
+        "fr": "Le datetime ne doit pas être passé.",
+    }
+)
+
 championship_not_found_message = defaultdict(
     lambda: "No championship found.",
     {
