@@ -5,7 +5,7 @@ from backend.db.database import get_db
 from backend.src.events.schemas import Championship, Event, Session
 from backend.utils import random_color
 
-def create_championship(name: str):
+def create_championship(name: str) -> Championship:
     db = get_db()
     db.cursor.execute("""
         INSERT INTO championships (name)

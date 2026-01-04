@@ -4,19 +4,19 @@ from jinja2 import Environment
 from backend.src.events.texts import *
 
 class ChampionshipAlreadyExistsError(HTTPException):
-    status_code = status.HTTP_406_NOT_ACCEPTABLE
+    status_code = status.HTTP_409_CONFLICT
     def __init__(self, language: str = "en", **kwargs):
         super().__init__(self.status_code, **kwargs)
         self.detail = championship_already_exists_message[language]
 
 class EventAlreadyExistsError(HTTPException):
-    status_code = status.HTTP_406_NOT_ACCEPTABLE
+    status_code = status.HTTP_409_CONFLICT
     def __init__(self, language: str = "en", **kwargs):
         super().__init__(self.status_code, **kwargs)
         self.detail = event_already_exists_message[language]
 
 class SessionAlreadyExistsError(HTTPException):
-    status_code = status.HTTP_406_NOT_ACCEPTABLE
+    status_code = status.HTTP_409_CONFLICT
     def __init__(self, language: str = "en", **kwargs):
         super().__init__(self.status_code, **kwargs)
         self.detail = session_already_exists_message[language]
@@ -26,6 +26,12 @@ class InvalidDatetimeStringError(HTTPException):
     def __init__(self, language: str = "en", **kwargs):
         super().__init__(self.status_code, **kwargs)
         self.detail = invalid_datetime_string_message[language]
+
+class InvalidDatetimeForSessionCreationError(HTTPException):
+    status_code = status.HTTP_406_NOT_ACCEPTABLE
+    def __init__(self, language: str = "en", **kwargs):
+        super().__init__(self.status_code, **kwargs)
+        self.detail = invalid_datetime_for_session_creation_message[language]
 
 class ChampionshipDoesNotExistsError(HTTPException):
     status_code = status.HTTP_404_NOT_FOUND
@@ -55,19 +61,19 @@ class SessionDoesNotExistsError(HTTPException):
         self.detail = jinja_template.render(session_id=session_id)
 
 class ChampionshipNotFoundError(HTTPException):
-    status_code = status.HTTP_406_NOT_ACCEPTABLE
+    status_code = status.HTTP_404_NOT_FOUND
     def __init__(self, language: str = "en", **kwargs):
         super().__init__(self.status_code, **kwargs)
         self.detail = championship_not_found_message[language]
 
 class EventNotFoundError(HTTPException):
-    status_code = status.HTTP_406_NOT_ACCEPTABLE
+    status_code = status.HTTP_404_NOT_FOUND
     def __init__(self, language: str = "en", **kwargs):
         super().__init__(self.status_code, **kwargs)
         self.detail = event_not_found_message[language]
 
 class SessionNotFoundError(HTTPException):
-    status_code = status.HTTP_406_NOT_ACCEPTABLE
+    status_code = status.HTTP_404_NOT_FOUND
     def __init__(self, language: str = "en", **kwargs):
         super().__init__(self.status_code, **kwargs)
         self.detail = session_not_found_message[language]
