@@ -8,7 +8,7 @@ CREATE TABLE public.sessionspredictions
     potential integer NOT NULL,
     created timestamp with time zone NOT NULL DEFAULT now(),
     PRIMARY KEY (session_id, user_id, driver_id),
-    UNIQUE (session_id, mygrid),
+    UNIQUE (session_id, user_id, mygrid),
     CONSTRAINT sessionspredictions_sessions_fkey FOREIGN KEY (session_id)
         REFERENCES public.sessions (id) MATCH SIMPLE
         ON UPDATE CASCADE

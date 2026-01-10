@@ -34,16 +34,16 @@ async def valid_event_id(id: int, language: str = "en") -> int:
     return id
 
 
-async def valid_session_id(id: int, language: str = "en") -> int:
+async def valid_session_id(session_id: int, language: str = "en") -> int:
     db = get_db()
     db.cursor.execute("""
         SELECT id FROM sessions
-        WHERE id = %s""", (id,))
+        WHERE id = %s""", (session_id,))
     session = db.cursor.fetchone()
     if not session:
-        raise SessionDoesNotExistsError(language=language, session_id=id)
+        raise SessionDoesNotExistsError(language=language, session_id=session_id)
 
-    return id
+    return session_id
 
 async def valid_session_id_not_started(id: Depends(valid_session_id), language: str = "en"):
     db = get_db()
@@ -51,12 +51,14 @@ async def valid_session_id_not_started(id: Depends(valid_session_id), language: 
         SELECT sessions.datetime
         FROM sessions
         WHERE sessions.id = %s
-        AND datetime > NOW()
+        AND sessions.datetime > NOW()
     """, (id,))
     valid_session = db.cursor.fetchone()
 
     if not valid_session:
         raise SessionStartedError(language=language)
+
+    return id
 
 async def valid_session_creation_datetime(datetime: datetime, language: str = "en"):
     if datetime < datetime.now(UTC):

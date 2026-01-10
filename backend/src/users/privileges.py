@@ -28,7 +28,7 @@ async def is_user_verified(user_id: int) -> bool:
     db.cursor.execute("""\
         SELECT verified
         FROM users
-        WHERE user_id = %s""", (user_id,))
+        WHERE id = %s""", (user_id,))
     user = db.cursor.fetchone()
 
     if not user:

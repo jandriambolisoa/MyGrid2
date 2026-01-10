@@ -1,18 +1,20 @@
-from typing import Union
+from typing import Union, Any
 
 from fastapi import APIRouter, Depends, status
 from psycopg.errors import UniqueViolation, ForeignKeyViolation
+from starlette.responses import Response
 
 from backend.db.database import Database, get_db
 from backend import exceptions as app_exceptions
 from backend.oauth2 import get_current_user
 from backend.src import predictions
+from backend.src.auth.exceptions import UnverifiedUserError
 from backend.src.events.dependencies import valid_session_id, valid_session_id_not_started
 from backend.src.predictions.exceptions import DriverNotRegisteredForSessionError
 from backend.src.scores.algorithms import compute_score
 from backend.src.scores.router import get_score_parameters_of_a_championship
 from backend.src.users.dependencies import valid_user_id
-from backend.src.users.privileges import is_user_moderator_or_admin
+from backend.src.users.privileges import is_user_moderator_or_admin, is_user_verified
 from backend.src.users.schemas import UserSelf
 from backend.src.scores import algorithms
 from backend.src.predictions.schemas import PredictionSession, PredictionScoreSession, PredictionSessionPost
@@ -39,7 +41,7 @@ async def get_user_prediction(session_id: int = Depends(valid_session_id), user_
 
     # Are session results out ?
     db.cursor.execute("""
-        SELECT session_id FROM sessionresults
+        SELECT session_id FROM sessionsresults
         WHERE session_id = %s""", (session_id,))
     session_results = db.cursor.fetchone()
 
@@ -56,11 +58,12 @@ async def get_user_prediction(session_id: int = Depends(valid_session_id), user_
                 FROM sessionstranslations
                 WHERE language = %s
             )
-            SELECT drivers.firstname AS driver_firstname,
+            SELECT  drivers.id  AS driver_id, 
+            drivers.firstname AS driver_firstname,
             drivers.lastname AS driver_lastname,
             drivers.codename AS driver_codename,
             sessionspredictions.mygrid AS mygrid,
-            sessionspredictions.potential AS potential
+            sessionspredictions.potential AS potential,
             COALESCE(events_translations.name||' '||sessions_translations.name, events.name||' '||sessions.name) AS session_name
             FROM sessionspredictions
             LEFT JOIN drivers ON drivers.id = sessionspredictions.driver_id
@@ -69,7 +72,7 @@ async def get_user_prediction(session_id: int = Depends(valid_session_id), user_
             LEFT JOIN events ON events.id = sessions.event_id
             LEFT JOIN events_translations ON events_translations.event_id = sessions.event_id
             WHERE sessionspredictions.session_id = %s AND sessionspredictions.user_id = %s
-            ORDER BY sessionspredictions.mygrid DESC;""", (language, language, session_id, user_id))
+            ORDER BY sessionspredictions.mygrid ASC;""", (language, language, session_id, user_id))
         results = db.cursor.fetchall()
     else:
 
@@ -84,7 +87,8 @@ async def get_user_prediction(session_id: int = Depends(valid_session_id), user_
                 FROM sessionstranslations
                 WHERE language = %s
             )
-            SELECT drivers.firstname AS driver_firstname,
+            SELECT drivers.id AS driver_id, 
+            drivers.firstname AS driver_firstname,
             drivers.lastname AS driver_lastname,
             drivers.codename AS driver_codename,
             sessionspredictions.mygrid AS mygrid,
@@ -103,12 +107,14 @@ async def get_user_prediction(session_id: int = Depends(valid_session_id), user_
             WHERE sessionspredictions.session_id = %s
             AND sessionsresults.session_id = %s
             AND sessionspredictions.user_id = %s
-            ORDER BY sessionspredictions.mygrid DESC;""", (language, language, session_id, session_id, user_id))
+            AND scores.session_id = %s
+            AND scores.user_id = %s
+            ORDER BY sessionspredictions.mygrid ASC;""", (language, language, session_id, session_id, user_id, session_id, user_id))
         results = db.cursor.fetchall()
 
 
     if not results:
-        return status.HTTP_204_NO_CONTENT
+        return Response(status_code=status.HTTP_204_NO_CONTENT)
 
     # Convert result into PredictionSession or PredictionScoreSession schemas
     predictions = list()
@@ -154,6 +160,9 @@ async def get_user_prediction(session_id: int = Depends(valid_session_id), user_
 
 @router.post("/{session_id}", status_code=status.HTTP_201_CREATED)
 async def create_my_grid(session_id: int, session_predictions: PredictionSessionPost, language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+    if not await is_user_verified(current_user.id):
+        raise UnverifiedUserError(language=language)
+
     session_id = await valid_session_id_not_started(session_id, language=language)
 
     # Override already existing predictions
@@ -203,7 +212,10 @@ async def create_my_grid(session_id: int, session_predictions: PredictionSession
 
 @router.delete("/{session_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_my_grid(session_id: int, language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
-    session_id = valid_session_id_not_started(session_id, language=language)
+    if not await is_user_verified(current_user.id):
+        raise UnverifiedUserError(language=language)
+
+    session_id = await valid_session_id_not_started(session_id, language=language)
 
     db.cursor.execute("""
         DELETE FROM sessionspredictions

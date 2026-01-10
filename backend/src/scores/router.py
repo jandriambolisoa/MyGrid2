@@ -25,9 +25,6 @@ router = APIRouter(
 
 @router.get("/parameters/{championship_id}", response_model=ScoresParameters)
 async def get_score_parameters_of_a_championship(championship_id: int = Depends(valid_championship_id), language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
-    if not await is_user_moderator_or_admin(current_user.id):
-        raise app_exceptions.ForbiddenAccessException(language=language)
-
     return await score_parameters_of_a_championship(championship_id, db, language)
 
 
