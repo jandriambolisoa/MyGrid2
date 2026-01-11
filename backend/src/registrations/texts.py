@@ -14,6 +14,13 @@ registration_already_exists_message = defaultdict(
     }
 )
 
+registration_cannot_swap_with_already_registered_driver_message = defaultdict(
+    lambda: "A driver registration cannot be swapped with an already registered driver.",
+    {
+        "fr": "L'enregistrement d'un pilote ne peut pas être échangé avec un pilote déjà sur la grille.",
+    }
+)
+
 invalid_session_registration_attempt_message = defaultdict(
     lambda: "Session registration attempt failed. Existing registrations are deleted. Make sure to use a valid driver_id and team_id.",
     {

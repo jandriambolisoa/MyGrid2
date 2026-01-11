@@ -29,9 +29,9 @@ def create_event(name: str, championship_id: int):
 
 def create_session(name: str, event_id: int, competitive: bool, upcoming: bool = True):
     if upcoming:
-        random_datetime = datetime.now(UTC) + timedelta(minutes=random.choice(range(9, 99)))
+        random_datetime = datetime.now(UTC) + timedelta(hours=random.choice(range(9, 99)))
     else:
-        random_datetime = datetime.now(UTC) - timedelta(minutes=random.choice(range(9, 99)))
+        random_datetime = datetime.now(UTC) - timedelta(hours=random.choice(range(9, 99)))
 
     db = get_db()
     db.cursor.execute("""
@@ -42,3 +42,14 @@ def create_session(name: str, event_id: int, competitive: bool, upcoming: bool =
     new = db.cursor.fetchone()
 
     return Session(**new)
+
+
+def get_competitive_sessions_from_event_id(event_id: int):
+    db = get_db()
+    db.cursor.execute("""
+        SELECT *
+        FROM sessions
+        WHERE event_id = %s AND competitive = true""", (event_id,))
+    results = db.cursor.fetchall()
+
+    return [Session(**res) for res in results]

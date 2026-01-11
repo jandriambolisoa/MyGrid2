@@ -12,7 +12,7 @@ async def compute_session_score(session_id: int, user: UserSelf):
         SELECT users.id AS user_id,
         drivers.id AS driver_id,
         sessionspredictions.mygrid AS mygrid_user,
-        sessionsregistrations.prediction AS myygrid_server,
+        sessionsregistrations.prediction AS mygrid_server,
         sessionsresults.result AS result
         FROM sessionspredictions
         LEFT JOIN users ON users.id = sessionspredictions.user_id
@@ -39,8 +39,7 @@ async def compute_session_score(session_id: int, user: UserSelf):
 
     score_parameters = await score_parameters_of_a_championship(
         championship["id"],
-        db = db,
-        current_user=user
+        db = db
     )
 
     # Delete existing scores

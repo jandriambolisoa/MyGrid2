@@ -166,15 +166,15 @@ async def search_event(db:Database = Depends(get_db),
     return list(search_results.values())
 
 
-@router.put("/championships/{id}", response_model=Championship)
-async def update_championship(datas: ChampionshipUpdate, id: int = Depends(valid_championship_id), language: str = "en", db:Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+@router.put("/championships/{championship_id}", response_model=Championship)
+async def update_championship(datas: ChampionshipUpdate, championship_id: int = Depends(valid_championship_id), language: str = "en", db:Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     if not await is_user_moderator_or_admin(current_user.id):
         raise ForbiddenAccessException(language=language)
 
     # Get orig championship
     db.cursor.execute("""\
         SELECT * FROM championships
-        WHERE id = %s""", (id,))
+        WHERE id = %s""", (championship_id,))
     orig = db.cursor.fetchone()
 
     # Get default values
@@ -187,7 +187,7 @@ async def update_championship(datas: ChampionshipUpdate, id: int = Depends(valid
             SET name = %s
             WHERE id = %s
             RETURNING *
-            """, (datas.name, id))
+            """, (datas.name, championship_id))
         updated = db.cursor.fetchone()
         db.conn.commit()
 
@@ -198,15 +198,15 @@ async def update_championship(datas: ChampionshipUpdate, id: int = Depends(valid
     return updated
 
 
-@router.put("/sessions/{id}", response_model=Championship)
-async def update_session(datas: SessionUpdate, id: int = Depends(valid_session_id), language: str = "en", db:Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+@router.put("/sessions/{session_id}", response_model=Championship)
+async def update_session(datas: SessionUpdate, session_id: int = Depends(valid_session_id), language: str = "en", db:Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     if not await is_user_moderator_or_admin(current_user.id):
         raise ForbiddenAccessException(language=language)
 
     # Get orig event
     db.cursor.execute("""\
         SELECT * FROM sessions
-        WHERE id = %s""", (id,))
+        WHERE id = %s""", (session_id,))
     orig = db.cursor.fetchone()
 
     # Get default values
@@ -225,14 +225,14 @@ async def update_session(datas: SessionUpdate, id: int = Depends(valid_session_i
             SET name = %s, datetime = %s
             WHERE id = %s
             RETURNING *
-            """, (datas.name["en"], datas.datetime, id))
+            """, (datas.name["en"], datas.datetime, session_id))
         updated = db.cursor.fetchone()
 
         for lang in translations:
             db.cursor.execute("""
                 UPDATE sessionstranslations
                 SET name = %s
-                WHERE session_id = %s AND language = %s""", (translations[lang].title(), id, lang))
+                WHERE session_id = %s AND language = %s""", (translations[lang].title(), session_id, lang))
 
         db.conn.commit()
 
@@ -243,15 +243,15 @@ async def update_session(datas: SessionUpdate, id: int = Depends(valid_session_i
     return updated
 
 
-@router.put("/{id}", response_model=Championship)
-async def update_event(datas: EventUpdate, id: int = Depends(valid_event_id), language: str = "en", db:Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+@router.put("/{event_id}", response_model=Championship)
+async def update_event(datas: EventUpdate, event_id: int = Depends(valid_event_id), language: str = "en", db:Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     if not await is_user_moderator_or_admin(current_user.id):
         raise ForbiddenAccessException(language=language)
 
     # Get orig event
     db.cursor.execute("""\
         SELECT * FROM events
-        WHERE id = %s""", (id,))
+        WHERE id = %s""", (event_id,))
     orig = db.cursor.fetchone()
 
     # Get default values
@@ -270,14 +270,14 @@ async def update_event(datas: EventUpdate, id: int = Depends(valid_event_id), la
             SET name = %s, color = %s
             WHERE id = %s
             RETURNING *
-            """, (datas.name["en"], datas.color, id))
+            """, (datas.name["en"], datas.color, event_id))
         updated = db.cursor.fetchone()
 
         for lang in translations:
             db.cursor.execute("""
                 UPDATE eventstranslations
                 SET name = %s
-                WHERE event_id = %s AND language = %s""", (translations[lang].title(), id, lang))
+                WHERE event_id = %s AND language = %s""", (translations[lang].title(), event_id, lang))
 
         db.conn.commit()
 
@@ -288,15 +288,15 @@ async def update_event(datas: EventUpdate, id: int = Depends(valid_event_id), la
     return updated
 
 
-@router.delete("/championships/{id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_championship(id: int = Depends(valid_championship_id), language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+@router.delete("/championships/{championship_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_championship(championship_id: int = Depends(valid_championship_id), language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     if not await is_user_moderator_or_admin(current_user.id):
         raise ForbiddenAccessException(language=language)
 
     db.cursor.execute("""
         DELETE FROM championships
         WHERE id = %s
-        RETURNING *""", (id,))
+        RETURNING *""", (championship_id,))
     to_delete = db.cursor.fetchone()
 
     db.conn.commit()
@@ -304,15 +304,15 @@ async def delete_championship(id: int = Depends(valid_championship_id), language
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
-@router.delete("/sessions/{id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_session(id: int = Depends(valid_session_id), language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+@router.delete("/sessions/{session_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_session(session_id: int = Depends(valid_session_id), language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     if not await is_user_moderator_or_admin(current_user.id):
         raise ForbiddenAccessException(language=language)
 
     db.cursor.execute("""
         DELETE FROM sessions
         WHERE id = %s
-        RETURNING *""", (id,))
+        RETURNING *""", (session_id,))
     to_delete = db.cursor.fetchone()
 
     db.conn.commit()
@@ -320,15 +320,15 @@ async def delete_session(id: int = Depends(valid_session_id), language: str = "e
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
-@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_event(id: int = Depends(valid_event_id), language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+@router.delete("/{event_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_event(event_id: int = Depends(valid_event_id), language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     if not await is_user_moderator_or_admin(current_user.id):
         raise ForbiddenAccessException(language=language)
 
     db.cursor.execute("""
         DELETE FROM events
         WHERE id = %s
-        RETURNING *""", (id,))
+        RETURNING *""", (event_id,))
     to_delete = db.cursor.fetchone()
 
     db.conn.commit()

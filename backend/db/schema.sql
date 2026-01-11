@@ -1,4 +1,4 @@
-\restrict zokdKJbZGCDmcUv6xQvadcjFPiHO0uzVQBQJsXUCpd41lzn79rygnxcqwOKkmow
+\restrict oxliJAPtW600MgzTwlv6eZcydCmd0P7ipDIlyw2a7HJoVZCNJ8bJvY0cLoUxc8G
 
 -- Dumped from database version 18.1
 -- Dumped by pg_dump version 18.1
@@ -915,11 +915,11 @@ ALTER TABLE ONLY public.sessionspredictions
 
 
 --
--- Name: sessionspredictions sessionspredictions_session_id_mygrid_key; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: sessionspredictions sessionspredictions_session_id_user_id_mygrid_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.sessionspredictions
-    ADD CONSTRAINT sessionspredictions_session_id_mygrid_key UNIQUE (session_id, mygrid);
+    ADD CONSTRAINT sessionspredictions_session_id_user_id_mygrid_key UNIQUE (session_id, user_id, mygrid);
 
 
 --
@@ -1230,7 +1230,7 @@ ALTER TABLE ONLY public.userobligations
 -- PostgreSQL database dump complete
 --
 
-\unrestrict zokdKJbZGCDmcUv6xQvadcjFPiHO0uzVQBQJsXUCpd41lzn79rygnxcqwOKkmow
+\unrestrict oxliJAPtW600MgzTwlv6eZcydCmd0P7ipDIlyw2a7HJoVZCNJ8bJvY0cLoUxc8G
 
 
 --

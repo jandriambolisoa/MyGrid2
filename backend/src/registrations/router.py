@@ -4,9 +4,9 @@ from psycopg.errors import UniqueViolation, ForeignKeyViolation
 from backend.db.database import Database, get_db
 from backend import exceptions as app_exceptions
 from backend.oauth2 import get_current_user
-from backend.src.events.dependencies import valid_session_id
+from backend.src.events.dependencies import valid_session_id, valid_session_id_not_started
 from backend.src.registrations.exceptions import NoRegistrationsFoundError, RegistrationAlreadyExistsError, \
-    InvalidSessionRegistrationAttemptError
+    InvalidSessionRegistrationAttemptError, RegistrationCannotSwapWithAlreadyRegisteredDriverError
 from backend.src.registrations.schemas import RegistrationDriver, RegistrationSession, RegistrationPost, \
     RegistrationSwapDrivers, RegistrationSwapTeams
 from backend.src.users.privileges import is_user_moderator_or_admin
@@ -82,7 +82,7 @@ async def get_session_registrations(session_id: int = Depends(valid_session_id),
 
 
 @router.post("/{session_id}", status_code=status.HTTP_201_CREATED)
-async def override_session_registrations(registrations: list[RegistrationPost], session_id: int = Depends(valid_session_id), language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+async def override_session_registrations(registrations: list[RegistrationPost], session_id: int = Depends(valid_session_id_not_started), language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     if not await is_user_moderator_or_admin(current_user.id):
         raise app_exceptions.ForbiddenAccessException(language=language)
 
@@ -110,7 +110,7 @@ async def override_session_registrations(registrations: list[RegistrationPost], 
 @router.put("/{session_id}/swap-drivers", status_code=status.HTTP_200_OK)
 async def swap_a_driver_with_an_unregistered_driver(
         drivers: RegistrationSwapDrivers,
-        session_id: int = Depends(valid_session_id),
+        session_id: int = Depends(valid_session_id_not_started),
         db: Database = Depends(get_db),
         language: str = "en",
         current_user: UserSelf = Depends(get_current_user)):
@@ -130,6 +130,9 @@ async def swap_a_driver_with_an_unregistered_driver(
         raise NoRegistrationsFoundError(language=language)
 
     predictions = {d["driver_id"]: d["prediction"] for d in drivers_list}
+
+    if drivers.new_driver_id in predictions.keys():
+        raise RegistrationCannotSwapWithAlreadyRegisteredDriverError(language=language)
 
     to_remove = None
     for driver in drivers_list:
@@ -171,7 +174,7 @@ async def swap_a_driver_with_an_unregistered_driver(
         UPDATE sessionspredictions
         SET driver_id = %s
         WHERE driver_id = %s
-        AND session_id = %s""", (newpilot.pilot_id, oldpilot_id, id))
+        AND session_id = %s""", (drivers.new_driver_id, drivers.old_driver_id, session_id))
     db.conn.commit()
 
     await registrations_signals.updated_session_registrations.send(session_id=session_id, user=current_user)
@@ -180,7 +183,7 @@ async def swap_a_driver_with_an_unregistered_driver(
 @router.put("/{session_id}/swap-teams", status_code=status.HTTP_200_OK)
 async def swap_teams_between_two_drivers(
         drivers: RegistrationSwapTeams,
-        session_id: int = Depends(valid_session_id),
+        session_id: int = Depends(valid_session_id_not_started),
         db: Database = Depends(get_db),
         language: str = "en",
         current_user: UserSelf = Depends(get_current_user)):
@@ -205,10 +208,13 @@ async def swap_teams_between_two_drivers(
     db.cursor.execute("""
         UPDATE sessionsregistrations
         SET team_id = %s
-        WHERE session_id = %s AND driver_id = %s;
+        WHERE session_id = %s AND driver_id = %s""",(driver_2["team_id"], session_id, drivers.driver_id_1))
+
+    db.cursor.execute("""
         UPDATE sessionsregistrations
         SET team_id = %s
-        WHERE session_id = %s AND driver_id = %s;""",(driver_1["team_id"], session_id, drivers.driver_id_1, driver_2["team_id"], session_id, drivers.driver_id_2))
+        WHERE session_id = %s AND driver_id = %s;""",(driver_1["team_id"], session_id, drivers.driver_id_2))
+
     db.conn.commit()
 
     await registrations_signals.updated_session_registrations.send(session_id=session_id, user=current_user)

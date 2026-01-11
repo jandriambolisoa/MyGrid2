@@ -1,4 +1,5 @@
 import random
+from random import randint
 
 import pytest
 from starlette.testclient import TestClient
@@ -23,7 +24,7 @@ def test_npc_users(client):
     created_users = list()
 
     for i in range(10):
-        user = users_utils.create_random_user(client, authorized= True)
+        user = users_utils.create_random_user(client, verified= True, authorized=True)
         created_users.append(user)
 
     return created_users
@@ -51,7 +52,7 @@ def test_teams(client):
 
 @pytest.fixture(scope="session")
 def test_championship(client):
-    return events_utils.create_championship("F0 2050")
+    return events_utils.create_championship(f"F0 {randint(1, 9999)}")
 
 @pytest.fixture(scope="session")
 def test_upcoming_events(client, test_championship, test_teams, test_drivers):
@@ -90,7 +91,6 @@ def test_registrations(test_teams, test_drivers, test_upcoming_events, test_pass
     db = get_db()
 
     number_of_drivers = len(test_drivers)
-    number_of_teams = len(test_teams)
     events = test_passed_events+test_upcoming_events
 
     for event in events:
@@ -155,7 +155,7 @@ def test_predictions(test_npc_users, test_registrations, test_passed_events, tes
 
     events = test_passed_events + test_upcoming_events
 
-    for user in test_npc_users[:-1]:
+    for user in test_npc_users:
         user_id = user.user.id
 
         for event in events:
@@ -180,7 +180,7 @@ def test_predictions(test_npc_users, test_registrations, test_passed_events, tes
 
                 for registration in registrations:
                     db.cursor.execute("""\
-                        INSERT INTO sessionsresults (session_id, user_id, driver_id, mygrid, potential)
+                        INSERT INTO sessionspredictions (session_id, user_id, driver_id, mygrid, potential)
                         VALUES (%s, %s, %s, %s, %s)""", (session["id"], user_id, registration["driver_id"], next(session_predictions), random.randint(0, 99)))
 
                 db.conn.commit()
@@ -189,7 +189,7 @@ def test_predictions(test_npc_users, test_registrations, test_passed_events, tes
 def test_scores(test_npc_users, test_predictions, test_results, test_passed_events):
     db = get_db()
 
-    for user in test_npc_users[:-1]:
+    for user in test_npc_users:
         user_id = user.user.id
 
         for event in test_passed_events:
@@ -203,9 +203,10 @@ def test_scores(test_npc_users, test_predictions, test_results, test_passed_even
             for session in results:
                 # Get this event registrations
                 db.cursor.execute("""\
-                    SELECT driver_id, potential
+                    SELECT driver_id, MAX(potential) AS potential
                     FROM sessionspredictions
-                    WHERE session_id = %s""", (session["id"],))
+                    WHERE session_id = %s
+                    GROUP BY driver_id""", (session["id"],))
                 registrations = db.cursor.fetchall()
 
                 for registration in registrations:
@@ -224,18 +225,58 @@ def test_scores(test_npc_users, test_predictions, test_results, test_passed_even
             REFRESH MATERIALIZED VIEW ranks_sessions_mv;""")
     db.conn.commit()
 
+@pytest.fixture(scope="session", autouse=True)
+def test_scores_parameters(test_championship):
+    db = get_db()
+    db.cursor.execute("""\
+        INSERT INTO scoresparameters (championship_id, param, value0, value1, value2)
+        VALUES 
+            (%s, 'position', 10, 6, 3),
+            (%s, 'top10', 8, 3, 1),
+            (%s, 'top5', 8, 3, 1),
+            (%s, 'top3', 10, 5, 2),
+            (%s, 'top1', 12, 6, 5),
+            (%s, 'penultimate', 6, 2, 1),
+            (%s, 'last', 10, 5, 2),
+            (%s, 'rarity1', 1, 0, 0),
+            (%s, 'rarity2', 3, 1, 0),
+            (%s, 'rarity3', 6, 2, 0),
+            (%s, 'rarity4', 9, 4, 0),
+            (%s, 'rarity5', 15, 6, 0),
+            (%s, 'rarity6', 25, 10, 0),
+            (%s, 'rarity7', 35, 10, 0),
+            (%s, 'rarity8', 40, 10, 0),
+            (%s, 'rarity9', 45, 10, 0),
+            (%s, 'rarity10', 48, 10, 0),
+            (%s, 'rarity11', 50, 10, 0),
+            (%s, 'rarity12', 52, 10, 0),
+            (%s, 'rarity13', 54, 10, 0),
+            (%s, 'rarity14', 56, 10, 0),
+            (%s, 'rarity15', 58, 10, 0),
+            (%s, 'rarity16', 60, 10, 0),
+            (%s, 'rarity17', 62, 10, 0),
+            (%s, 'rarity18', 64, 10, 0),
+            (%s, 'rarity19', 66, 10, 0),
+            (%s, 'rarity20', 68, 10, 0),
+            (%s, 'rarity21', 70, 10, 0)""", (test_championship.id,) * 28)
+    db.conn.commit()
+
 @pytest.fixture(scope="session")
 def unauthorized_user(client):
     return users_utils.create_random_user(client)
 
 @pytest.fixture(scope="session")
+def unverified_user(client):
+    return users_utils.create_random_user(client, authorized=True)
+
+@pytest.fixture(scope="session")
 def authorized_user(client):
-    return users_utils.create_random_user(client, authorized= True)
+    return users_utils.create_random_user(client, verified=True, authorized=True)
 
 @pytest.fixture(scope="session")
 def moderator_user(client):
-    return users_utils.create_random_user(client, authorized= True, moderator= True)
+    return users_utils.create_random_user(client, verified=True, authorized=True, moderator=True)
 
 @pytest.fixture(scope="session")
 def banned_user(client):
-    return users_utils.create_random_user(client, authorized= True, banned= True)
+    return users_utils.create_random_user(client, verified=True, authorized=True, banned=True)

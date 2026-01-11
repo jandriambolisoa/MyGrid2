@@ -51,6 +51,12 @@ def test_signup_user(username: str, email: str, password: str, status_code, clie
         })
         assert res.status_code == status.HTTP_406_NOT_ACCEPTABLE
 
+        db = get_db()
+        db.cursor.execute("""\
+            DELETE FROM users
+            WHERE username = %s""", (username,))
+        db.conn.commit()
+
 def mocking_login_email(user_obj):
     password = predictable_password(user_obj.user.username)
     # Try login with email and username
@@ -68,8 +74,9 @@ def mocking_login_email(user_obj):
 
     yield res.status_code
 
-def test_login_email(unauthorized_user, authorized_user, moderator_user, banned_user):
+def test_login_email(unauthorized_user, unverified_user, authorized_user, moderator_user, banned_user):
     assert tuple(mocking_login_email(unauthorized_user)) == (status.HTTP_200_OK, status.HTTP_200_OK)
+    assert tuple(mocking_login_email(unverified_user)) == (status.HTTP_200_OK, status.HTTP_200_OK)
     assert tuple(mocking_login_email(authorized_user)) == (status.HTTP_200_OK, status.HTTP_200_OK)
     assert tuple(mocking_login_email(moderator_user)) == (status.HTTP_200_OK, status.HTTP_200_OK)
     assert tuple(mocking_login_email(banned_user)) == (status.HTTP_401_UNAUTHORIZED, status.HTTP_401_UNAUTHORIZED)
@@ -102,8 +109,9 @@ def mocking_login_refresh_token(user_obj):
     else:
         yield res.status_code
 
-def test_login_refresh_token(unauthorized_user, authorized_user, moderator_user, banned_user):
+def test_login_refresh_token(unauthorized_user, unverified_user, authorized_user, moderator_user, banned_user):
     assert tuple(mocking_login_refresh_token(unauthorized_user)) == (status.HTTP_200_OK, status.HTTP_200_OK)
+    assert tuple(mocking_login_refresh_token(unverified_user)) == (status.HTTP_200_OK, status.HTTP_200_OK)
     assert tuple(mocking_login_refresh_token(authorized_user)) == (status.HTTP_200_OK, status.HTTP_200_OK)
     assert tuple(mocking_login_refresh_token(moderator_user)) == (status.HTTP_200_OK, status.HTTP_200_OK)
     assert tuple(mocking_login_refresh_token(banned_user)) == (status.HTTP_401_UNAUTHORIZED, status.HTTP_401_UNAUTHORIZED)
@@ -126,20 +134,20 @@ def test_logout(test_npc_users, test_appstatus):
 
 
 def test_confirm_email(client):
-    mock_unauthorized_user = create_random_user(client, authorized=False, moderator=False, banned=False)
+    mock_unverified_user = create_random_user(client, authorized=True, verified=False)
 
     mock_token = MagicMock()
-    mock_token.user_id = mock_unauthorized_user.user.id
-    mock_token.username = mock_unauthorized_user.user.username
-    mock_token.email = mock_unauthorized_user.user.email
-    mock_token.language = mock_unauthorized_user.user.language
+    mock_token.user_id = mock_unverified_user.user.id
+    mock_token.username = mock_unverified_user.user.username
+    mock_token.email = mock_unverified_user.user.email
+    mock_token.language = mock_unverified_user.user.language
 
     mock_payload = {"language": "en"}
 
     with patch("backend.src.auth.router.verify_access_token", return_value=mock_token), \
             patch("backend.src.auth.router.jwt.decode", return_value=mock_payload):
 
-        res = mock_unauthorized_user.client.post("/auth/confirm-email", json=
+        res = mock_unverified_user.client.post("/auth/confirm-email", json=
             {
                 "access_token": "mock.token.jwt",
                 "token_type": "bearer"

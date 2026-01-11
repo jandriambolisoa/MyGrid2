@@ -69,3 +69,9 @@ class AppleSSOLoginFailedError(HTTPException):
     def __init__(self, language: str = "en", **kwargs):
         super().__init__(self.status_code, **kwargs)
         self.detail = apple_sso_login_failed_message[language]
+
+class UnverifiedUserError(HTTPException):
+    status_code = status.HTTP_403_FORBIDDEN
+    def __init__(self, language: str = "en", **kwargs):
+        super().__init__(self.status_code, **kwargs)
+        self.detail = unverified_user_message[language]

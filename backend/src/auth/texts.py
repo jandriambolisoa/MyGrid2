@@ -78,3 +78,10 @@ apple_sso_login_failed_message = defaultdict(
         "fr": "L'authentification Apple a échouée, veuillez réessayer plus tard.",
     }
 )
+
+unverified_user_message = defaultdict(
+    lambda: "Your account must be verified to be able to continue.",
+    {
+        "fr": "Votre compte doit être vérifié pour pouvoir continuer.",
+    }
+)

@@ -41,7 +41,7 @@ async def update_users_predictions_potential(session_id: int, user: UserSelf):
     )
 
     for prediction in predictions:
-        new_potential = compute_score(
+        new_potential = await compute_score(
             user_driver_prediction=prediction["mygrid"],
             mygrid_driver_prediction=prediction["prediction"],
             driver_result=prediction["mygrid"],

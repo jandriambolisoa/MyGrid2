@@ -7,16 +7,16 @@ from backend.src.events.schemas import Championship, Event, Session
 
 
 class UserRank(BaseModel):
-    rank: int
-    user: User
-    score: int
+    rank: Optional[int] = None
+    user: Optional[User] = None
+    score: Optional[int] = None
 
 class UserSessionRank(BaseModel):
     rank: int
     user: User
     event: Event
     session: Session
-    score: int
+    score: Optional[int] = 0
 
 class ChampionshipRanks(BaseModel):
     championship: Championship
