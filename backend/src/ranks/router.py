@@ -6,6 +6,7 @@ from backend.db.database import Database, get_db
 from backend import exceptions as app_exceptions
 from backend.oauth2 import get_current_user
 from backend.src.events.dependencies import valid_session_id, valid_championship_id, valid_event_id
+from backend.src.ranks.constants import RANK_QUERY_LIMIT
 from backend.src.ranks.exceptions import NoRanksError
 from backend.src.ranks.schemas import ChampionshipRanks, EventRanks, SessionRanks
 from backend.src.results.exceptions import NoResultsFoundError, InvalidSessionResultsAttemptError
@@ -23,13 +24,13 @@ router = APIRouter(
 # CRUD operations
 #
 
-@router.get("/championships/{id}", response_model=ChampionshipRanks)
+@router.get("/championships/{championship_id}", response_model=ChampionshipRanks)
 async def get_championships_ranks(
-        id: int = Depends(valid_championship_id),
+        championship_id: int = Depends(valid_championship_id),
         language: str = "en",
         db: Database = Depends(get_db),
         current_user: UserSelf = Depends(get_current_user),
-        limit: int = QUERY_LIMIT,
+        limit: int = RANK_QUERY_LIMIT,
         page: int = 0):
 
     offset = limit * page
@@ -48,7 +49,7 @@ async def get_championships_ranks(
         LEFT JOIN championships ON championships.id = ranks_championships_mv.championship_id
         WHERE ranks_championships_mv.championship_id = %s
         ORDER BY ranks_championships_mv.rank ASC
-        LIMIT %s OFFSET %s""", (language, id, limit, offset))
+        LIMIT %s OFFSET %s""", (championship_id, limit, offset))
 
     ranks = db.cursor.fetchall()
 
@@ -65,14 +66,14 @@ async def get_championships_ranks(
         ranks_championships_mv.score AS score
         FROM ranks_championships_mv
         LEFT JOIN users ON users.id = ranks_championships_mv.user_id
-        WHERE ranks_championships_mv.championship_id = %s AND users.id = %s""", (id, current_user.id))
+        WHERE ranks_championships_mv.championship_id = %s AND users.id = %s""", (championship_id, current_user.id))
 
     current_user_rank = db.cursor.fetchone()
 
     ranks_result = list()
     # Convert query result into UserRank schema
     for rank in ranks:
-        user = {k.removeprefix("user_"): v for k, v in rank if k.startswith("user_")}
+        user = {key.removeprefix("user_"): rank[key] for key in rank.keys() if key.startswith("user_")}
 
         ranks_result.append({
             "rank": rank["rank"],
@@ -82,24 +83,24 @@ async def get_championships_ranks(
 
     viewer_rank = {
         "rank": current_user_rank["rank"] if current_user_rank else None,
-        "user": {k.removeprefix("user_"): v for k, v in current_user_rank if k.startswith("user_")} if current_user_rank else None,
+        "user": {key.removeprefix("user_"): current_user_rank[key] for key in current_user_rank.keys() if key.startswith("user_")} if current_user_rank else None,
         "score": current_user_rank["score"] if current_user_rank else None
     }
 
     return {
-        "championship": {k.removeprefix("championship_"): v for k, v in ranks[0] if k.startswith("championship_")},
+        "championship": {key.removeprefix("championship_"): ranks[0][key] for key in ranks[0].keys() if key.startswith("championship_")},
         "viewer_rank": viewer_rank,
         "ranks": ranks_result
     }
 
 
-@router.get("/events/{id}", response_model=EventRanks)
+@router.get("/events/{event_id}", response_model=EventRanks)
 async def get_events_ranks(
-        id: int = Depends(valid_event_id),
+        event_id: int = Depends(valid_event_id),
         language: str = "en",
         db: Database = Depends(get_db),
         current_user: UserSelf = Depends(get_current_user),
-        limit: int = QUERY_LIMIT,
+        limit: int = RANK_QUERY_LIMIT,
         page: int = 0):
 
     offset = limit * page
@@ -129,7 +130,7 @@ async def get_events_ranks(
         LEFT JOIN events_translations ON events_translations.event_id = ranks_events_mv.event_id
         WHERE ranks_events_mv.event_id = %s
         ORDER BY ranks_events_mv.rank ASC
-        LIMIT %s OFFSET %s""", (language, id, limit, offset))
+        LIMIT %s OFFSET %s""", (language, event_id, limit, offset))
 
     ranks = db.cursor.fetchall()
 
@@ -146,14 +147,14 @@ async def get_events_ranks(
         ranks_events_mv.score AS score
         FROM ranks_events_mv
         LEFT JOIN users ON users.id = ranks_events_mv.user_id
-        WHERE ranks_events_mv.event_id = %s AND users.id = %s""", (id, current_user.id))
+        WHERE ranks_events_mv.event_id = %s AND users.id = %s""", (event_id, current_user.id))
 
     current_user_rank = db.cursor.fetchone()
 
     ranks_result = list()
     # Convert query result into UserRank schema
     for rank in ranks:
-        user = {k.removeprefix("user_"): v for k, v in rank if k.startswith("user_")}
+        user = {key.removeprefix("user_"): rank[key] for key in rank.keys() if key.startswith("user_")}
 
         ranks_result.append({
             "rank": rank["rank"],
@@ -163,25 +164,25 @@ async def get_events_ranks(
 
     viewer_rank = {
         "rank": current_user_rank["rank"] if current_user_rank else None,
-        "user": {k.removeprefix("user_"): v for k, v in current_user_rank if k.startswith("user_")} if current_user_rank else None,
+        "user": {key.removeprefix("user_"): current_user_rank[key] for key in current_user_rank.keys() if key.startswith("user_")} if current_user_rank else None,
         "score": current_user_rank["score"] if current_user_rank else None
     }
 
     return {
-        "championship": {k.removeprefix("championship_"): v for k, v in ranks[0] if k.startswith("championship_")},
-        "event": {k.removeprefix("event_"): v for k, v in ranks[0] if k.startswith("event_")},
+        "championship": {key.removeprefix("championship_"): ranks[0][key] for key in ranks[0].keys() if key.startswith("championship_")},
+        "event": {key.removeprefix("event_"): ranks[0][key] for key in ranks[0].keys() if key.startswith("event_")},
         "viewer_rank": viewer_rank,
         "ranks": ranks_result
     }
 
 
-@router.get("/record/sessions/{championship_id}", response_model=SessionRanks)
-async def get_record_sessions_ranks(
+@router.get("/records/sessions/{championship_id}", response_model=SessionRanks)
+async def get_records_sessions_ranks(
         championship_id: int = Depends(valid_championship_id),
         language: str = "en",
         db: Database = Depends(get_db),
         current_user: UserSelf = Depends(get_current_user),
-        limit: int = QUERY_LIMIT,
+        limit: int = RANK_QUERY_LIMIT,
         page: int = 0):
 
     offset = limit * page
@@ -233,9 +234,9 @@ async def get_record_sessions_ranks(
     ranks_result = list()
     # Convert query result into UserRank schema
     for rank in ranks:
-        user = {k.removeprefix("user_"): v for k, v in rank if k.startswith("user_")}
-        event = {k.removeprefix("event_"): v for k, v in rank if k.startswith("event_")}
-        session = {k.removeprefix("session_"): v for k, v in rank if k.startswith("session_")}
+        user = {key.removeprefix("user_"): rank[key] for key in rank.keys() if key.startswith("user_")}
+        event = {key.removeprefix("event_"): rank[key] for key in rank.keys() if key.startswith("event_")}
+        session = {key.removeprefix("session_"): rank[key] for key in rank.keys() if key.startswith("session_")}
 
         ranks_result.append({
             "rank": rank["rank"],
@@ -246,6 +247,6 @@ async def get_record_sessions_ranks(
         })
 
     return {
-        "championship": {k.removeprefix("championship_"): v for k, v in ranks[0] if k.startswith("championship_")},
+        "championship": {key.removeprefix("championship_"): ranks[0][key] for key in ranks[0].keys() if key.startswith("championship_")},
         "ranks": ranks_result
     }
