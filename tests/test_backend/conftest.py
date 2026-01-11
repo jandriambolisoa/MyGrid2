@@ -225,7 +225,7 @@ def test_scores(test_npc_users, test_predictions, test_results, test_passed_even
             REFRESH MATERIALIZED VIEW ranks_sessions_mv;""")
     db.conn.commit()
 
-@pytest.fixture(scope="session")
+@pytest.fixture(scope="session", autouse=True)
 def test_scores_parameters(test_championship):
     db = get_db()
     db.cursor.execute("""\

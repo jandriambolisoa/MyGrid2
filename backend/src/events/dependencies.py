@@ -45,7 +45,7 @@ async def valid_session_id(session_id: int, language: str = "en") -> int:
 
     return session_id
 
-async def valid_session_id_not_started(session_id: Depends(valid_session_id), language: str = "en"):
+async def valid_session_id_not_started(session_id: int = Depends(valid_session_id), language: str = "en"):
     db = get_db()
     db.cursor.execute("""
         SELECT sessions.datetime
