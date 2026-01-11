@@ -9,8 +9,9 @@ def mock_get_score_parameters_of_a_championship(user_obj: MockUser, championship
     res = user_obj.client.get(f"/scores/parameters/{championship.id}")
     return res.status_code
 
-def test_get_score_parameters_of_a_championship(test_championship, unauthorized_user, authorized_user, moderator_user, banned_user):
-    assert mock_get_score_parameters_of_a_championship(unauthorized_user, test_championship) == status.HTTP_200_OK
+def test_get_score_parameters_of_a_championship(test_championship, unauthorized_user, unverified_user, authorized_user, moderator_user, banned_user):
+    assert mock_get_score_parameters_of_a_championship(unauthorized_user, test_championship) == status.HTTP_401_UNAUTHORIZED
+    assert mock_get_score_parameters_of_a_championship(unverified_user, test_championship) == status.HTTP_200_OK
     assert mock_get_score_parameters_of_a_championship(authorized_user, test_championship) == status.HTTP_200_OK
     assert mock_get_score_parameters_of_a_championship(moderator_user, test_championship) == status.HTTP_200_OK
     assert mock_get_score_parameters_of_a_championship(banned_user, test_championship) == status.HTTP_401_UNAUTHORIZED
@@ -53,8 +54,9 @@ def mock_override_score_parameters_of_a_championship(user_obj: MockUser):
     return res.status_code
 
 
-def test_override_score_parameters_of_a_championship(test_championship, unauthorized_user, authorized_user, moderator_user, banned_user):
-    assert mock_override_score_parameters_of_a_championship(unauthorized_user) == status.HTTP_403_FORBIDDEN
+def test_override_score_parameters_of_a_championship(test_championship, unauthorized_user, unverified_user, authorized_user, moderator_user, banned_user):
+    assert mock_override_score_parameters_of_a_championship(unauthorized_user) == status.HTTP_401_UNAUTHORIZED
+    assert mock_override_score_parameters_of_a_championship(unverified_user) == status.HTTP_403_FORBIDDEN
     assert mock_override_score_parameters_of_a_championship(authorized_user) == status.HTTP_403_FORBIDDEN
     assert mock_override_score_parameters_of_a_championship(moderator_user) == status.HTTP_201_CREATED
     assert mock_override_score_parameters_of_a_championship(banned_user) == status.HTTP_401_UNAUTHORIZED

@@ -18,17 +18,18 @@ class MockUser(BaseModel):
 def predictable_password(username):
     return f"password123{username}*"
 
-def create_random_user(client: TestClient, authorized: bool = False, moderator: bool = False, banned: bool = False):
+def create_random_user(client: TestClient, authorized: bool = False, verified: bool = False, moderator: bool = False, banned: bool = False):
     """
     Returns a valid random user and its client.
     Args:
+        verified: The verified status of the user to create.
         client: The TestClient to use.
         authorized: Whether the user to create is authorized.
-        moderator: Whether the user to create is moderator.
+        moderator: Whether the user to create is a moderator.
         banned: Whether the user to create is banned.
 
     Returns:
-        :class TestUser: The user as a Pydantic model.
+        class TestUser: The user as a Pydantic model.
     """
     db = get_db()
     name = random_code(12)
@@ -41,7 +42,7 @@ def create_random_user(client: TestClient, authorized: bool = False, moderator: 
     client.post("/auth/signup", json=user_data)
 
     # Modify the verified entry if the user is authorized
-    if authorized:
+    if verified:
         db.cursor.execute("""
             UPDATE users
             SET verified = true
@@ -80,9 +81,12 @@ def create_random_user(client: TestClient, authorized: bool = False, moderator: 
     }))
 
     new_client = TestClient(app)
-    new_client.headers = {
-        **client.headers,
-        "Authorization": f"Bearer {access_token}"
-    }
+    if authorized:
+        new_client.headers = {
+            **client.headers,
+            "Authorization": f"Bearer {access_token}"
+        }
+    else:
+        new_client.headers = {**client.headers}
 
     return MockUser(user=new_user, client=new_client)

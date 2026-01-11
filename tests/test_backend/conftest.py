@@ -24,7 +24,7 @@ def test_npc_users(client):
     created_users = list()
 
     for i in range(10):
-        user = users_utils.create_random_user(client, authorized= True)
+        user = users_utils.create_random_user(client, verified= True, authorized=True)
         created_users.append(user)
 
     return created_users
@@ -266,13 +266,17 @@ def unauthorized_user(client):
     return users_utils.create_random_user(client)
 
 @pytest.fixture(scope="session")
+def unverified_user(client):
+    return users_utils.create_random_user(client, authorized=True)
+
+@pytest.fixture(scope="session")
 def authorized_user(client):
-    return users_utils.create_random_user(client, authorized= True)
+    return users_utils.create_random_user(client, verified=True, authorized=True)
 
 @pytest.fixture(scope="session")
 def moderator_user(client):
-    return users_utils.create_random_user(client, authorized= True, moderator= True)
+    return users_utils.create_random_user(client, verified=True, authorized=True, moderator=True)
 
 @pytest.fixture(scope="session")
 def banned_user(client):
-    return users_utils.create_random_user(client, authorized= True, banned= True)
+    return users_utils.create_random_user(client, verified=True, authorized=True, banned=True)

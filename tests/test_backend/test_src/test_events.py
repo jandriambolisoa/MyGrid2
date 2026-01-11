@@ -23,8 +23,9 @@ def mock_create_championship(user_obj: MockUser):
         yield True
 
 
-def test_create_championship(unauthorized_user, authorized_user, moderator_user, banned_user):
-    assert tuple(mock_create_championship(unauthorized_user)) == (status.HTTP_403_FORBIDDEN, True)
+def test_create_championship(unauthorized_user, unverified_user, authorized_user, moderator_user, banned_user):
+    assert tuple(mock_create_championship(unauthorized_user)) == (status.HTTP_401_UNAUTHORIZED, True)
+    assert tuple(mock_create_championship(unverified_user)) == (status.HTTP_403_FORBIDDEN, True)
     assert tuple(mock_create_championship(authorized_user)) == (status.HTTP_403_FORBIDDEN, True)
     assert tuple(mock_create_championship(moderator_user)) == (status.HTTP_201_CREATED, True)
     assert tuple(mock_create_championship(banned_user)) == (status.HTTP_401_UNAUTHORIZED, True)
@@ -54,8 +55,9 @@ def mock_create_event(user_obj: MockUser, championship: Championship):
         yield True
 
 
-def test_create_event(test_championship, unauthorized_user, authorized_user, moderator_user, banned_user):
-    assert tuple(mock_create_event(unauthorized_user, test_championship)) == (status.HTTP_403_FORBIDDEN, True)
+def test_create_event(test_championship, unauthorized_user, unverified_user, authorized_user, moderator_user, banned_user):
+    assert tuple(mock_create_event(unauthorized_user, test_championship)) == (status.HTTP_401_UNAUTHORIZED, True)
+    assert tuple(mock_create_event(unverified_user, test_championship)) == (status.HTTP_403_FORBIDDEN, True)
     assert tuple(mock_create_event(authorized_user, test_championship)) == (status.HTTP_403_FORBIDDEN, True)
     assert tuple(mock_create_event(moderator_user, test_championship)) == (status.HTTP_201_CREATED, True)
     assert tuple(mock_create_event(banned_user, test_championship)) == (status.HTTP_401_UNAUTHORIZED, True)
@@ -85,9 +87,10 @@ def mock_create_session(user_obj: MockUser, event: Event):
         yield True
 
 
-def test_create_session(test_championship, test_upcoming_events, unauthorized_user, authorized_user, moderator_user, banned_user):
+def test_create_session(test_championship, test_upcoming_events, unauthorized_user, unverified_user, authorized_user, moderator_user, banned_user):
     event = random.choice(test_upcoming_events)
-    assert tuple(mock_create_session(unauthorized_user, event)) == (status.HTTP_403_FORBIDDEN, True)
+    assert tuple(mock_create_session(unauthorized_user, event)) == (status.HTTP_401_UNAUTHORIZED, True)
+    assert tuple(mock_create_session(unverified_user, event)) == (status.HTTP_403_FORBIDDEN, True)
     assert tuple(mock_create_session(authorized_user, event)) == (status.HTTP_403_FORBIDDEN, True)
     assert tuple(mock_create_session(moderator_user, event)) == (status.HTTP_201_CREATED, True)
     assert tuple(mock_create_session(banned_user, event)) == (status.HTTP_401_UNAUTHORIZED, True)
@@ -98,39 +101,45 @@ def mock_search_event(user_obj: MockUser, q: str = None):
     yield res.status_code
 
 
-def test_search_upcoming_event(test_upcoming_events, unauthorized_user, authorized_user, moderator_user, banned_user):
+def test_search_upcoming_event(test_upcoming_events, unauthorized_user, unverified_user, authorized_user, moderator_user, banned_user):
     to_search = random.choice(test_upcoming_events)
 
     assert next(mock_search_event(unauthorized_user)) == status.HTTP_200_OK
+    assert next(mock_search_event(unverified_user)) == status.HTTP_200_OK
     assert next(mock_search_event(authorized_user)) == status.HTTP_200_OK
     assert next(mock_search_event(moderator_user)) == status.HTTP_200_OK
     assert next(mock_search_event(banned_user)) == status.HTTP_200_OK
 
     assert next(mock_search_event(unauthorized_user, "unknown event")) == status.HTTP_404_NOT_FOUND
+    assert next(mock_search_event(unverified_user, "unknown event")) == status.HTTP_404_NOT_FOUND
     assert next(mock_search_event(authorized_user, "unknown event")) == status.HTTP_404_NOT_FOUND
     assert next(mock_search_event(moderator_user, "unknown event")) == status.HTTP_404_NOT_FOUND
     assert next(mock_search_event(banned_user, "unknown event")) == status.HTTP_404_NOT_FOUND
 
     assert next(mock_search_event(unauthorized_user, to_search.name[1:-2])) == status.HTTP_200_OK
+    assert next(mock_search_event(unverified_user, to_search.name[1:-2])) == status.HTTP_200_OK
     assert next(mock_search_event(authorized_user, to_search.name[:-3])) == status.HTTP_200_OK
     assert next(mock_search_event(moderator_user, to_search.name)) == status.HTTP_200_OK
     assert next(mock_search_event(banned_user, to_search.name)) == status.HTTP_200_OK
 
 
-def test_search_passed_event(test_passed_events, unauthorized_user, authorized_user, moderator_user, banned_user):
+def test_search_passed_event(test_passed_events, unauthorized_user, unverified_user, authorized_user, moderator_user, banned_user):
     to_search = random.choice(test_passed_events)
 
     assert next(mock_search_event(unauthorized_user)) == status.HTTP_200_OK
+    assert next(mock_search_event(unverified_user)) == status.HTTP_200_OK
     assert next(mock_search_event(authorized_user)) == status.HTTP_200_OK
     assert next(mock_search_event(moderator_user)) == status.HTTP_200_OK
     assert next(mock_search_event(banned_user)) == status.HTTP_200_OK
 
     assert next(mock_search_event(unauthorized_user, "unknown event")) == status.HTTP_404_NOT_FOUND
+    assert next(mock_search_event(unverified_user, "unknown event")) == status.HTTP_404_NOT_FOUND
     assert next(mock_search_event(authorized_user, "unknown event")) == status.HTTP_404_NOT_FOUND
     assert next(mock_search_event(moderator_user, "unknown event")) == status.HTTP_404_NOT_FOUND
     assert next(mock_search_event(banned_user, "unknown event")) == status.HTTP_404_NOT_FOUND
 
     assert next(mock_search_event(unauthorized_user, to_search.name[1:-2])) == status.HTTP_200_OK
+    assert next(mock_search_event(unverified_user, to_search.name[1:-2])) == status.HTTP_200_OK
     assert next(mock_search_event(authorized_user, to_search.name[:-3])) == status.HTTP_200_OK
     assert next(mock_search_event(moderator_user, to_search.name)) == status.HTTP_200_OK
     assert next(mock_search_event(banned_user, to_search.name)) == status.HTTP_200_OK
@@ -145,8 +154,9 @@ def mock_update_championship(user_obj: MockUser):
     res = user_obj.client.put(f"/events/championships/{to_update.id}", json={"name": json.dumps(to_update_names)})
     yield res.status_code
 
-def test_update_championship(unauthorized_user, authorized_user, moderator_user, banned_user):
-    assert next(mock_update_championship(unauthorized_user)) == status.HTTP_403_FORBIDDEN
+def test_update_championship(unauthorized_user, unverified_user, authorized_user, moderator_user, banned_user):
+    assert next(mock_update_championship(unauthorized_user)) == status.HTTP_401_UNAUTHORIZED
+    assert next(mock_update_championship(unverified_user)) == status.HTTP_403_FORBIDDEN
     assert next(mock_update_championship(authorized_user)) == status.HTTP_403_FORBIDDEN
     assert next(mock_update_championship(moderator_user)) == status.HTTP_200_OK
     assert next(mock_update_championship(banned_user)) == status.HTTP_401_UNAUTHORIZED
@@ -168,8 +178,9 @@ def mock_update_event(user_obj: MockUser, championship: Championship):
     yield res.status_code
 
 
-def test_update_event(test_championship, unauthorized_user, authorized_user, moderator_user, banned_user):
-    assert next(mock_update_event(unauthorized_user, test_championship)) == status.HTTP_403_FORBIDDEN
+def test_update_event(test_championship, unauthorized_user, unverified_user, authorized_user, moderator_user, banned_user):
+    assert next(mock_update_event(unauthorized_user, test_championship)) == status.HTTP_401_UNAUTHORIZED
+    assert next(mock_update_event(unverified_user, test_championship)) == status.HTTP_403_FORBIDDEN
     assert next(mock_update_event(authorized_user, test_championship)) == status.HTTP_403_FORBIDDEN
     assert next(mock_update_event(moderator_user, test_championship)) == status.HTTP_200_OK
     assert next(mock_update_event(banned_user, test_championship)) == status.HTTP_401_UNAUTHORIZED
@@ -190,9 +201,10 @@ def mock_update_session(user_obj: MockUser, event: Event):
     yield res.status_code
 
 
-def test_update_session(test_championship, test_upcoming_events, unauthorized_user, authorized_user, moderator_user, banned_user):
+def test_update_session(test_championship, test_upcoming_events, unauthorized_user, unverified_user, authorized_user, moderator_user, banned_user):
     event = random.choice(test_upcoming_events)
-    assert next(mock_update_session(unauthorized_user, event)) == status.HTTP_403_FORBIDDEN
+    assert next(mock_update_session(unauthorized_user, event)) == status.HTTP_401_UNAUTHORIZED
+    assert next(mock_update_session(unverified_user, event)) == status.HTTP_403_FORBIDDEN
     assert next(mock_update_session(authorized_user, event)) == status.HTTP_403_FORBIDDEN
     assert next(mock_update_session(moderator_user, event)) == status.HTTP_200_OK
     assert next(mock_update_session(banned_user, event)) == status.HTTP_401_UNAUTHORIZED
@@ -211,8 +223,9 @@ def mock_delete_championship(user_obj: MockUser):
     yield db.cursor.fetchone() is None
 
 
-def test_delete_driver(unauthorized_user, authorized_user, moderator_user, banned_user):
-    assert tuple(mock_delete_championship(unauthorized_user)) == (status.HTTP_403_FORBIDDEN, False)
+def test_delete_driver(unauthorized_user, unverified_user, authorized_user, moderator_user, banned_user):
+    assert tuple(mock_delete_championship(unauthorized_user)) == (status.HTTP_401_UNAUTHORIZED, False)
+    assert tuple(mock_delete_championship(unverified_user)) == (status.HTTP_403_FORBIDDEN, False)
     assert tuple(mock_delete_championship(authorized_user)) == (status.HTTP_403_FORBIDDEN, False)
     assert tuple(mock_delete_championship(moderator_user)) == (status.HTTP_204_NO_CONTENT, True)
     assert tuple(mock_delete_championship(banned_user)) == (status.HTTP_401_UNAUTHORIZED, False)
@@ -231,8 +244,9 @@ def mock_delete_event(user_obj: MockUser, championship: Championship):
     yield db.cursor.fetchone() is None
 
 
-def test_delete_event(test_championship, unauthorized_user, authorized_user, moderator_user, banned_user):
-    assert tuple(mock_delete_event(unauthorized_user, test_championship)) == (status.HTTP_403_FORBIDDEN, False)
+def test_delete_event(test_championship, unauthorized_user, unverified_user, authorized_user, moderator_user, banned_user):
+    assert tuple(mock_delete_event(unauthorized_user, test_championship)) == (status.HTTP_401_UNAUTHORIZED, False)
+    assert tuple(mock_delete_event(unverified_user, test_championship)) == (status.HTTP_403_FORBIDDEN, False)
     assert tuple(mock_delete_event(authorized_user, test_championship)) == (status.HTTP_403_FORBIDDEN, False)
     assert tuple(mock_delete_event(moderator_user, test_championship)) == (status.HTTP_204_NO_CONTENT, True)
     assert tuple(mock_delete_event(banned_user, test_championship)) == (status.HTTP_401_UNAUTHORIZED, False)
@@ -251,9 +265,10 @@ def mock_delete_session(user_obj: MockUser, event: Event):
     yield db.cursor.fetchone() is None
 
 
-def test_delete_sessions(test_championship, test_upcoming_events, unauthorized_user, authorized_user, moderator_user, banned_user):
+def test_delete_sessions(test_championship, test_upcoming_events, unauthorized_user, unverified_user, authorized_user, moderator_user, banned_user):
     event = random.choice(test_upcoming_events)
-    assert tuple(mock_delete_session(unauthorized_user, event)) == (status.HTTP_403_FORBIDDEN, False)
+    assert tuple(mock_delete_session(unauthorized_user, event)) == (status.HTTP_401_UNAUTHORIZED, False)
+    assert tuple(mock_delete_session(unverified_user, event)) == (status.HTTP_403_FORBIDDEN, False)
     assert tuple(mock_delete_session(authorized_user, event)) == (status.HTTP_403_FORBIDDEN, False)
     assert tuple(mock_delete_session(moderator_user, event)) == (status.HTTP_204_NO_CONTENT, True)
     assert tuple(mock_delete_session(banned_user, event)) == (status.HTTP_401_UNAUTHORIZED, False)

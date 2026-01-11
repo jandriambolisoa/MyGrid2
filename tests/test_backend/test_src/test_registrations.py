@@ -12,17 +12,19 @@ def mock_get_session_registrations(user_obj: MockUser, session):
     res = user_obj.client.get(f"/events/sessions/registrations/{session.id}")
     return res.status_code
 
-def test_get_session_registrations(test_upcoming_events, test_passed_events, test_registrations, unauthorized_user, authorized_user, moderator_user, banned_user):
+def test_get_session_registrations(test_upcoming_events, test_passed_events, test_registrations, unauthorized_user, unverified_user, authorized_user, moderator_user, banned_user):
     upcoming_event = random.choice(test_upcoming_events)
     upcoming_session = get_competitive_sessions_from_event_id(upcoming_event.id)[0]
-    assert mock_get_session_registrations(unauthorized_user, upcoming_session) == status.HTTP_200_OK
+    assert mock_get_session_registrations(unauthorized_user, upcoming_session) == status.HTTP_401_UNAUTHORIZED
+    assert mock_get_session_registrations(unverified_user, upcoming_session) == status.HTTP_200_OK
     assert mock_get_session_registrations(authorized_user, upcoming_session) == status.HTTP_200_OK
     assert mock_get_session_registrations(moderator_user, upcoming_session) == status.HTTP_200_OK
     assert mock_get_session_registrations(banned_user, upcoming_session) == status.HTTP_401_UNAUTHORIZED
 
     passed_event = random.choice(test_passed_events)
     passed_session = get_competitive_sessions_from_event_id(passed_event.id)[0]
-    assert mock_get_session_registrations(unauthorized_user, passed_session) == status.HTTP_200_OK
+    assert mock_get_session_registrations(unauthorized_user, passed_session) == status.HTTP_401_UNAUTHORIZED
+    assert mock_get_session_registrations(unverified_user, passed_session) == status.HTTP_200_OK
     assert mock_get_session_registrations(authorized_user, passed_session) == status.HTTP_200_OK
     assert mock_get_session_registrations(moderator_user, passed_session) == status.HTTP_200_OK
     assert mock_get_session_registrations(banned_user, passed_session) == status.HTTP_401_UNAUTHORIZED
@@ -44,10 +46,11 @@ def mock_override_session_registrations(user_obj: MockUser, session, drivers, te
     res = user_obj.client.post(f"/events/sessions/registrations/{session.id}", json=registrations)
     return res.status_code
 
-def test_override_session_registrations(test_upcoming_events, test_passed_events, test_drivers, test_teams, test_registrations, unauthorized_user, authorized_user, moderator_user, banned_user):
+def test_override_session_registrations(test_upcoming_events, test_passed_events, test_drivers, test_teams, test_registrations, unauthorized_user, unverified_user, authorized_user, moderator_user, banned_user):
     upcoming_event = random.choice(test_upcoming_events)
     upcoming_session = get_competitive_sessions_from_event_id(upcoming_event.id)[0]
-    assert mock_override_session_registrations(unauthorized_user, upcoming_session, test_drivers, test_teams) == status.HTTP_403_FORBIDDEN
+    assert mock_override_session_registrations(unauthorized_user, upcoming_session, test_drivers, test_teams) == status.HTTP_401_UNAUTHORIZED
+    assert mock_override_session_registrations(unverified_user, upcoming_session, test_drivers, test_teams) == status.HTTP_403_FORBIDDEN
     assert mock_override_session_registrations(authorized_user, upcoming_session, test_drivers, test_teams) == status.HTTP_403_FORBIDDEN
     assert mock_override_session_registrations(moderator_user, upcoming_session, test_drivers, test_teams) == status.HTTP_201_CREATED
     assert mock_override_session_registrations(banned_user, upcoming_session, test_drivers, test_teams) == status.HTTP_401_UNAUTHORIZED
@@ -55,6 +58,7 @@ def test_override_session_registrations(test_upcoming_events, test_passed_events
     passed_event = random.choice(test_passed_events)
     passed_session = get_competitive_sessions_from_event_id(passed_event.id)[0]
     assert mock_override_session_registrations(unauthorized_user, passed_session, test_drivers, test_teams) == status.HTTP_412_PRECONDITION_FAILED
+    assert mock_override_session_registrations(unverified_user, passed_session, test_drivers, test_teams) == status.HTTP_412_PRECONDITION_FAILED
     assert mock_override_session_registrations(authorized_user, passed_session, test_drivers, test_teams) == status.HTTP_412_PRECONDITION_FAILED
     assert mock_override_session_registrations(moderator_user, passed_session, test_drivers, test_teams) == status.HTTP_412_PRECONDITION_FAILED
     assert mock_override_session_registrations(banned_user, passed_session, test_drivers, test_teams) == status.HTTP_412_PRECONDITION_FAILED
@@ -78,10 +82,11 @@ def mock_swap_a_driver_with_an_unregistered_driver(user_obj: MockUser, session, 
     return res.status_code
 
 
-def test_swap_a_driver_with_an_unregistered_driver(test_upcoming_events, test_passed_events, test_drivers, test_registrations, unauthorized_user, authorized_user, moderator_user, banned_user):
+def test_swap_a_driver_with_an_unregistered_driver(test_upcoming_events, test_passed_events, test_drivers, test_registrations, unauthorized_user, unverified_user, authorized_user, moderator_user, banned_user):
     upcoming_event = random.choice(test_upcoming_events)
     upcoming_session = get_competitive_sessions_from_event_id(upcoming_event.id)[0]
-    assert mock_swap_a_driver_with_an_unregistered_driver(unauthorized_user, upcoming_session, test_drivers) == status.HTTP_403_FORBIDDEN
+    assert mock_swap_a_driver_with_an_unregistered_driver(unauthorized_user, upcoming_session, test_drivers) == status.HTTP_401_UNAUTHORIZED
+    assert mock_swap_a_driver_with_an_unregistered_driver(unverified_user, upcoming_session, test_drivers) == status.HTTP_403_FORBIDDEN
     assert mock_swap_a_driver_with_an_unregistered_driver(authorized_user, upcoming_session, test_drivers) == status.HTTP_403_FORBIDDEN
     assert mock_swap_a_driver_with_an_unregistered_driver(moderator_user, upcoming_session, test_drivers) == status.HTTP_200_OK
     assert mock_swap_a_driver_with_an_unregistered_driver(banned_user, upcoming_session, test_drivers) == status.HTTP_401_UNAUTHORIZED
@@ -89,6 +94,7 @@ def test_swap_a_driver_with_an_unregistered_driver(test_upcoming_events, test_pa
     passed_event = random.choice(test_passed_events)
     passed_session = get_competitive_sessions_from_event_id(passed_event.id)[0]
     assert mock_swap_a_driver_with_an_unregistered_driver(unauthorized_user, passed_session, test_drivers) == status.HTTP_412_PRECONDITION_FAILED
+    assert mock_swap_a_driver_with_an_unregistered_driver(unverified_user, passed_session, test_drivers) == status.HTTP_412_PRECONDITION_FAILED
     assert mock_swap_a_driver_with_an_unregistered_driver(authorized_user, passed_session, test_drivers) == status.HTTP_412_PRECONDITION_FAILED
     assert mock_swap_a_driver_with_an_unregistered_driver(moderator_user, passed_session, test_drivers) == status.HTTP_412_PRECONDITION_FAILED
     assert mock_swap_a_driver_with_an_unregistered_driver(banned_user, passed_session, test_drivers) == status.HTTP_412_PRECONDITION_FAILED
@@ -105,10 +111,11 @@ def mock_swap_teams_between_two_drivers(user_obj: MockUser, session, drivers):
     return res.status_code
 
 
-def test_swap_teams_between_two_drivers(test_upcoming_events, test_passed_events, test_drivers, test_registrations, unauthorized_user, authorized_user, moderator_user, banned_user):
+def test_swap_teams_between_two_drivers(test_upcoming_events, test_passed_events, test_drivers, test_registrations, unauthorized_user, unverified_user, authorized_user, moderator_user, banned_user):
     upcoming_event = random.choice(test_upcoming_events)
     upcoming_session = get_competitive_sessions_from_event_id(upcoming_event.id)[0]
-    assert mock_swap_a_driver_with_an_unregistered_driver(unauthorized_user, upcoming_session, test_drivers) == status.HTTP_403_FORBIDDEN
+    assert mock_swap_a_driver_with_an_unregistered_driver(unauthorized_user, upcoming_session, test_drivers) == status.HTTP_401_UNAUTHORIZED
+    assert mock_swap_a_driver_with_an_unregistered_driver(unverified_user, upcoming_session, test_drivers) == status.HTTP_403_FORBIDDEN
     assert mock_swap_a_driver_with_an_unregistered_driver(authorized_user, upcoming_session, test_drivers) == status.HTTP_403_FORBIDDEN
     assert mock_swap_a_driver_with_an_unregistered_driver(moderator_user, upcoming_session, test_drivers) == status.HTTP_200_OK
     assert mock_swap_a_driver_with_an_unregistered_driver(banned_user, upcoming_session, test_drivers) == status.HTTP_401_UNAUTHORIZED
@@ -116,6 +123,7 @@ def test_swap_teams_between_two_drivers(test_upcoming_events, test_passed_events
     passed_event = random.choice(test_passed_events)
     passed_session = get_competitive_sessions_from_event_id(passed_event.id)[0]
     assert mock_swap_a_driver_with_an_unregistered_driver(unauthorized_user, passed_session, test_drivers) == status.HTTP_412_PRECONDITION_FAILED
+    assert mock_swap_a_driver_with_an_unregistered_driver(unverified_user, passed_session, test_drivers) == status.HTTP_412_PRECONDITION_FAILED
     assert mock_swap_a_driver_with_an_unregistered_driver(authorized_user, passed_session, test_drivers) == status.HTTP_412_PRECONDITION_FAILED
     assert mock_swap_a_driver_with_an_unregistered_driver(moderator_user, passed_session, test_drivers) == status.HTTP_412_PRECONDITION_FAILED
     assert mock_swap_a_driver_with_an_unregistered_driver(banned_user, passed_session, test_drivers) == status.HTTP_412_PRECONDITION_FAILED

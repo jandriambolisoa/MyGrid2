@@ -33,8 +33,9 @@ def mock_create_driver(user_obj: MockUser):
         yield False
 
 
-def test_create_driver(unauthorized_user, authorized_user, moderator_user, banned_user):
-    assert tuple(mock_create_driver(unauthorized_user)) == (status.HTTP_403_FORBIDDEN, False)
+def test_create_driver(unauthorized_user, unverified_user, authorized_user, moderator_user, banned_user):
+    assert tuple(mock_create_driver(unauthorized_user)) == (status.HTTP_401_UNAUTHORIZED, False)
+    assert tuple(mock_create_driver(unverified_user)) == (status.HTTP_403_FORBIDDEN, False)
     assert tuple(mock_create_driver(authorized_user)) == (status.HTTP_403_FORBIDDEN, False)
     assert tuple(mock_create_driver(moderator_user)) == (status.HTTP_201_CREATED, True)
     assert tuple(mock_create_driver(banned_user)) == (status.HTTP_401_UNAUTHORIZED, False)
@@ -63,8 +64,9 @@ def mock_create_team(user_obj: MockUser):
         yield False
 
 
-def test_create_team(unauthorized_user, authorized_user, moderator_user, banned_user):
-    assert tuple(mock_create_team(unauthorized_user)) == (status.HTTP_403_FORBIDDEN, False)
+def test_create_team(unauthorized_user, unverified_user, authorized_user, moderator_user, banned_user):
+    assert tuple(mock_create_team(unauthorized_user)) == (status.HTTP_401_UNAUTHORIZED, False)
+    assert tuple(mock_create_team(unverified_user)) == (status.HTTP_403_FORBIDDEN, False)
     assert tuple(mock_create_team(authorized_user)) == (status.HTTP_403_FORBIDDEN, False)
     assert tuple(mock_create_team(moderator_user)) == (status.HTTP_201_CREATED, True)
     assert tuple(mock_create_team(banned_user)) == (status.HTTP_401_UNAUTHORIZED, False)
@@ -75,20 +77,23 @@ def mock_search_driver(user_obj: MockUser, q: str = None):
     yield res.status_code
 
 
-def test_search_driver(test_drivers, test_teams, test_registrations, unauthorized_user, authorized_user, moderator_user, banned_user):
+def test_search_driver(test_drivers, test_teams, test_registrations, unauthorized_user, unverified_user, authorized_user, moderator_user, banned_user):
     driver_to_search = random.choice(test_drivers)
 
     assert next(mock_search_driver(unauthorized_user)) == status.HTTP_200_OK
+    assert next(mock_search_driver(unverified_user)) == status.HTTP_200_OK
     assert next(mock_search_driver(authorized_user)) == status.HTTP_200_OK
     assert next(mock_search_driver(moderator_user)) == status.HTTP_200_OK
     assert next(mock_search_driver(banned_user)) == status.HTTP_200_OK
 
     assert next(mock_search_driver(unauthorized_user, "unknown driver")) == status.HTTP_404_NOT_FOUND
+    assert next(mock_search_driver(unverified_user, "unknown driver")) == status.HTTP_404_NOT_FOUND
     assert next(mock_search_driver(authorized_user, "unknown driver")) == status.HTTP_404_NOT_FOUND
     assert next(mock_search_driver(moderator_user, "unknown driver")) == status.HTTP_404_NOT_FOUND
     assert next(mock_search_driver(banned_user, "unknown driver")) == status.HTTP_404_NOT_FOUND
 
     assert next(mock_search_driver(unauthorized_user, driver_to_search.firstname[1:-2])) == status.HTTP_200_OK
+    assert next(mock_search_driver(unverified_user, driver_to_search.firstname[1:-2])) == status.HTTP_200_OK
     assert next(mock_search_driver(authorized_user, driver_to_search.lastname[:-3])) == status.HTTP_200_OK
     assert next(mock_search_driver(moderator_user, driver_to_search.firstname)) == status.HTTP_200_OK
     assert next(mock_search_driver(banned_user, driver_to_search.codename)) == status.HTTP_200_OK
@@ -99,20 +104,23 @@ def mock_search_team(user_obj: MockUser, q: str = None):
     yield res.status_code
 
 
-def test_search_team(test_drivers, test_teams, test_registrations, unauthorized_user, authorized_user, moderator_user, banned_user):
+def test_search_team(test_drivers, test_teams, test_registrations, unauthorized_user, unverified_user, authorized_user, moderator_user, banned_user):
     team_to_search = random.choice(test_teams)
 
     assert next(mock_search_team(unauthorized_user)) == status.HTTP_200_OK
+    assert next(mock_search_team(unverified_user)) == status.HTTP_200_OK
     assert next(mock_search_team(authorized_user)) == status.HTTP_200_OK
     assert next(mock_search_team(moderator_user)) == status.HTTP_200_OK
     assert next(mock_search_team(banned_user)) == status.HTTP_200_OK
 
     assert next(mock_search_team(unauthorized_user, "unknown team")) == status.HTTP_404_NOT_FOUND
+    assert next(mock_search_team(unverified_user, "unknown team")) == status.HTTP_404_NOT_FOUND
     assert next(mock_search_team(authorized_user, "unknown team")) == status.HTTP_404_NOT_FOUND
     assert next(mock_search_team(moderator_user, "unknown team")) == status.HTTP_404_NOT_FOUND
     assert next(mock_search_team(banned_user, "unknown team")) == status.HTTP_404_NOT_FOUND
 
     assert next(mock_search_team(unauthorized_user, team_to_search.name[1:-2])) == status.HTTP_200_OK
+    assert next(mock_search_team(unverified_user, team_to_search.name[1:-2])) == status.HTTP_200_OK
     assert next(mock_search_team(authorized_user, team_to_search.name[:-3])) == status.HTTP_200_OK
     assert next(mock_search_team(moderator_user, team_to_search.name)) == status.HTTP_200_OK
     assert next(mock_search_team(banned_user, team_to_search.name[3:])) == status.HTTP_200_OK
@@ -153,8 +161,9 @@ def mock_update_driver(user_obj: MockUser):
     else:
         yield False
 
-def test_update_driver(test_drivers, unauthorized_user, authorized_user, moderator_user, banned_user):
-    assert tuple(mock_update_driver(unauthorized_user)) == (status.HTTP_403_FORBIDDEN, status.HTTP_403_FORBIDDEN, status.HTTP_403_FORBIDDEN, False)
+def test_update_driver(test_drivers, unauthorized_user, unverified_user, authorized_user, moderator_user, banned_user):
+    assert tuple(mock_update_driver(unauthorized_user)) == (status.HTTP_401_UNAUTHORIZED, status.HTTP_401_UNAUTHORIZED, status.HTTP_401_UNAUTHORIZED, False)
+    assert tuple(mock_update_driver(unverified_user)) == (status.HTTP_403_FORBIDDEN, status.HTTP_403_FORBIDDEN, status.HTTP_403_FORBIDDEN, False)
     assert tuple(mock_update_driver(authorized_user)) == (status.HTTP_403_FORBIDDEN, status.HTTP_403_FORBIDDEN, status.HTTP_403_FORBIDDEN, False)
     assert tuple(mock_update_driver(moderator_user)) == (status.HTTP_200_OK, status.HTTP_200_OK, status.HTTP_200_OK, True)
     assert tuple(mock_update_driver(banned_user)) == (status.HTTP_401_UNAUTHORIZED, status.HTTP_401_UNAUTHORIZED, status.HTTP_401_UNAUTHORIZED, False)
@@ -189,8 +198,9 @@ def mock_update_team(user_obj: MockUser):
     else:
         yield False
 
-def test_update_team(test_drivers, unauthorized_user, authorized_user, moderator_user, banned_user):
-    assert tuple(mock_update_team(unauthorized_user)) == (status.HTTP_403_FORBIDDEN, status.HTTP_403_FORBIDDEN, False)
+def test_update_team(test_drivers, unauthorized_user, unverified_user, authorized_user, moderator_user, banned_user):
+    assert tuple(mock_update_team(unauthorized_user)) == (status.HTTP_401_UNAUTHORIZED, status.HTTP_401_UNAUTHORIZED, False)
+    assert tuple(mock_update_team(unverified_user)) == (status.HTTP_403_FORBIDDEN, status.HTTP_403_FORBIDDEN, False)
     assert tuple(mock_update_team(authorized_user)) == (status.HTTP_403_FORBIDDEN, status.HTTP_403_FORBIDDEN, False)
     assert tuple(mock_update_team(moderator_user)) == (status.HTTP_200_OK, status.HTTP_200_OK, True)
     assert tuple(mock_update_team(banned_user)) == (status.HTTP_401_UNAUTHORIZED, status.HTTP_401_UNAUTHORIZED, False)
@@ -213,8 +223,9 @@ def mock_delete_driver(user_obj: MockUser):
     yield db.cursor.fetchone() is None
 
 
-def test_delete_driver(unauthorized_user, authorized_user, moderator_user, banned_user):
-    assert tuple(mock_delete_driver(unauthorized_user)) == (status.HTTP_403_FORBIDDEN, False)
+def test_delete_driver(unauthorized_user, unverified_user, authorized_user, moderator_user, banned_user):
+    assert tuple(mock_delete_driver(unauthorized_user)) == (status.HTTP_401_UNAUTHORIZED, False)
+    assert tuple(mock_delete_driver(unverified_user)) == (status.HTTP_403_FORBIDDEN, False)
     assert tuple(mock_delete_driver(authorized_user)) == (status.HTTP_403_FORBIDDEN, False)
     assert tuple(mock_delete_driver(moderator_user)) == (status.HTTP_204_NO_CONTENT, True)
     assert tuple(mock_delete_driver(banned_user)) == (status.HTTP_401_UNAUTHORIZED, False)
@@ -236,8 +247,9 @@ def mock_delete_team(user_obj: MockUser):
     yield db.cursor.fetchone() is None
 
 
-def test_delete_team(unauthorized_user, authorized_user, moderator_user, banned_user):
-    assert tuple(mock_delete_team(unauthorized_user)) == (status.HTTP_403_FORBIDDEN, False)
+def test_delete_team(unauthorized_user, unverified_user, authorized_user, moderator_user, banned_user):
+    assert tuple(mock_delete_team(unauthorized_user)) == (status.HTTP_401_UNAUTHORIZED, False)
+    assert tuple(mock_delete_team(unverified_user)) == (status.HTTP_403_FORBIDDEN, False)
     assert tuple(mock_delete_team(authorized_user)) == (status.HTTP_403_FORBIDDEN, False)
     assert tuple(mock_delete_team(moderator_user)) == (status.HTTP_204_NO_CONTENT, True)
     assert tuple(mock_delete_team(banned_user)) == (status.HTTP_401_UNAUTHORIZED, False)

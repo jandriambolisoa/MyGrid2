@@ -57,10 +57,11 @@ def mock_create_my_grid(user_obj: MockUser, event, drivers):
 
     return res.status_code
 
-def test_create_my_grid(test_passed_events, test_upcoming_events, test_drivers, test_scores_parameters, unauthorized_user, authorized_user, moderator_user, banned_user):
+def test_create_my_grid(test_passed_events, test_upcoming_events, test_drivers, test_scores_parameters, unauthorized_user, unverified_user, authorized_user, moderator_user, banned_user):
     upcoming_event = random.choice(test_upcoming_events)
     passed_event = random.choice(test_passed_events)
-    assert mock_create_my_grid(unauthorized_user, upcoming_event, test_drivers) == status.HTTP_403_FORBIDDEN
+    assert mock_create_my_grid(unauthorized_user, upcoming_event, test_drivers) == status.HTTP_401_UNAUTHORIZED
+    assert mock_create_my_grid(unverified_user, upcoming_event, test_drivers) == status.HTTP_403_FORBIDDEN
     assert mock_create_my_grid(authorized_user, upcoming_event, test_drivers) == status.HTTP_201_CREATED
     assert mock_create_my_grid(authorized_user, passed_event, test_drivers) == status.HTTP_412_PRECONDITION_FAILED
     assert mock_create_my_grid(moderator_user, upcoming_event, test_drivers) == status.HTTP_201_CREATED
@@ -75,10 +76,11 @@ def mock_delete_my_grid(user_obj: MockUser, event, drivers):
 
     return res.status_code
 
-def test_delete_my_grid(test_passed_events, test_upcoming_events, test_drivers, unauthorized_user, authorized_user, moderator_user, banned_user):
+def test_delete_my_grid(test_passed_events, test_upcoming_events, test_drivers, unauthorized_user, unverified_user, authorized_user, moderator_user, banned_user):
     upcoming_event = random.choice(test_upcoming_events)
     passed_event = random.choice(test_passed_events)
-    assert mock_delete_my_grid(unauthorized_user, upcoming_event, test_drivers) == status.HTTP_403_FORBIDDEN
+    assert mock_delete_my_grid(unauthorized_user, upcoming_event, test_drivers) == status.HTTP_401_UNAUTHORIZED
+    assert mock_delete_my_grid(unverified_user, upcoming_event, test_drivers) == status.HTTP_403_FORBIDDEN
     assert mock_delete_my_grid(authorized_user, upcoming_event, test_drivers) == status.HTTP_204_NO_CONTENT
     assert mock_delete_my_grid(authorized_user, passed_event, test_drivers) == status.HTTP_412_PRECONDITION_FAILED
     assert mock_delete_my_grid(moderator_user, upcoming_event, test_drivers) == status.HTTP_204_NO_CONTENT
