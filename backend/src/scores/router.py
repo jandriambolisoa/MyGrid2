@@ -40,7 +40,7 @@ async def override_score_parameters_of_a_championship(parameters: ScoresParamete
         WHERE championship_id = %s""", (championship_id,))
     db.conn.commit()
 
-    for parameter in list(parameters.keys()):
+    for parameter in list(vars(parameters).keys()):
         points_list = getattr(parameters, parameter)
         points_list.sort(reverse=True)
 
