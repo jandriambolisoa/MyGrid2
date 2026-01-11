@@ -38,7 +38,7 @@ async def get_session_results(session_id: int = Depends(valid_session_id), langu
         drivers.lastname AS driver_lastname,
         drivers.codename AS driver_codename,
         sessionsresults.result AS result,
-        sessionsresults.points AS points
+        sessionsresults.points AS points,
         COALESCE(events_translations.name||' '||sessions_translations.name, events.name||' '||sessions.name) AS session_name
         FROM sessionsresults
         LEFT JOIN drivers ON drivers.id = sessionsresults.driver_id

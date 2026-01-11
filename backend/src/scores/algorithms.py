@@ -26,7 +26,7 @@ async def compute_score(
     # Use if statement to separate rarity and quality computation.
     # If the difference is higher than the margin allowed
     # by a parameter, just skip it.
-    for param in parameters.__class_vars__:
+    for param in vars(parameters).keys():
         max_margin = len(param)-1
 
         if difference > max_margin:
@@ -42,23 +42,53 @@ async def compute_score(
             # whether we have to skip the computation.
             rarity_margin = int(param.removeprefix("rarity"))
             if rarity_margin == rarity:
-                final_score += param_points[difference]
+                try:
+                    final_score += param_points[difference]
+                except IndexError:
+                    pass
             continue
 
         match param:
             case "position":
-                final_score += param_points[difference]
+                try:
+                    final_score += param_points[difference]
+                except IndexError:
+                    pass
+
             case "top10":
-                final_score += param_points[difference] if user_driver_prediction <= 10 else 0
+                try:
+                    final_score += param_points[difference] if user_driver_prediction <= 10 else 0
+                except IndexError:
+                    pass
+
             case "top5":
-                final_score += param_points[difference] if user_driver_prediction <= 5 else 0
+                try:
+                    final_score += param_points[difference] if user_driver_prediction <= 5 else 0
+                except IndexError:
+                    pass
+
             case "top3":
-                final_score += param_points[difference] if user_driver_prediction <= 3 else 0
+                try:
+                    final_score += param_points[difference] if user_driver_prediction <= 3 else 0
+                except IndexError:
+                    pass
+
             case "top1":
-                final_score += param_points[difference] if user_driver_prediction == 1 else 0
+                try:
+                    final_score += param_points[difference] if user_driver_prediction == 1 else 0
+                except IndexError:
+                    pass
+
             case "last":
-                final_score += param_points[difference] if user_driver_prediction == grid_size else 0
+                try:
+                    final_score += param_points[difference] if user_driver_prediction == grid_size else 0
+                except IndexError:
+                    pass
+
             case "penultimate":
-                final_score += param_points[difference] if user_driver_prediction == grid_size-1 else 0
+                try:
+                    final_score += param_points[difference] if user_driver_prediction == grid_size-1 else 0
+                except IndexError:
+                    pass
 
     return final_score
