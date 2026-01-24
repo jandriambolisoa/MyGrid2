@@ -7,6 +7,8 @@ services:
       - POSTGRES_DB=${DB_NAME}
     volumes:
       - postgres-db:/var/lib/postgresql
+    ports:
+      - "5432:5432"
     networks:
       - app-network
 
@@ -16,9 +18,12 @@ services:
       - db
     environment:
       - DATABASE_URL=${DATABASE_URL}
+      - DBMATE_MIGRATIONS_DIR=/db/migrations
     command: up
     networks:
       - app-network
+    volumes:
+      - ./backend/db/migrations:/db/migrations
 
   openf1:
     image: jandriambolisoa/mygrid2
@@ -53,6 +58,7 @@ services:
     depends_on:
       - db
     environment:
+      - DEBUG=0
       - SECRET_KEY=${SECRET_KEY}
       - ALGORITHM=${ALGORITHM}
       - TOKEN_EXPIRES_MINUTES=${TOKEN_EXPIRES_MINUTES}
@@ -70,8 +76,13 @@ services:
       - GOOGLE_AUTH_EXPO_CLIENT_ID=${GOOGLE_AUTH_EXPO_CLIENT_ID}
       - GOOGLE_AUTH_ANDROID_CLIENT_ID=${GOOGLE_AUTH_ANDROID_CLIENT_ID}
       - GOOGLE_AUTH_IOS_CLIENT_ID=${GOOGLE_AUTH_IOS_CLIENT_ID}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
     ports:
-      - "80:8000"
+      - "8000:8000"
     networks:
       - app-network
 

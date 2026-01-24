@@ -1,0 +1,105 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    env:
+      DB_HOST: ${{ secrets.DB_HOST }}
+      DB_PORT: ${{ secrets.DB_PORT }}
+      DB_NAME: ${{ secrets.DB_NAME }}
+      DB_USER: ${{ secrets.DB_USER }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      OPENF1_API_USERNAME: ${{ secrets.OPENF1_API_USERNAME }}
+      OPENF1_API_PASSWORD: ${{ secrets.OPENF1_API_PASSWORD }}
+
+      MAIL_HOST: ${{ secrets.MAIL_HOST }}
+      MAIL_CRYPTAGE: ${{ secrets.MAIL_CRYPTAGE }}
+      MAIL_PORT: ${{ secrets.MAIL_PORT }}
+      MAIL_USERLABEL: ${{ secrets.MAIL_USERLABEL }}
+      MAIL_ALIAS: ${{ secrets.MAIL_ALIAS }}
+      MAIL_DOMAIN: ${{ secrets.MAIL_DOMAIN }}
+      MAIL_LOGIN: ${{ secrets.MAIL_LOGIN }}
+      MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      ALGORITHM: ${{ secrets.ALGORITHM }}
+      TOKEN_EXPIRES_MINUTES: ${{ secrets.TOKEN_EXPIRES_MINUTES }}
+      REFRESH_TOKEN_EXPIRES_MINUTES: ${{ secrets.REFRESH_TOKEN_EXPIRES_MINUTES }}
+      WEBSITE_URL: ${{ secrets.WEBSITE_URL }}
+      CONFIRMED_EMAIL_URL: ${{ secrets.CONFIRMED_EMAIL_URL }}
+      MS_MAILINGS_URL: ${{ secrets.MS_MAILINGS_URL }}
+      MS_OPENF1_URL: ${{ secrets.MS_OPENF1_URL }}
+      APPLE_DEV_NONCE_SECRET: ${{ secrets.APPLE_DEV_NONCE_SECRET }}
+      APPLE_APP_ISS: ${{ secrets.APPLE_APP_ISS }}
+      APPLE_CLIENT_ID: ${{ secrets.APPLE_CLIENT_ID }}
+      APPLE_DEV_KID: ${{ secrets.APPLE_DEV_KID }}
+      APPLE_DEV_PRIVATE_KEY: ${{ secrets.APPLE_DEV_PRIVATE_KEY }}
+      APPLE_DEV_SUB: ${{ secrets.APPLE_DEV_SUB }}
+      GOOGLE_AUTH_EXPO_CLIENT_ID: ${{ secrets.GOOGLE_AUTH_EXPO_CLIENT_ID }}
+      GOOGLE_AUTH_ANDROID_CLIENT_ID: ${{ secrets.GOOGLE_AUTH_ANDROID_CLIENT_ID }}
+      GOOGLE_AUTH_IOS_CLIENT_ID: ${{ secrets.GOOGLE_AUTH_IOS_CLIENT_ID }}
+
+    services:
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_USER: ${{ secrets.DB_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          POSTGRES_DB: ${{ secrets.DB_NAME }}_tests
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    runs-on: ubuntu-slim
+
+    steps:
+      - name: Pulling git repo
+        uses: actions/checkout@v6
+      - name: Install Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          virtualenvs-create: false
+      - name: Install dependencies
+        run: poetry install --no-interaction --no-ansi
+      - name: Run db migrations
+        uses: dwin/dbmate-action@v1.15
+        with:
+          command: '--migrations-dir ./backend/db/migrations --schema-file ./backend/db/schema.sql up'
+      - name: Testings
+        run: |
+          pip install pytest
+          pytest -v -s
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: [ build ]
+
+    steps:
+      - name: Deploy to prod VPS
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          password: ${{ secrets.VPS_PASSWORD }}
+          script: |
+            cd MyGrid2/
+            git pull
+            docker login
+            docker pull jandriambolisoa/mygrid2:latest
+            docker compose down
+            docker compose up -d
