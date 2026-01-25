@@ -66,7 +66,7 @@ jobs:
       - name: Run Migrations
         run: docker compose run --rm dbmate up
       - name: Run tests
-        run: docker compose run --rm api poetry run pytest -s -v
+        run: docker compose run --rm api poetry run pytest tests/ -s -v
       - name: Final Cleanup
         if: always()
         run: docker compose down
