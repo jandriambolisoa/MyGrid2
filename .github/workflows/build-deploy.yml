@@ -7,7 +7,7 @@ on:
 
 jobs:
   ci:
-    runs-on: ubuntu-slim
+    runs-on: ubuntu-latest
     env:
       DEBUG: 0
 
@@ -51,21 +51,21 @@ jobs:
       GOOGLE_AUTH_IOS_CLIENT_ID: abc123
 
     steps:
+      - name: Pull git repo
+        uses: actions/checkout@v4
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Pull git repo
-        uses: actions/checkout@v4
-      - name: run Docker
-        run: systemctl start docker
       - name: Docker compose
         run: docker compose up -d
-      - name: Run tests
+      - name: Wait for Database
         run: |
-          docker container exec -it mygrid2-api-1 sh
-          poetry run pytest -s -v
+          docker compose exec -T db sh -c 'until pg_isready -U postgres; do sleep 1; done'
+      - name: Run tests
+        run: docker compose exec -T api-service-name poetry run pytest -s -v
+
 
   docker-build:
     runs-on: ubuntu-latest
