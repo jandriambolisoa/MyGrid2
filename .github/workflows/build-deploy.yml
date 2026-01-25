@@ -58,14 +58,18 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Docker compose
-        run: docker compose up -d
+      - name: Start Dependencies
+        run: docker compose up -d db openf1 mailings
       - name: Wait for Database
         run: |
           docker compose exec -T db sh -c 'until pg_isready -U postgres; do sleep 1; done'
+      - name: Run Migrations
+        run: docker compose run --rm dbmate up
       - name: Run tests
-        run: docker compose exec -T mygrid2-api-1 poetry run pytest -s -v
-
+        run: docker compose run --rm api poetry run pytest -s -v
+      - name: Final Cleanup
+        if: always()
+        run: docker compose down
 
   docker-build:
     runs-on: ubuntu-latest
