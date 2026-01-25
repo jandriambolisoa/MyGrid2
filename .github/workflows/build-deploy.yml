@@ -20,6 +20,6 @@ jobs:
             cd ~/MyGrid2/
             git pull
             docker login
-            docker pull jandriambolisoa/mygrid2:latest
             docker compose down
+            docker pull jandriambolisoa/mygrid2:latest
             docker compose up -d
