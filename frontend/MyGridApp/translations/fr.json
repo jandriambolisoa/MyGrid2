@@ -1,0 +1,8 @@
+{
+  "auth": {
+    "login": {
+      "signInGoogle": "Se connecter avec Google",
+      "signInApple": "Se connecter avec Apple"
+    }
+  }
+}
