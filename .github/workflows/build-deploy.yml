@@ -97,7 +97,7 @@ jobs:
           username: ${{ secrets.VPS_USERNAME }}
           password: ${{ secrets.VPS_PASSWORD }}
           script: |
-            cd MyGrid2/
+            cd ~/MyGrid2/
             git pull
             docker login
             docker pull jandriambolisoa/mygrid2:latest
