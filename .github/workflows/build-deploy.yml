@@ -59,17 +59,17 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Start Dependencies
-        run: docker compose up -d db openf1 mailings
+        run: docker compose -f docker-compose-test.yml up -d db openf1 mailings
       - name: Wait for Database
         run: |
-          docker compose exec -T db sh -c 'until pg_isready -U postgres; do sleep 1; done'
+          docker compose -f docker-compose-test.yml exec -T db sh -c 'until pg_isready -U postgres; do sleep 1; done'
       - name: Run Migrations
-        run: docker compose run --rm dbmate up
+        run: docker compose -f docker-compose-test.yml run --rm dbmate up
       - name: Run tests
-        run: docker compose run --rm api poetry run pytest tests/ -s -v
+        run: docker compose -f docker-compose-test.yml run --rm api poetry run pytest tests/ -s -v
       - name: Final Cleanup
         if: always()
-        run: docker compose down
+        run: docker compose -f docker-compose-test.yml down
 
   docker-build:
     runs-on: ubuntu-latest
