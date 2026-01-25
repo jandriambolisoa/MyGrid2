@@ -1,0 +1,102 @@
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    volumes:
+      - postgres-db:/var/lib/postgresql
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+
+  dbmate:
+    image: amacneil/dbmate
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - DBMATE_MIGRATIONS_DIR=/db/migrations
+    command: up
+    networks:
+      - app-network
+    volumes:
+      - ./backend/db/migrations:/db/migrations
+
+  openf1:
+    build:
+      context: .
+      dockerfile: Dockerfile-test
+    environment:
+      - OPENF1_API_USERNAME=${OPENF1_API_USERNAME}
+      - OPENF1_API_PASSWORD=${OPENF1_API_PASSWORD}
+    ports:
+      - "8003:8003"
+    command: poetry run uvicorn backend.openf1.main:app --port 8003
+    networks:
+      - app-network
+
+  mailings:
+    build:
+      context: .
+      dockerfile: Dockerfile-test
+    environment:
+      - MAIL_HOST=${MAIL_HOST}
+      - MAIL_CRYPTAGE=${MAIL_CRYPTAGE}
+      - MAIL_PORT=${MAIL_PORT}
+      - MAIL_USERLABEL=${MAIL_USERLABEL}
+      - MAIL_ALIAS=${MAIL_ALIAS}
+      - MAIL_DOMAIN=${MAIL_DOMAIN}
+      - MAIL_LOGIN=${MAIL_LOGIN}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+    ports:
+      - "8002:8002"
+    command: poetry run uvicorn backend.mailings.main:app --port 8002
+    networks:
+      - app-network
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile-test
+    depends_on:
+      - db
+    environment:
+      - DEBUG=0
+      - SECRET_KEY=${SECRET_KEY}
+      - ALGORITHM=${ALGORITHM}
+      - TOKEN_EXPIRES_MINUTES=${TOKEN_EXPIRES_MINUTES}
+      - REFRESH_TOKEN_EXPIRES_MINUTES=${REFRESH_TOKEN_EXPIRES_MINUTES}
+      - WEBSITE_URL=${WEBSITE_URL}
+      - CONFIRMED_EMAIL_URL=${CONFIRMED_EMAIL_URL}
+      - MS_MAILINGS_URL=${MS_MAILINGS_URL}
+      - MS_OPENF1_URL=${MS_OPENF1_URL}
+      - APPLE_DEV_NONCE_SECRET=${APPLE_DEV_NONCE_SECRET}
+      - APPLE_APP_ISS=${APPLE_APP_ISS}
+      - APPLE_CLIENT_ID=${APPLE_CLIENT_ID}
+      - APPLE_DEV_KID=${APPLE_DEV_KID}
+      - APPLE_DEV_PRIVATE_KEY=${APPLE_DEV_PRIVATE_KEY}
+      - APPLE_DEV_SUB=${APPLE_DEV_SUB}
+      - GOOGLE_AUTH_EXPO_CLIENT_ID=${GOOGLE_AUTH_EXPO_CLIENT_ID}
+      - GOOGLE_AUTH_ANDROID_CLIENT_ID=${GOOGLE_AUTH_ANDROID_CLIENT_ID}
+      - GOOGLE_AUTH_IOS_CLIENT_ID=${GOOGLE_AUTH_IOS_CLIENT_ID}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/usr/src/app
+    networks:
+      - app-network
+
+volumes:
+  postgres-db:
+
+networks:
+  app-network:
+    driver: bridge
