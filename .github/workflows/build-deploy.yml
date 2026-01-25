@@ -8,6 +8,47 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-slim
+    env:
+      DEBUG: 0
+
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: mygrid2
+      DB_USER: postgres
+      DB_PASSWORD: password123
+
+      DATABASE_URL: postgres://postgres:password123@db:5432/mygrid2?sslmode=disable
+
+      OPENF1_API_USERNAME: username
+      OPENF1_API_PASSWORD: password123
+
+      MAIL_HOST: ${{ secrets.MAIL_HOST }}
+      MAIL_CRYPTAGE: ${{ secrets.MAIL_CRYPTAGE }}
+      MAIL_PORT: ${{ secrets.MAIL_PORT }}
+      MAIL_USERLABEL: ${{ secrets.MAIL_USERLABEL }}
+      MAIL_ALIAS: ${{ secrets.MAIL_ALIAS }}
+      MAIL_DOMAIN: ${{ secrets.MAIL_DOMAIN }}
+      MAIL_LOGIN: ${{ secrets.MAIL_LOGIN }}
+      MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      ALGORITHM: ${{ secrets.ALGORITHM }}
+      TOKEN_EXPIRES_MINUTES: 12
+      REFRESH_TOKEN_EXPIRES_MINUTES: 24
+      WEBSITE_URL: https://mygrid-app.com/
+      CONFIRMED_EMAIL_URL: https://mygrid-app.com/
+      MS_MAILINGS_URL: https://mygrid-app.com/
+      MS_OPENF1_URL: https://mygrid-app.com/
+      MS: 0
+      APPLE_DEV_NONCE_SECRET: abc123
+      APPLE_APP_ISS: ABC123
+      APPLE_CLIENT_ID: ${{ secrets.APPLE_CLIENT_ID }}
+      APPLE_DEV_KID: ABC123
+      APPLE_DEV_PRIVATE_KEY: ABC123
+      APPLE_DEV_SUB: ${{ secrets.APPLE_CLIENT_ID }}
+      GOOGLE_AUTH_EXPO_CLIENT_ID: abc123
+      GOOGLE_AUTH_ANDROID_CLIENT_ID: abc123
+      GOOGLE_AUTH_IOS_CLIENT_ID: abc123
 
     steps:
       - name: Login to Docker Hub
