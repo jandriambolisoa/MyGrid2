@@ -65,7 +65,8 @@ scheduler.start()
 
 @app.get("/", response_class=RedirectResponse)
 def home():
-    return RedirectResponse(settings.website_url)
+    return {"message": "Welcome to the MyGrid API!"}
+    # return RedirectResponse(settings.website_url)
 
 @app.get("/test")
 async def test(token: str, authorization_code: str):
