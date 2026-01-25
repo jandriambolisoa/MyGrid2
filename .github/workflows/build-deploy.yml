@@ -8,6 +8,44 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-slim
+    env:
+      DB_HOST: ${{ secrets.DB_HOST }}
+      DB_PORT: ${{ secrets.DB_PORT }}
+      DB_NAME: ${{ secrets.DB_NAME }}
+      DB_USER: ${{ secrets.DB_USER }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+      OPENF1_API_USERNAME: ${{ secrets.OPENF1_API_USERNAME }}
+      OPENF1_API_PASSWORD: ${{ secrets.OPENF1_API_PASSWORD }}
+
+      MAIL_HOST: ${{ secrets.MAIL_HOST }}
+      MAIL_CRYPTAGE: ${{ secrets.MAIL_CRYPTAGE }}
+      MAIL_PORT: ${{ secrets.MAIL_PORT }}
+      MAIL_USERLABEL: ${{ secrets.MAIL_USERLABEL }}
+      MAIL_ALIAS: ${{ secrets.MAIL_ALIAS }}
+      MAIL_DOMAIN: ${{ secrets.MAIL_DOMAIN }}
+      MAIL_LOGIN: ${{ secrets.MAIL_LOGIN }}
+      MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      ALGORITHM: ${{ secrets.ALGORITHM }}
+      TOKEN_EXPIRES_MINUTES: ${{ secrets.TOKEN_EXPIRES_MINUTES }}
+      REFRESH_TOKEN_EXPIRES_MINUTES: ${{ secrets.REFRESH_TOKEN_EXPIRES_MINUTES }}
+      WEBSITE_URL: ${{ secrets.WEBSITE_URL }}
+      CONFIRMED_EMAIL_URL: ${{ secrets.CONFIRMED_EMAIL_URL }}
+      MS_MAILINGS_URL: ${{ secrets.MS_MAILINGS_URL }}
+      MS_OPENF1_URL: ${{ secrets.MS_OPENF1_URL }}
+      APPLE_DEV_NONCE_SECRET: ${{ secrets.APPLE_DEV_NONCE_SECRET }}
+      APPLE_APP_ISS: ${{ secrets.APPLE_APP_ISS }}
+      APPLE_CLIENT_ID: ${{ secrets.APPLE_CLIENT_ID }}
+      APPLE_DEV_KID: ${{ secrets.APPLE_DEV_KID }}
+      APPLE_DEV_PRIVATE_KEY: ${{ secrets.APPLE_DEV_PRIVATE_KEY }}
+      APPLE_DEV_SUB: ${{ secrets.APPLE_DEV_SUB }}
+      GOOGLE_AUTH_EXPO_CLIENT_ID: ${{ secrets.GOOGLE_AUTH_EXPO_CLIENT_ID }}
+      GOOGLE_AUTH_ANDROID_CLIENT_ID: ${{ secrets.GOOGLE_AUTH_ANDROID_CLIENT_ID }}
+      GOOGLE_AUTH_IOS_CLIENT_ID: ${{ secrets.GOOGLE_AUTH_IOS_CLIENT_ID }}
 
     steps:
       - name: Login to Docker Hub
