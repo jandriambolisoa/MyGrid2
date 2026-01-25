@@ -64,7 +64,7 @@ jobs:
         run: |
           docker compose exec -T db sh -c 'until pg_isready -U postgres; do sleep 1; done'
       - name: Run tests
-        run: docker compose exec -T api-service-name poetry run pytest -s -v
+        run: docker compose exec -T mygrid2-api-1 poetry run pytest -s -v
 
 
   docker-build:
