@@ -58,6 +58,8 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: Pull git repo
         uses: actions/checkout@v4
+      - name: Set up Docker Compose
+        uses: docker/setup-compose-action@v1
       - name: Docker compose
         run: docker compose up -d
       - name: Run tests
