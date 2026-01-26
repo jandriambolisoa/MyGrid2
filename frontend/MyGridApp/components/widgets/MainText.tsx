@@ -1,5 +1,5 @@
 import { StyleSheet, Text, type TextProps } from 'react-native';
-import { Colors } from '@/constants/Colors';
+import { Colors } from '@/theme/Colors';
 
 export type MainTextProps = TextProps & {
   type?: 'light' | 'dark';

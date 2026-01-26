@@ -1,4 +1,4 @@
-import { Colors } from '@/constants/Colors';
+import { Colors } from '@/theme/Colors';
 import { ReactNode } from 'react';
 import { View, type ViewProps, StyleSheet } from 'react-native';
 import { Svg, Defs, LinearGradient, RadialGradient, Stop, Rect } from 'react-native-svg';
