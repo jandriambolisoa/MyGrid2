@@ -11,6 +11,8 @@ export const Colors = {
     lightText: '#ffffff',
     darkText: '#000000',
     orangeLogo: '#ff7300',
-    cyanLogo: '#00fff0'
+    cyanLogo: '#00fff0',
+    lightShadow: '#ffffff',
+    darkShadow: '#000000'
   },
 };

@@ -10,10 +10,10 @@ import { ShadowSetup } from "@/components/widgets";
 export function ShadowButton({ style, ...otherProps }: TouchableOpacityProps) {
   return (
     <TouchableOpacity style={[GlobalStyles.button, style]} {...otherProps}>
-        <View style={{padding: Spacing.buttonPadding, zIndex: 1}}>
-          {otherProps.children}
-        </View>
-        <ShadowSetup />
+      <View style={{padding: Spacing.buttonPadding, zIndex: 1}}>
+        {otherProps.children}
+      </View>
+      <ShadowSetup />
     </TouchableOpacity>
   )
 }

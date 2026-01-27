@@ -2,6 +2,7 @@
 
 import { StyleSheet } from 'react-native';
 import { Svg, Defs, LinearGradient, Stop, Rect } from 'react-native-svg';
+import { Colors } from '@/theme';
 
 export type ShadowProps = {
   light?: boolean;
@@ -71,7 +72,7 @@ export function Shadow({
       break;
   }
 
-  const stopColor = light ? "#ffffff" : "#000000";
+  const stopColor = light ? Colors.light.lightShadow : Colors.light.darkShadow;
 
   return (
     <Svg height="100%" width="100%" style={[StyleSheet.absoluteFill]}>
