@@ -25,6 +25,7 @@ def test_get_user_prediction(
 
     res = mock_user.client.get(f"/events/sessions/predictions/{passed_session.id}")
     res_json = res.json()
+    print(f"# DEBUG - res_json: {res_json}")
     assert res.status_code == status.HTTP_200_OK
     assert res_json.get("session_score", None) is not None
     predictions = res_json.get("predictions", None)
