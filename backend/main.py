@@ -65,7 +65,7 @@ scheduler.start()
 
 @app.get("/", response_class=RedirectResponse)
 def home():
-    return Response({"message": "Hello from MyGrid2!"})
+    return {"Hello": "Welcome to MyGrid2 API!"}
     # return RedirectResponse(settings.website_url)
 
 @app.get("/test")
