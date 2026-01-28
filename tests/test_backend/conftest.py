@@ -24,7 +24,7 @@ def test_npc_users(client):
     created_users = list()
 
     for i in range(10):
-        user = users_utils.create_random_user(client, verified= True, authorized=True)
+        user = users_utils.create_random_user(client, verified= True, authorized= True)
         created_users.append(user)
 
     return created_users
