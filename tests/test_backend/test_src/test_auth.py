@@ -117,8 +117,8 @@ def test_login_refresh_token(unauthorized_user, unverified_user, authorized_user
     assert tuple(mocking_login_refresh_token(banned_user)) == (status.HTTP_401_UNAUTHORIZED, status.HTTP_401_UNAUTHORIZED)
 
 
-def test_logout(test_npc_users, test_appstatus):
-    user_obj = random.choice(test_npc_users)
+def test_logout(client, test_npc_users, test_appstatus):
+    user_obj = create_random_user(client, verified= True, authorized= True)
     token = user_obj.client.headers["Authorization"].split(" ")[1]
 
     res = user_obj.client.post("/auth/logout")

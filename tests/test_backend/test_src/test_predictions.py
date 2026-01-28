@@ -16,23 +16,26 @@ def test_get_user_prediction(
         test_predictions,
         test_results,
         test_scores):
-    mock_user = random.choice(test_npc_users)
+
+    user_obj = random.choice(test_npc_users)
     passed_event = random.choice(test_passed_events)
     upcoming_event = random.choice(test_upcoming_events)
 
     passed_session = get_competitive_sessions_from_event_id(passed_event.id)[0]
     upcoming_session = get_competitive_sessions_from_event_id(upcoming_event.id)[0]
+    print(f"# DEBUG - {user_obj}")
+    print(f"# DEBUG - {passed_session}")
+    print(f"# DEBUG - {upcoming_session}")
 
-    res = mock_user.client.get(f"/events/sessions/predictions/{passed_session.id}")
+    res = user_obj.client.get(f"/events/sessions/predictions/{passed_session.id}")
     res_json = res.json()
-    print(f"# DEBUG - res_json: {res_json}")
     assert res.status_code == status.HTTP_200_OK
     assert res_json.get("session_score", None) is not None
     predictions = res_json.get("predictions", None)
     if predictions:
         assert predictions[0].get("score", None) is not None
 
-    res = mock_user.client.get(f"/events/sessions/predictions/{upcoming_session.id}")
+    res = user_obj.client.get(f"/events/sessions/predictions/{upcoming_session.id}")
     res_json = res.json()
     assert res.status_code == status.HTTP_200_OK
     assert res_json.get("session_score", None) is None

@@ -171,7 +171,6 @@ def mock_update_event(user_obj: MockUser, championship: Championship):
     to_update_color = random_color()
 
     res = user_obj.client.put(f"/events/{to_update.id}", json={"name": to_update_names})
-    print("# DEBUG - %s"%res.json())
     yield res.status_code
 
     res = user_obj.client.put(f"/events/{to_update.id}", json={"color": to_update_color})
