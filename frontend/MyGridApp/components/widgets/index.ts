@@ -6,3 +6,4 @@ export * from './Shadow';
 export * from './ShadowButton';
 export * from './LiteButton';
 export * from './ShadowSetup';
+export * from './MainTabBar';
