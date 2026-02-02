@@ -13,5 +13,17 @@ export const GlobalStyles = StyleSheet.create({
     backgroundColor: Colors.light.background,
     justifyContent: 'center',
     alignItems: 'center'
+  },
+  tabBar: {
+    position: 'absolute',
+    bottom: 0,
+    flexDirection: 'row',
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    paddingTop: 10,
+    borderWidth: 0,
+    borderTopWidth: 1,
+    borderColor: '#fff'
   }
 });

@@ -9,5 +9,8 @@ export const Constants = {
     rightThickness: 8,
     darkOpacity: "0.2",
     lightOpacity: "0.8"
+  },
+  gesture: {
+    swipeThreshold: 70
   }
 }
