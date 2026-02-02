@@ -13,7 +13,7 @@ from backend.src.events.dependencies import valid_championship_id, valid_session
 from backend.src.events.exceptions import ChampionshipAlreadyExistsError, EventAlreadyExistsError, \
     SessionAlreadyExistsError, EventNotFoundError, ChampionshipNotFoundError, SessionNotFoundError
 from backend.src.events.schemas import Championship, ChampionshipCreate, Event, EventCreate, Session, SessionCreate, \
-    EventSearch, ChampionshipUpdate, EventUpdate, SessionUpdate
+    EventSearch, ChampionshipUpdate, EventUpdate, SessionUpdate, EventCollectible
 from backend.src.users.privileges import is_user_moderator_or_admin
 from backend.src.events import signals as events_signal
 from backend.src.users.schemas import UserSelf
@@ -59,9 +59,9 @@ async def create_event(to_create: EventCreate, language: str = "en", db: Databas
 
     try:
         db.cursor.execute("""
-            INSERT INTO events (name, championship_id, color)
-            VALUES (%s, %s, %s)
-            RETURNING *""", (to_create.name["en"].title(), to_create.championship_id, to_create.color))
+            INSERT INTO events (name, championship_id, color, flag)
+            VALUES (%s, %s, %s, %s)
+            RETURNING *""", (to_create.name["en"].title(), to_create.championship_id, to_create.color, to_create.flag))
         created = db.cursor.fetchone()
 
         for lang in translations:
@@ -256,6 +256,8 @@ async def update_event(datas: EventUpdate, event_id: int = Depends(valid_event_i
 
     # Get default values
     translations = None
+    event_collectible = datas.collectible.model
+    event_collectible_textures = datas.collectible.textures
     if not datas.name:
         datas.name["en"] = orig["name"]
     else:
@@ -263,14 +265,26 @@ async def update_event(datas: EventUpdate, event_id: int = Depends(valid_event_i
         datas.name["en"] = datas.name.get("en", orig["name"])
     if not datas.color:
         datas.color = orig["color"]
+    if not datas.flag:
+        datas.flag = orig["flag"]
+    if not datas.collectible:
+        datas.collectible = EventCollectible(
+            model = orig["collectible"],
+            textures = orig["collectibletextures"]
+        )
+    else:
+        datas.collectible = EventCollectible(
+            model = event_collectible,
+            textures = event_collectible_textures
+        )
 
     try:
         db.cursor.execute("""\
             UPDATE events
-            SET name = %s, color = %s
+            SET name = %s, color = %s, flag = %s, collectible = %s, collectibletextures = %s
             WHERE id = %s
             RETURNING *
-            """, (datas.name["en"], datas.color, event_id))
+            """, (datas.name["en"], datas.color, datas.flag, datas.collectible.model, datas.collectible.textures, event_id))
         updated = db.cursor.fetchone()
 
         for lang in translations:

@@ -6,7 +6,7 @@ CREATE TABLE public.events
     color character varying NOT NULL,
     flag character varying NOT NULL,
     collectible character varying,
-    collectibletexture character varying,
+    collectibletextures character varying,
     championship_id integer NOT NULL,
     PRIMARY KEY (id),
     UNIQUE (championship_id, name),

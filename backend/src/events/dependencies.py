@@ -7,7 +7,8 @@ from backend.src.drivers.constants import CODENAME_LENGTH
 from backend.src.drivers.exceptions import NotAValidCodenameLengthError, NotAValidColorError, DriverNotFoundError, \
     DriverDoesNotExistsError
 from backend.src.events.exceptions import ChampionshipDoesNotExistsError, SessionStartedError, \
-    SessionDoesNotExistsError, InvalidDatetimeForSessionCreationError
+    SessionDoesNotExistsError, InvalidDatetimeForSessionCreationError, EventDoesNotExistsError, EventNotFoundError
+from backend.src.events.schemas import Event, Championship
 
 
 async def valid_championship_id(championship_id: int, language: str = "en") -> int:
@@ -65,3 +66,57 @@ async def valid_session_creation_datetime(datetime: datetime, language: str = "e
         raise InvalidDatetimeForSessionCreationError(language=language)
 
     return datetime
+
+async def get_upcoming_event(language: str = "en"):
+    db = get_db()
+    db.cursor.execute("""
+        WITH events_translations AS (
+            SELECT event_id, name
+            FROM eventstranslations
+            WHERE language = %s
+        )
+        SELECT events.id AS id,
+        COALESCE(events_translations.name, events.name) AS name,
+        events.color,
+        events.flag,
+        events.collectible,
+        events.collectibletextures,
+        events.championship_id
+        FROM sessions
+        LEFT JOIN events ON events.id = event_id
+        LEFT JOIN events_translations ON events.id = events_translations.event_id
+        WHERE competitive = true
+        ORDER BY datetime ASC""", (language,))
+    event = db.cursor.fetchone()
+
+    if not event:
+        raise EventNotFoundError(language=language)
+
+    return Event(**event)
+
+async def get_event_championship(event_id: int, language: str = "en"):
+    db = get_db()
+    db.cursor.execute("""\
+        SELECT championships.*
+        FROM events
+        LEFT JOIN championships ON championships.id = events.championship_id
+        WHERE events.id = %s""", (event_id,))
+    championship = db.cursor.fetchone()
+
+    if not championship:
+        raise EventNotFoundError(language=language)
+
+    return Championship(**championship)
+
+async def is_session_over(session_id: int):
+    db = get_db()
+    db.cursor.execute("""
+        SELECT session_id
+        FROM sessionsresults
+        WHERE session_id = %s""", (session_id,))
+    session = db.cursor.fetchone()
+
+    if session:
+        return True
+
+    return False
