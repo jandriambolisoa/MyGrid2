@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import PagerView from "react-native-pager-view";
 import { View } from "react-native";
 import { PagerTabBar } from "@/components/widgets";
@@ -10,6 +10,8 @@ import Social from "./social";
 export default function HomePagerView () {
 
   const pagerRef = useRef<PagerView>(null);
+  
+  const [scroll, setScroll] = useState<any>({ position: 1, offset: 0});
 
   return (
     <View style= {{ flex: 1 }}>
@@ -17,12 +19,16 @@ export default function HomePagerView () {
         ref={pagerRef}
         style={{ flex: 1 }}
         initialPage={1}
+        overdrag={true}
+        onPageScroll={(e) => {
+          setScroll(e.nativeEvent);
+        }}
       >
         <Social />
         <Events />
         <Profile />
       </PagerView>
-      <PagerTabBar />
+      <PagerTabBar setPage={(page) => pagerRef.current?.setPage(page)} scroll={scroll}/>
     </View>
   )
 }

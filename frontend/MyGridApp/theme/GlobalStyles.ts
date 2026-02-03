@@ -1,5 +1,6 @@
 import { StyleSheet } from "react-native";
-import { Colors } from "@/theme"
+import { Colors } from "./Colors";
+import { Constants } from "./Constants";
 
 export const GlobalStyles = StyleSheet.create({
   button: {
@@ -25,5 +26,12 @@ export const GlobalStyles = StyleSheet.create({
     borderWidth: 0,
     borderTopWidth: 1,
     borderColor: '#fff'
+  },
+  tabBarSlider: {
+    position: 'absolute',
+    height: 1,
+    backgroundColor: Colors.light.borders,
+    width: Constants.spacing.sliderWidth,
+    transform: [{ translateX: -Constants.spacing.sliderWidth / 2 }]
   }
 });

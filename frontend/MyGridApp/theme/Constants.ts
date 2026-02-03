@@ -1,6 +1,7 @@
 export const Constants = {
   spacing: {
-    buttonPadding: 10
+    buttonPadding: 10,
+    sliderWidth: 24
   },
   shadow: {
     topThickness: 24,
