@@ -27,7 +27,6 @@ export function PagerTabBar ({
     if (firstTabDim && lastTabDim) {
       setFirstX(firstTabDim.x + firstTabDim.width / 2);
       setLastX(lastTabDim.x + lastTabDim.width / 2);
-      console.log(firstX, lastX);
     }
   }, [firstTabDim, lastTabDim]);
 

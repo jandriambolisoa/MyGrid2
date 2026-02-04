@@ -33,5 +33,11 @@ export const GlobalStyles = StyleSheet.create({
     backgroundColor: Colors.light.borders,
     width: Constants.spacing.sliderWidth,
     transform: [{ translateX: -Constants.spacing.sliderWidth / 2 }]
+  },
+  mainWidget: {
+    alignSelf: 'stretch',
+    marginHorizontal: Constants.spacing.mainWidgetMargin,
+    marginBottom: Constants.spacing.mainWidgetMargin,
+    alignItems: 'center'
   }
 });

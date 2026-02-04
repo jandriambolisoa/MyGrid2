@@ -1,13 +1,14 @@
 export const Constants = {
   spacing: {
     buttonPadding: 10,
-    sliderWidth: 24
+    sliderWidth: 24,
+    mainWidgetMargin: 14
   },
   shadow: {
-    topThickness: 24,
-    leftThickness: 18,
-    bottomThickness: 12,
-    rightThickness: 8,
+    topThickness: 18,
+    leftThickness: 14,
+    bottomThickness: 8,
+    rightThickness: 5,
     darkOpacity: "0.2",
     lightOpacity: "0.8"
   },
