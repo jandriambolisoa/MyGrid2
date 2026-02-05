@@ -87,3 +87,10 @@ session_started_message = defaultdict(
         "fr": "La requête est annulée car la session a déjà commencée.",
     }
 )
+
+too_late_to_make_a_championship_prediction_message = defaultdict(
+    lambda: "You are not able to make a prediction for the world champion anymore.",
+    {
+        "fr": "Vous ne pouvez plus faire de pronostic pour le champion du monde.",
+    }
+)

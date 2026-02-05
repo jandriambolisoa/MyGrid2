@@ -120,3 +120,58 @@ async def is_session_over(session_id: int):
         return True
 
     return False
+
+async def get_number_of_races_left(championship_id: int) -> int:
+    """
+    Returns the number of races left for a given championship id
+    Args:
+        championship_id: the championship id
+        language: for translations (optional)
+
+    Returns:
+        int: the number of races left
+    """
+    db = get_db()
+    db.cursor.execute("""\
+        WITH races AS (
+            SELECT DISTINCT ON (events.name) events.name AS event_name,
+            sessions.datetime
+            FROM sessions
+            LEFT JOIN events ON events.id = sessions.event_id
+            LEFT JOIN championships ON championships.id = events.championship_id
+            WHERE championship_id = %s AND sessions.competitive = true AND sessions.name = 'Race'
+        )
+        SELECT races.event_name
+        FROM races
+        WHERE datetime > NOW()""",(championship_id,))
+    races_left = db.cursor.fetchall()
+
+    if not races_left:
+        return 0
+
+    return len(races_left)
+
+async def get_number_of_races(championship_id: int) -> int:
+    """
+    Returns the number of races for a given championship id
+    Args:
+        championship_id: the championship id
+        language: for translations (optional)
+
+    Returns:
+        int: the number of races
+    """
+    db = get_db()
+    db.cursor.execute("""\
+        SELECT DISTINCT ON (events.name) events.name AS event_name,
+        sessions.datetime
+        FROM sessions
+        LEFT JOIN events ON events.id = sessions.event_id
+        LEFT JOIN championships ON championships.id = events.championship_id
+        WHERE championship_id = %s AND sessions.competitive = true AND sessions.name = 'Race'""", (championship_id,))
+    races = db.cursor.fetchall()
+
+    if not races:
+        return 0
+
+    return len(races)

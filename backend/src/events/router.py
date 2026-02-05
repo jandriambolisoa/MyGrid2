@@ -1,19 +1,19 @@
-from fastapi import APIRouter, status, Depends, Request, Response
-from fastapi.responses import RedirectResponse
-from fastapi.security.oauth2 import OAuth2PasswordRequestForm
+from fastapi import APIRouter, status, Depends, Response
 from psycopg.errors import ForeignKeyViolation, UniqueViolation
 
 from backend.db.database import get_db, Database
-from backend.exceptions import ForbiddenAccessException
+from backend.exceptions import ForbiddenAccessException, UnexpectedError
 from backend.oauth2 import get_current_user
-from backend import exceptions as app_exceptions
 from backend.constants import QUERY_LIMIT
+from backend.src.events.constants import WDC_PREDICTION_POINTS, WCC_PREDICTION_POINTS
 from backend.src.events.dependencies import valid_championship_id, valid_session_id, valid_event_id, \
-    valid_session_creation_datetime
+    valid_session_creation_datetime, get_number_of_races_left, get_number_of_races
 from backend.src.events.exceptions import ChampionshipAlreadyExistsError, EventAlreadyExistsError, \
-    SessionAlreadyExistsError, EventNotFoundError, ChampionshipNotFoundError, SessionNotFoundError
+    SessionAlreadyExistsError, EventNotFoundError, ChampionshipNotFoundError, SessionNotFoundError, \
+    ChampionshipDoesNotExistsError, TooLateToMakeAChampionshipPrediction
 from backend.src.events.schemas import Championship, ChampionshipCreate, Event, EventCreate, Session, SessionCreate, \
-    EventSearch, ChampionshipUpdate, EventUpdate, SessionUpdate, EventCollectible
+    EventSearch, ChampionshipUpdate, EventUpdate, SessionUpdate, EventCollectible, WDCPrediction, \
+    WCCPrediction, PredictionWCCPotentialResponse, PredictionWDCPotentialResponse
 from backend.src.users.privileges import is_user_moderator_or_admin
 from backend.src.events import signals as events_signal
 from backend.src.users.schemas import UserSelf
@@ -349,3 +349,148 @@ async def delete_event(event_id: int = Depends(valid_event_id), language: str = 
     await events_signal.delete_event.send(to_delete, user = current_user)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
+@router.post("/championships/{championship_id}/wdc-prediction", response_model=PredictionWDCPotentialResponse)
+async def override_wdc_prediction(prediction: WDCPrediction, championship_id: int = Depends(valid_championship_id), language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+    races_total = await get_number_of_races(championship_id)
+    races_left = await get_number_of_races_left(championship_id)
+
+    if not races_total:
+        raise ChampionshipDoesNotExistsError(championship_id, language)
+
+    if not races_left:
+        raise TooLateToMakeAChampionshipPrediction(language)
+
+    potential = round(WDC_PREDICTION_POINTS * races_left / races_total)
+
+    db.cursor.execute("""\
+        SELECT potential FROM wdcpredictions
+        WHERE user_id = %s AND championship_id = %s""", (current_user.id, championship_id))
+    has_prono = db.cursor.fetchone()
+
+    if has_prono:
+        db.cursor.execute("""\
+            WITH prediction AS (
+                UPDATE wdcpredictions
+                SET driver_id = %s, potential = %s
+                WHERE user_id = %s AND championship_id = %s
+                RETURNING *
+            )
+            SELECT drivers.id AS driver_id,
+            drivers.firstname AS driver_firstname,
+            drivers.lastname AS driver_lastname,
+            drivers.codename AS driver_codename,
+            potential
+            FROM prediction
+            LEFT JOIN drivers ON drivers.id = prediction.driver_id""", (prediction.driver_id, potential, current_user.id, championship_id))
+        try:
+            db.conn.commit()
+        except ForeignKeyViolation:
+            db.conn.rollback()
+            raise UnexpectedError(language)
+
+        prediction = db.cursor.fetchone()
+
+        return {
+            "driver": {key.removeprefix("driver_"): prediction[key] for key in prediction.keys() if
+                       key.startswith("driver_")},
+            "potential": prediction["potential"]
+        }
+    else:
+        db.cursor.execute("""\
+            WITH prediction AS (
+                INSERT INTO wdcpredictions (user_id, championship_id, driver_id, potential)
+                VALUES (%s, %s, %s, %s)
+                RETURNING *
+            )
+            SELECT drivers.id AS driver_id,
+            drivers.firstname AS driver_firstname,
+            drivers.lastname AS driver_lastname,
+            drivers.codename AS driver_codename,
+            potential
+            FROM prediction
+            LEFT JOIN drivers ON drivers.id = prediction.driver_id""", (current_user.id, championship_id, prediction.driver_id, potential))
+        try:
+            db.conn.commit()
+        except ForeignKeyViolation:
+            db.conn.rollback()
+            raise UnexpectedError(language)
+
+        prediction = db.cursor.fetchone()
+
+        return {
+            "driver": {key.removeprefix("driver_"): prediction[key] for key in prediction.keys() if
+                       key.startswith("driver_")},
+            "potential": prediction["potential"]
+        }
+
+@router.post("/championships/{championship_id}/wcc-prediction", response_model=PredictionWCCPotentialResponse)
+async def override_wcc_prediction(prediction: WCCPrediction, championship_id: int = Depends(valid_championship_id), language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+    races_total = await get_number_of_races(championship_id)
+    races_left = await get_number_of_races_left(championship_id)
+
+    if not races_total:
+        raise ChampionshipDoesNotExistsError(championship_id, language)
+
+    if not races_left:
+        raise TooLateToMakeAChampionshipPrediction(language)
+
+    potential = round(WCC_PREDICTION_POINTS * races_left / races_total)
+
+    db.cursor.execute("""\
+        SELECT potential FROM wccpredictions
+        WHERE user_id = %s AND championship_id = %s""", (current_user.id, championship_id))
+    has_prono = db.cursor.fetchone()
+
+    if has_prono:
+        db.cursor.execute("""\
+            WITH prediction AS (
+                UPDATE wccpredictions
+                SET team_id = %s, potential = %s
+                WHERE user_id = %s AND championship_id = %s
+                RETURNING *
+            )
+            SELECT teams.id AS team_id,
+            teams.name AS team_name,
+            teams.color AS team_color,
+            potential
+            FROM prediction
+            LEFT JOIN teams ON teams.id = prediction.team_id""", (prediction.team_id, potential, current_user.id, championship_id))
+        try:
+            db.conn.commit()
+        except ForeignKeyViolation:
+            db.conn.rollback()
+            raise UnexpectedError(language)
+
+        prediction = db.cursor.fetchone()
+
+        return {
+            "team": {key.removeprefix("team_"): prediction[key] for key in prediction.keys() if
+                       key.startswith("team_")},
+            "potential": prediction["potential"]
+        }
+    else:
+        db.cursor.execute("""\
+            WITH prediction AS (
+                INSERT INTO wccpredictions (user_id, championship_id, team_id, potential)
+                VALUES (%s, %s, %s, %s)
+                RETURNING *
+            )
+            SELECT teams.id AS team_id,
+            teams.name AS team_name,
+            teams.color AS team_color,
+            potential
+            FROM prediction
+            LEFT JOIN teams ON teams.id = prediction.team_id""", (current_user.id, championship_id, prediction.team_id, potential))
+        try:
+            db.conn.commit()
+        except ForeignKeyViolation:
+            db.conn.rollback()
+            raise UnexpectedError(language)
+
+        prediction = db.cursor.fetchone()
+
+        return {
+            "team": {key.removeprefix("team_"): prediction[key] for key in prediction.keys() if
+                       key.startswith("team_")},
+            "potential": prediction["potential"]
+        }

@@ -2,6 +2,9 @@ from datetime import datetime
 from pydantic import BaseModel
 from typing import List, Optional
 
+from backend.src.drivers.schemas import Driver, Team
+
+
 class Championship(BaseModel):
     id: int
     name: str
@@ -57,3 +60,17 @@ class SessionUpdate(BaseModel):
 class EventSearch(Event):
     championship: Championship
     sessions: List[Session]
+
+class WDCPrediction(BaseModel):
+    driver_id: int
+
+class WCCPrediction(BaseModel):
+    team_id: int
+
+class PredictionWDCPotentialResponse(BaseModel):
+    driver: Driver
+    potential: int
+
+class PredictionWCCPotentialResponse(BaseModel):
+    team: Team
+    potential: int
