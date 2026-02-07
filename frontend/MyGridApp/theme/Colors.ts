@@ -13,6 +13,8 @@ export const Colors = {
     orangeLogo: '#ff7300',
     cyanLogo: '#00fff0',
     lightShadow: '#ffffff',
-    darkShadow: '#000000'
+    darkShadow: '#000000',
+    disabled: '#e1e1e1',
+    live: '#E31B00'
   },
 };

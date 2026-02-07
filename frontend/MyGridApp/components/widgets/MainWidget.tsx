@@ -1,34 +1,47 @@
-import { GlobalStyles, Constants } from "@/theme";
+import { GlobalStyles, Constants, Colors } from "@/theme";
 import { View, ViewProps, StyleSheet, Image, FlatList } from "react-native";
 import { ShadowSetup, MainText, SpotLight, LiteButton } from "@/components/widgets";
+import { DateTime } from "luxon"
 
-export function MainWidget({ style, ...otherProps }: ViewProps) {
+export type MainWidgetProps = ViewProps & {
+  datas?: any
+}
 
-  const data = {
-    sessions: [
-      {
-        name: "Practice 1"
-      },
-      {
-        name: "Sprint Qualifying"
-      },
-      {
-        name: "Sprint Race"
-      },
-      {
-        name: "Qualifying"
-      },
-      {
-        name: "Feature Race"
-      }
-    ]
-  }
+export function MainWidget({ 
+  datas = null,
+  style,
+  ...otherProps
+}: MainWidgetProps) {
+
+  // Temporary date to test with example datas
+  const dateTemp = "2026-01-25T03:41:44.092651+01:00"
 
   function renderItem({item} : any) {
 
+    const disabledColor = item.is_over ? { color: Colors.light.disabled, borderColor: Colors.light.disabled } : { }
+
+    function rightItem () {
+      if (item.is_over) {
+        return (
+          <MainText style={{  }}>Show results</MainText>
+        )
+      }
+
+      if (DateTime.fromISO(item.datetime) < DateTime.fromISO(dateTemp)) {
+        return (
+          <MainText style={{ color: Colors.light.live }}>Live</MainText>
+        )
+      }
+
+      return (
+        <MainText>{item.nice_datetime}</MainText>
+      )
+    }
+
     return(
-      <LiteButton style={{ alignSelf: "stretch", marginBottom: Constants.spacing.buttonPadding }}>
-        <MainText>{item.name}</MainText>
+      <LiteButton style={[disabledColor, { alignSelf: "stretch", flexDirection: "row", justifyContent: "space-between", marginBottom: Constants.spacing.buttonPadding }]}>
+        <MainText style={[disabledColor]}>{item.name}</MainText>
+        {rightItem()}
       </LiteButton>
     )
   }
@@ -43,7 +56,7 @@ export function MainWidget({ style, ...otherProps }: ViewProps) {
         <Image resizeMode="stretch" style={{ position: 'absolute', width: 50, height: 50, top: 20, right: "10%" }} source={require('@/assets/images/demo/spa.png')}/>
         <Image resizeMode="contain" style={{ height: "30%", marginVertical: 30 }} source={require('@/assets/images/demo/trophy_belgium.png')}/>
         <FlatList
-          data={data.sessions}
+          data={datas.sessions}
           renderItem={renderItem}
           scrollEnabled={false}
           style={{ alignSelf: "stretch" }}
