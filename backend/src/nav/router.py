@@ -1,11 +1,13 @@
 from fastapi import APIRouter, Depends, status
 
+from backend.constants import QUERY_LIMIT
 from backend.db.database import Database, get_db
 from backend.oauth2 import get_current_user
 from backend.src.events.dependencies import valid_championship_id, get_upcoming_event,\
     is_session_over, get_event_championship
 from backend.src.nav.schemas import NavMainEvent, NavMainEventSession, NavChampionship
 from backend.src.predictions.dependencies import is_user_has_prono
+from backend.src.ranks.schemas import ChampionshipRanks
 from backend.src.users.schemas import UserSelf
 from backend.utils import get_nice_datetime
 

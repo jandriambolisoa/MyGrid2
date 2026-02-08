@@ -12,7 +12,7 @@ from backend.src.events.exceptions import ChampionshipAlreadyExistsError, EventA
     SessionAlreadyExistsError, EventNotFoundError, ChampionshipNotFoundError, SessionNotFoundError, \
     ChampionshipDoesNotExistsError, TooLateToMakeAChampionshipPrediction
 from backend.src.events.schemas import Championship, ChampionshipCreate, Event, EventCreate, Session, SessionCreate, \
-    EventSearch, ChampionshipUpdate, EventUpdate, SessionUpdate, EventCollectible, WDCPrediction, \
+    EventSearch, ChampionshipUpdate, EventUpdate, SessionUpdate, WDCPrediction, \
     WCCPrediction, PredictionWCCPotentialResponse, PredictionWDCPotentialResponse
 from backend.src.users.privileges import is_user_moderator_or_admin
 from backend.src.events import signals as events_signal
@@ -256,8 +256,6 @@ async def update_event(datas: EventUpdate, event_id: int = Depends(valid_event_i
 
     # Get default values
     translations = None
-    event_collectible = datas.collectible.model
-    event_collectible_textures = datas.collectible.textures
     if not datas.name:
         datas.name["en"] = orig["name"]
     else:
@@ -267,16 +265,6 @@ async def update_event(datas: EventUpdate, event_id: int = Depends(valid_event_i
         datas.color = orig["color"]
     if not datas.flag:
         datas.flag = orig["flag"]
-    if not datas.collectible:
-        datas.collectible = EventCollectible(
-            model = orig["collectible"],
-            textures = orig["collectibletextures"]
-        )
-    else:
-        datas.collectible = EventCollectible(
-            model = event_collectible,
-            textures = event_collectible_textures
-        )
 
     try:
         db.cursor.execute("""\

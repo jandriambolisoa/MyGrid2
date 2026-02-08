@@ -30,11 +30,13 @@ class Settings (BaseSettings):
     google_auth_ios_client_id: str
 
     # Redirections related settings
+    api_url: str
     website_url: str
     confirmed_email_url: str
 
     # Microservices related settings
     ms: int = 1 # 0 is off
+    ms_assets_url: str
     ms_mailings_url: str
     ms_openf1_url: str
 

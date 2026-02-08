@@ -9,6 +9,7 @@ from fastapi.responses import RedirectResponse
 
 # from backend.src.appstatus import router as user_router
 from backend.src.auth import router as auth_router
+from backend.src.assets import router as assets_router
 from backend.src.auth.apple import validate_apple_token
 from backend.src.drivers import router as drivers_router
 from backend.src.events import router as events_router
@@ -20,7 +21,6 @@ from backend.src.registrations import router as registrations_router
 from backend.src.results import router as results_router
 from backend.src.scores import router as scores_router
 from backend.src.users import router as users_router
-
 from backend.src.live import listener as live_listener
 from backend.src.predictions import listener as predictions_listener
 from backend.src.ranks import listener as ranks_listener
@@ -52,6 +52,7 @@ results_listener.init_listener()
 scores_listener.init_listener()
 
 app.include_router(auth_router.router)
+app.include_router(assets_router.router)
 app.include_router(drivers_router.router)
 app.include_router(events_router.router)
 app.include_router(live_router.router)
@@ -67,8 +68,7 @@ scheduler.start()
 
 @app.get("/", response_class=RedirectResponse)
 def home():
-    return {"Hello": "Welcome to MyGrid2 API!"}
-    # return RedirectResponse(settings.website_url)
+    return RedirectResponse(settings.website_url)
 
 @app.get("/test")
 async def test(token: str, authorization_code: str):

@@ -5,7 +5,7 @@ from backend.constants import QUERY_LIMIT
 from backend.db.database import Database, get_db
 from backend import exceptions as app_exceptions
 from backend.oauth2 import get_current_user
-from backend.src.events.dependencies import valid_session_id, valid_championship_id, valid_event_id
+from backend.src.events.dependencies import valid_session_id, valid_championship_id, valid_event_id, get_last_event_id
 from backend.src.ranks.constants import RANK_QUERY_LIMIT
 from backend.src.ranks.exceptions import NoRanksError
 from backend.src.ranks.schemas import ChampionshipRanks, EventRanks, SessionRanks
@@ -94,9 +94,9 @@ async def get_championships_ranks(
     }
 
 
-@router.get("/events/{event_id}", response_model=EventRanks)
+@router.get("/events", response_model=EventRanks)
 async def get_events_ranks(
-        event_id: int = Depends(valid_event_id),
+        event_id: int = Depends(get_last_event_id),
         language: str = "en",
         db: Database = Depends(get_db),
         current_user: UserSelf = Depends(get_current_user),
@@ -122,7 +122,8 @@ async def get_events_ranks(
         events.id AS event_id,
         COALESCE(events_translations.name, events.name) AS event_name,
         events.championship_id AS event_championship_id,
-        events.color AS event_color
+        events.color AS event_color,
+        events.flag AS event_flag
         FROM ranks_events_mv
         LEFT JOIN users ON users.id = ranks_events_mv.user_id
         LEFT JOIN championships ON championships.id = ranks_events_mv.championship_id
@@ -210,6 +211,7 @@ async def get_records_sessions_ranks(
         COALESCE(events_translations.name, events.name) AS event_name,
         events.championship_id AS event_championship_id,
         events.color AS event_color,
+        events.flag AS event_flag,
         sessions.id AS session_id,
         COALESCE(sessions_translations.name, sessions.name) AS session_name,
         sessions.datetime AS session_datetime,

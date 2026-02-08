@@ -1,7 +1,8 @@
 from datetime import datetime
-from pydantic import BaseModel
+from pydantic import BaseModel, computed_field
 from typing import List, Optional
 
+from backend.config import settings as app_settings
 from backend.src.drivers.schemas import Driver, Team
 
 
@@ -9,15 +10,26 @@ class Championship(BaseModel):
     id: int
     name: str
 
+    @computed_field
+    @property
+    def trophee_model(self) -> str:
+        return f"{app_settings.api_url}/assets/championship_{self.id:04d}/model"
+
+    @computed_field
+    @property
+    def trophee_textures(self) -> str:
+        return f"{app_settings.api_url}/assets/championship_{self.id:04d}/textures"
+
+    @computed_field
+    @property
+    def trophee_icon(self) -> str:
+        return f"{app_settings.api_url}/assets/championship_{self.id:04d}/icon"
+
 class ChampionshipCreate(BaseModel):
     name: str
 
 class ChampionshipUpdate(BaseModel):
     name: Optional[str] = None
-
-class EventCollectible(BaseModel):
-    model: str
-    textures: Optional[str] = None
 
 class Event(BaseModel):
     id: int
@@ -25,8 +37,22 @@ class Event(BaseModel):
     championship_id: int
     color: str
     flag: str
-    collectible: Optional[str] = None
-    collectibletextures: Optional[str] = None
+
+    @computed_field
+    @property
+    def trophee_model(self) -> str:
+        return f"{app_settings.api_url}/assets/event_{self.id:04d}/model"
+
+    @computed_field
+    @property
+    def trophee_textures(self) -> str:
+        return f"{app_settings.api_url}/assets/event_{self.id:04d}/textures"
+
+    @computed_field
+    @property
+    def trophee_icon(self) -> str:
+        return f"{app_settings.api_url}/assets/event_{self.id:04d}/icon"
+
 
 class EventCreate(BaseModel):
     name: dict # {language: translation}
@@ -38,7 +64,6 @@ class EventUpdate(BaseModel):
     name: Optional[dict] = None # {language: translation}
     color: Optional[str] = None
     flag: Optional[str] = None
-    collectible: Optional[EventCollectible] = None
 
 class Session(BaseModel):
     id: int

@@ -10,7 +10,6 @@ from backend.src.events.exceptions import ChampionshipDoesNotExistsError, Sessio
     SessionDoesNotExistsError, InvalidDatetimeForSessionCreationError, EventDoesNotExistsError, EventNotFoundError
 from backend.src.events.schemas import Event, Championship
 
-
 async def valid_championship_id(championship_id: int, language: str = "en") -> int:
     db = get_db()
     db.cursor.execute("""
@@ -79,8 +78,6 @@ async def get_upcoming_event(language: str = "en"):
         COALESCE(events_translations.name, events.name) AS name,
         events.color,
         events.flag,
-        events.collectible,
-        events.collectibletextures,
         events.championship_id
         FROM sessions
         LEFT JOIN events ON events.id = event_id
@@ -93,6 +90,21 @@ async def get_upcoming_event(language: str = "en"):
         raise EventNotFoundError(language=language)
 
     return Event(**event)
+
+async def get_last_event_id(language: str = "en"):
+    db = get_db()
+    db.cursor.execute("""
+        SELECT events.id AS id
+        FROM sessions
+        LEFT JOIN events ON events.id = event_id
+        WHERE competitive = true AND datetime < NOW()
+        ORDER BY datetime ASC""")
+    event = db.cursor.fetchone()
+
+    if not event:
+        raise EventNotFoundError(language=language)
+
+    return event["id"]
 
 async def get_event_championship(event_id: int, language: str = "en"):
     db = get_db()
