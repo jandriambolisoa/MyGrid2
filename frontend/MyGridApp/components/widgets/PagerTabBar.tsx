@@ -4,6 +4,7 @@ import { MainText } from "./MainText";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BlurView } from "expo-blur";
 import { useState, useEffect } from "react";
+import { scopedI18n } from "@/translations/i18n";
 
 export type PagerTabBarProps = ViewProps & {
   setPage?: (page: number) => void;
@@ -17,6 +18,8 @@ export function PagerTabBar ({
 }: PagerTabBarProps) {
 
   const insets = useSafeAreaInsets();
+
+  const t = scopedI18n('widgets.pagerTabBar')
 
   const [ firstTabDim, setFirstTabDim ] = useState<any>(null);
   const [ lastTabDim, setLastTabDim ] = useState<any>(null);
@@ -33,13 +36,13 @@ export function PagerTabBar ({
   return (
     <BlurView tint="light" intensity={10} style={[GlobalStyles.tabBar, { paddingBottom: insets.bottom }]} {...otherProps}>
       <TouchableOpacity onPress={() => setPage(0)} onLayout={(e) => setFirstTabDim(e.nativeEvent.layout)}>
-        <MainText>Social</MainText>
+        <MainText>{t('social')}</MainText>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => setPage(1)}>
-        <MainText>Home</MainText>
+        <MainText>{t('home')}</MainText>
       </TouchableOpacity>
       <TouchableOpacity onPress={() => setPage(2)} onLayout={(e) => setLastTabDim(e.nativeEvent.layout)}>
-        <MainText>Profile</MainText>
+        <MainText>{t('profile')}</MainText>
       </TouchableOpacity>
       <View style={[GlobalStyles.tabBarSlider, { bottom: insets.bottom - 6, left: (scroll?.offset + scroll?.position + .5) * (lastX - firstX) / 2 }]} />
     </BlurView>

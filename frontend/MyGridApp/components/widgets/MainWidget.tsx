@@ -2,6 +2,8 @@ import { GlobalStyles, Constants, Colors } from "@/theme";
 import { View, ViewProps, StyleSheet, Image, FlatList } from "react-native";
 import { ShadowSetup, MainText, SpotLight, LiteButton } from "@/components/widgets";
 import { DateTime } from "luxon"
+import { niceDatetime } from "@/utils"
+import { scopedI18n } from "@/translations/i18n";
 
 export type MainWidgetProps = ViewProps & {
   datas?: any
@@ -16,6 +18,8 @@ export function MainWidget({
   // Temporary date to test with example datas
   const dateTemp = "2026-01-25T03:41:44.092651+01:00"
 
+  const t = scopedI18n('widgets.mainWidget')
+
   function renderItem({item} : any) {
 
     const disabledColor = item.is_over ? { color: Colors.light.disabled, borderColor: Colors.light.disabled } : { }
@@ -23,18 +27,18 @@ export function MainWidget({
     function rightItem () {
       if (item.is_over) {
         return (
-          <MainText style={{  }}>Show results</MainText>
+          <MainText style={{  }}>{t('showResults')}</MainText>
         )
       }
 
       if (DateTime.fromISO(item.datetime) < DateTime.fromISO(dateTemp)) {
         return (
-          <MainText style={{ color: Colors.light.live }}>Live</MainText>
+          <MainText style={{ color: Colors.light.live }}>{t('live')}</MainText>
         )
       }
 
       return (
-        <MainText>{item.nice_datetime}</MainText>
+        <MainText>{niceDatetime(item.datetime)}</MainText>
       )
     }
 

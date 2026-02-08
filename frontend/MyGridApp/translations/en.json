@@ -4,5 +4,22 @@
       "signInGoogle": "Sign in with Google",
       "signInApple": "Sign in with Apple"
     }
+  },
+  "utils": {
+    "niceDatetime": {
+      "on": "On",
+      "at": "at"
+    }
+  },
+  "widgets": {
+    "mainWidget": {
+      "showResults": "Show results",
+      "live": "Live"
+    },
+    "pagerTabBar": {
+      "social": "Social",
+      "home": "Home",
+      "profile": "Profile"
+    }
   }
 }
