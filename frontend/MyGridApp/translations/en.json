@@ -20,6 +20,12 @@
       "social": "Social",
       "home": "Home",
       "profile": "Profile"
+    },
+    "championshipWidget": {
+      "championship": "Championship",
+      "drivers": "Drivers",
+      "constructors": "Constructors",
+      "noPrediction": "No prediction yet"
     }
   }
 }

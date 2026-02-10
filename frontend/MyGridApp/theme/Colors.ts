@@ -15,6 +15,7 @@ export const Colors = {
     lightShadow: '#ffffff',
     darkShadow: '#000000',
     disabled: '#e1e1e1',
-    live: '#E31B00'
+    live: '#E31B00',
+    warning: '#E31B00'
   },
 };

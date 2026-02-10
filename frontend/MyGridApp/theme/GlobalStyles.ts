@@ -7,7 +7,9 @@ export const GlobalStyles = StyleSheet.create({
     borderColor: Colors.light.borders,
     borderWidth: 1,
     borderRadius: 4,
-    overflow: 'hidden'
+    overflow: 'hidden',
+    alignItems: 'center',
+    justifyContent: 'center'
   },
   container: {
     flex: 1,
@@ -39,5 +41,10 @@ export const GlobalStyles = StyleSheet.create({
     marginHorizontal: Constants.spacing.mainWidgetMargin,
     marginBottom: Constants.spacing.mainWidgetMargin,
     alignItems: 'center'
+  },
+  rowWidget: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignSelf: 'stretch'
   }
 });
