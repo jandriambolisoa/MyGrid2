@@ -7,4 +7,5 @@ export * from './ShadowButton';
 export * from './LiteButton';
 export * from './ShadowSetup';
 export * from './PagerTabBar';
-export * from './ChampionshipWidget'
+export * from './ChampionshipWidget';
+export * from './EventCalendar';

@@ -1,4 +1,4 @@
-import { Container, MainWidget, ShadowButton, ChampionshipWidget } from "@/components/widgets";
+import { Container, MainWidget, ShadowButton, ChampionshipWidget, EventCalendar } from "@/components/widgets";
 import { Constants, GlobalStyles } from "@/theme";
 import { Dimensions, ScrollView, Image } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -6,6 +6,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 // Temporary example datas
 import { mainEventDatas } from "./_tmp_main-event"
 import { championshipsDatas } from "./_tmp_championships"
+import { calendarDatas } from "./_tmp_calendar"
 
 export type EventsProps = {
   tabBarHeight?: number;
@@ -25,6 +26,7 @@ export default function Events ({
           <Image source={require('@/assets/images/demo/krunker.png')} style={{ height: 100, width: 500 }} resizeMode="stretch"/>
         </ShadowButton>
         <ChampionshipWidget datas={JSON.parse(championshipsDatas)}/>
+        <EventCalendar datas={JSON.parse(calendarDatas)}/>
       </ScrollView>
     </Container>
   )
