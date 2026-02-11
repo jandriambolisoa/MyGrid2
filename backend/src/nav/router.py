@@ -5,7 +5,7 @@ from backend.db.database import Database, get_db
 from backend.oauth2 import get_current_user
 from backend.src.events.dependencies import valid_championship_id, get_upcoming_event,\
     is_session_over, get_event_championship
-from backend.src.nav.schemas import NavMainEvent, NavMainEventSession, NavChampionship
+from backend.src.nav.schemas import NavMainEvent, NavMainEventSession, NavChampionship, NavChampionshipEvents
 from backend.src.predictions.dependencies import is_user_has_prono
 from backend.src.ranks.schemas import ChampionshipRanks
 from backend.src.users.schemas import UserSelf
@@ -195,4 +195,38 @@ async def home_get_championships(championship_id: int = Depends(valid_championsh
             },
             "has_prono": True if wcc_prono else False
         }
+    }
+
+@router.get("/home/events", response_model=NavChampionshipEvents, status_code=status.HTTP_200_OK)
+async def home_get_events(championship_id: int = Depends(valid_championship_id), language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+    db.cursor.execute("""\
+        SELECT * FROM championships
+        WHERE id = %s""",(championship_id,))
+    championship = db.cursor.fetchone()
+
+    db.cursor.execute("""\
+        WITH events_translations AS (
+            SELECT event_id, name
+            FROM eventstranslations
+            WHERE language = %s
+        )
+        SELECT DISTINCT ON (events.id) events.id AS event_id,
+        COALESCE(events_translations.name, events.name) AS event_name,
+        events.color AS event_color,
+        events.championship_id AS event_championship_id,
+        events.flag AS event_flag,
+        sessions.datetime AS event_datetime
+        FROM sessions
+        LEFT JOIN events ON events.id = sessions.event_id
+        LEFT JOIN events_translations ON events_translations.event_id = events.id
+        WHERE events.championship_id = %s AND sessions.competitive = true
+        ORDER BY events.id, sessions.datetime DESC""", (language, championship_id))
+    events = db.cursor.fetchall()
+
+    return {
+        "championship": {**championship},
+        "events": [
+            {key.removeprefix("event_"): event[key] for key in event.keys() if key.startswith("event_")}
+            for event in events
+        ]
     }

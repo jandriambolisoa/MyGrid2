@@ -1,3 +1,4 @@
+from datetime import datetime
 from pydantic import BaseModel
 from typing import List, Optional
 
@@ -28,3 +29,10 @@ class NavChampionship(BaseModel):
     championship: Championship
     wdc: NavDriverChampionshipLeaderboard
     wcc: NavTeamChampionshipLeaderboard
+
+class NavEvent(Event):
+    datetime: datetime
+
+class NavChampionshipEvents(BaseModel):
+    championship: Championship
+    events: List[NavEvent]
