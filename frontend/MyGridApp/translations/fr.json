@@ -9,6 +9,10 @@
     "niceDatetime": {
       "on": "Le",
       "at": "à"
+    },
+    "fromToDatetime": {
+      "from": "Du",
+      "to": "au"
     }
   },
   "widgets": {
@@ -26,6 +30,9 @@
       "drivers": "Pilotes",
       "constructors": "Constructeurs",
       "noPrediction": "Pas encore de prono"
+    },
+    "eventCalendar": {
+      "calendar": "Calendrier"
     }
   }
 }

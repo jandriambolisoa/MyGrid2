@@ -9,6 +9,10 @@
     "niceDatetime": {
       "on": "On",
       "at": "at"
+    },
+    "fromToDatetime": {
+      "from": "From",
+      "to": "to"
     }
   },
   "widgets": {
@@ -26,6 +30,9 @@
       "drivers": "Drivers",
       "constructors": "Constructors",
       "noPrediction": "No prediction yet"
+    },
+    "eventCalendar": {
+      "calendar": "Calendar"
     }
   }
 }

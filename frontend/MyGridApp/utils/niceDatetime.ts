@@ -11,9 +11,9 @@ export function niceDatetime (date: string): string {
   const datetime = DateTime.fromISO(date).setLocale(locale) 
 
   if (locale === 'fr') {
-    return (datetime.toFormat(`'${t('on')}' cccc '${t('at')}' HH'h'mm`))
+    return datetime.toFormat(`'${t('on')}' cccc '${t('at')}' HH'h'mm`)
   }
 
-  return (datetime.toFormat(`'${t('on')}' cccc '${t('at')}' hh':'mm`))
+  return datetime.toFormat(`'${t('on')}' cccc '${t('at')}' hh':'mm`)
 
 }

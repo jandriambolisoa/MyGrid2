@@ -10,7 +10,8 @@ export type ShadowProps = {
   opacityStart?: string,
   opacityEnd?: string,
   borderRadius?: number,
-  thickness?: number
+  thickness?: number,
+  color?: string
 };
 
 /**
@@ -33,7 +34,8 @@ export function Shadow({
   opacityStart = "0.2",
   opacityEnd = "0",
   borderRadius = 0,
-  thickness = 30
+  thickness = 30,
+  color=''
 }: ShadowProps) {
 
   let x1 = "0%", y1 = "0%", x2 = "0%", y2 = "0%", x= "0%", y= "0%", width: string | number ="100%", height: string | number ="100%", transform = "";
@@ -72,7 +74,9 @@ export function Shadow({
       break;
   }
 
-  const stopColor = light ? Colors.light.lightShadow : Colors.light.darkShadow;
+  const stopColor = color ? color : light ? Colors.light.lightShadow : Colors.light.darkShadow;
+
+  console.log(stopColor)
 
   return (
     <Svg height="100%" width="100%" style={[StyleSheet.absoluteFill]}>
