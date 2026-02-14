@@ -120,6 +120,21 @@ async def get_event_championship(event_id: int, language: str = "en"):
 
     return Championship(**championship)
 
+async def get_session_championship(session_id: int, language: str = "en"):
+    db = get_db()
+    db.cursor.execute("""\
+        SELECT championships.*
+        FROM sessions
+        LEFT JOIN events ON events.id = sessions.event_id
+        LEFT JOIN championships ON championships.id = events.championship_id
+        WHERE sessions.id = %s""", (session_id,))
+    championship = db.cursor.fetchone()
+
+    if not championship:
+        raise EventNotFoundError(language=language)
+
+    return Championship(**championship)
+
 async def is_session_over(session_id: int):
     db = get_db()
     db.cursor.execute("""
@@ -187,3 +202,29 @@ async def get_number_of_races(championship_id: int) -> int:
         return 0
 
     return len(races)
+
+async def get_session_full_name(session_id: int, language: str = "en"):
+    db = get_db()
+    db.cursor.execute("""\
+        WITH events_translations AS (
+            SELECT event_id, name
+            FROM eventstranslations
+            WHERE language = %s
+        ),
+        sessions_translations AS (
+            SELECT session_id, name
+            FROM sessionstranslations
+            WHERE language = %s
+        )
+        SELECT COALESCE(sessions_translations.name, sessions.name)||' '||COALESCE(events_translations.name, events.name) AS name
+        FROM sessions
+        LEFT JOIN events ON events.id = sessions.event_id
+        LEFT JOIN events_translations ON events_translations.event_id = events.id
+        LEFT JOIN sessions_translations ON sessions_translations.session_id = sessions.id
+        WHERE sessions.id = %s""", (language, language, session_id))
+    session = db.cursor.fetchone()
+
+    if not session:
+        raise EventNotFoundError(language=language)
+
+    return session["name"]

@@ -3,7 +3,7 @@ from pydantic import BaseModel, computed_field
 from typing import List, Optional
 
 from backend.config import settings as app_settings
-from backend.src.drivers.schemas import Driver, Team
+from backend.src.drivers.schemas import Driver, Team, DriverRegistration
 
 
 class Championship(BaseModel):
@@ -99,3 +99,7 @@ class PredictionWDCPotentialResponse(BaseModel):
 class PredictionWCCPotentialResponse(BaseModel):
     team: Team
     potential: int
+
+class SessionDrivers(BaseModel):
+    session_name: str
+    drivers: List[DriverRegistration]

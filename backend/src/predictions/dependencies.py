@@ -11,6 +11,6 @@ async def is_user_has_prono(user_id: int, session_id: int) -> bool:
     has_prono = db.cursor.fetchone()
 
     if has_prono:
-        return False
+        return True
 
     return False

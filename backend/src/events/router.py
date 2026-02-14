@@ -5,15 +5,18 @@ from backend.db.database import get_db, Database
 from backend.exceptions import ForbiddenAccessException, UnexpectedError
 from backend.oauth2 import get_current_user
 from backend.constants import QUERY_LIMIT
+from backend.src.drivers.schemas import DriverRegistration
 from backend.src.events.constants import WDC_PREDICTION_POINTS, WCC_PREDICTION_POINTS
 from backend.src.events.dependencies import valid_championship_id, valid_session_id, valid_event_id, \
-    valid_session_creation_datetime, get_number_of_races_left, get_number_of_races
+    valid_session_creation_datetime, get_number_of_races_left, get_number_of_races, get_session_full_name, \
+    get_event_championship, get_session_championship
 from backend.src.events.exceptions import ChampionshipAlreadyExistsError, EventAlreadyExistsError, \
     SessionAlreadyExistsError, EventNotFoundError, ChampionshipNotFoundError, SessionNotFoundError, \
     ChampionshipDoesNotExistsError, TooLateToMakeAChampionshipPrediction
 from backend.src.events.schemas import Championship, ChampionshipCreate, Event, EventCreate, Session, SessionCreate, \
     EventSearch, ChampionshipUpdate, EventUpdate, SessionUpdate, WDCPrediction, \
-    WCCPrediction, PredictionWCCPotentialResponse, PredictionWDCPotentialResponse
+    WCCPrediction, PredictionWCCPotentialResponse, PredictionWDCPotentialResponse, SessionDrivers
+from backend.src.predictions.dependencies import is_user_has_prono
 from backend.src.users.privileges import is_user_moderator_or_admin
 from backend.src.events import signals as events_signal
 from backend.src.users.schemas import UserSelf
@@ -482,3 +485,143 @@ async def override_wcc_prediction(prediction: WCCPrediction, championship_id: in
                        key.startswith("team_")},
             "potential": prediction["potential"]
         }
+
+@router.get("/sessions/{session_id}/drivers", response_model=SessionDrivers, status_code=status.HTTP_200_OK)
+async def get_session_drivers(session_id: int = Depends(valid_session_id), championship_order: bool = False, language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+    session_name = await get_session_full_name(session_id, language)
+    championship = await get_session_championship(session_id, language)
+    has_prono = await is_user_has_prono(current_user.id, session_id)
+
+    if not has_prono and not championship_order:
+        db.cursor.execute("""\
+            SELECT drivers.id AS driver_id, 
+            drivers.firstname AS driver_firstname,
+            drivers.lastname AS driver_lastname,
+            drivers.codename AS driver_codename,
+            teams.id AS team_id,
+            teams.name AS team_name,
+            teams.color AS team_color,
+            sessionsregistrations.prediction
+            FROM sessionsregistrations
+            LEFT JOIN drivers ON drivers.id = sessionsregistrations.driver_id
+            LEFT JOIN teams ON teams.id = sessionsregistrations.team_id
+            WHERE session_id = %s
+            ORDER BY prediction ASC""", (session_id,))
+        drivers = db.cursor.fetchall()
+
+    elif has_prono and not championship_order:
+        db.cursor.execute("""\
+            SELECT drivers.id AS driver_id, 
+            drivers.firstname AS driver_firstname,
+            drivers.lastname AS driver_lastname,
+            drivers.codename AS driver_codename,
+            teams.id AS team_id,
+            teams.name AS team_name,
+            teams.color AS team_color,
+            sessionsregistrations.prediction,
+            sessionspredictions.mygrid
+            FROM sessionspredictions
+            LEFT JOIN sessionsregistrations ON sessionsregistrations.driver_id = sessionspredictions.driver_id
+            LEFT JOIN drivers ON drivers.id = sessionsregistrations.driver_id
+            LEFT JOIN teams ON teams.id = sessionsregistrations.team_id
+            WHERE sessionsregistrations.session_id = %s AND sessionspredictions.session_id = %s AND sessionspredictions.user_id = %s
+            ORDER BY sessionspredictions.mygrid ASC""", (session_id, session_id, current_user.id))
+        drivers = db.cursor.fetchall()
+
+    elif not has_prono and championship_order:
+        db.cursor.execute("""\
+            WITH session_registration AS (
+                SELECT drivers.id AS driver_id, 
+                drivers.firstname AS driver_firstname,
+                drivers.lastname AS driver_lastname,
+                drivers.codename AS driver_codename,
+                teams.id AS team_id,
+                teams.name AS team_name,
+                teams.color AS team_color,
+                sessionsregistrations.prediction
+                FROM sessionsregistrations
+                LEFT JOIN drivers ON drivers.id = sessionsregistrations.driver_id
+                LEFT JOIN teams ON teams.id = sessionsregistrations.team_id
+                WHERE session_id = %s
+            )
+            SELECT session_registration.driver_id,
+            session_registration.driver_firstname,
+            session_registration.driver_lastname,
+            session_registration.driver_codename,
+            session_registration.team_id,
+            session_registration.team_name,
+            session_registration.team_color,
+            session_registration.prediction,             
+            SUM(sessionsresults.points) AS score
+            FROM sessionsresults
+            LEFT JOIN session_registration ON session_registration.driver_id = sessionsresults.driver_id
+            LEFT JOIN sessions ON sessions.id = sessionsresults.session_id
+            LEFT JOIN events ON events.id = sessions.event_id
+            LEFT JOIN championships ON championships.id = events.championship_id
+            WHERE championships.id = %s
+            GROUP BY session_registration.driver_id,
+            session_registration.driver_firstname,
+            session_registration.driver_lastname,
+            session_registration.driver_codename,
+            session_registration.team_id,
+            session_registration.team_name,
+            session_registration.team_color,
+            session_registration.prediction
+            ORDER BY score DESC""", (session_id, championship.id))
+        drivers = db.cursor.fetchall()
+
+    else:
+        db.cursor.execute("""\
+            WITH session_registration AS (
+                SELECT drivers.id AS driver_id, 
+            drivers.firstname AS driver_firstname,
+            drivers.lastname AS driver_lastname,
+            drivers.codename AS driver_codename,
+            teams.id AS team_id,
+            teams.name AS team_name,
+            teams.color AS team_color,
+            sessionsregistrations.prediction,
+            sessionspredictions.mygrid
+            FROM sessionspredictions
+            LEFT JOIN sessionsregistrations ON sessionsregistrations.driver_id = sessionspredictions.driver_id
+            LEFT JOIN drivers ON drivers.id = sessionsregistrations.driver_id
+            LEFT JOIN teams ON teams.id = sessionsregistrations.team_id
+            WHERE sessionsregistrations.session_id = %s AND sessionspredictions.session_id = %s AND sessionspredictions.user_id = %s
+            )
+            SELECT session_registration.driver_id,
+            session_registration.driver_firstname,
+            session_registration.driver_lastname,
+            session_registration.driver_codename,
+            session_registration.team_id,
+            session_registration.team_name,
+            session_registration.team_color,
+            session_registration.prediction,
+            session_registration.mygrid,
+            SUM(sessionsresults.points) AS score
+            FROM sessionsresults
+            LEFT JOIN session_registration ON session_registration.driver_id = sessionsresults.driver_id
+            LEFT JOIN sessions ON sessions.id = sessionsresults.session_id
+            LEFT JOIN events ON events.id = sessions.event_id
+            LEFT JOIN championships ON championships.id = events.championship_id
+            WHERE championships.id = %s
+            GROUP BY session_registration.driver_id,
+            session_registration.driver_firstname,
+            session_registration.driver_lastname,
+            session_registration.driver_codename,
+            session_registration.team_id,
+            session_registration.team_name,
+            session_registration.team_color,
+            session_registration.prediction,
+            session_registration.mygrid
+            ORDER BY score DESC""", (session_id, session_id, current_user.id, championship.id))
+        drivers = db.cursor.fetchall()
+
+    return {
+        "session_name": session_name,
+        "drivers": [{
+            "driver": {key.removeprefix("driver_"): driver[key] for key in driver.keys() if key.startswith("driver_")},
+            "team": {key.removeprefix("team_"): driver[key] for key in driver.keys() if key.startswith("team_")},
+            "prediction": driver["prediction"],
+            "mygrid": None if not has_prono else driver["mygrid"]
+        } for driver in drivers]
+    }
