@@ -488,6 +488,20 @@ async def override_wcc_prediction(prediction: WCCPrediction, championship_id: in
 
 @router.get("/sessions/{session_id}/drivers", response_model=SessionDrivers, status_code=status.HTTP_200_OK)
 async def get_session_drivers(session_id: int = Depends(valid_session_id), championship_order: bool = False, language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+    """
+    Will try to return drivers in the order of the user prediction for a session,
+    otherwise will return drivers in the global prediction order.
+    If championship_order is True, will return drivers in the current championship standings order.
+    Args:
+        session_id: the id of the session
+        championship_order: if True, will return drivers in the championship standings order.
+        language: language of errors
+        db: the db
+        current_user: current user schema
+
+    Returns:
+        SessionDrivers schema
+    """
     session_name = await get_session_full_name(session_id, language)
     championship = await get_session_championship(session_id, language)
     has_prono = await is_user_has_prono(current_user.id, session_id)
