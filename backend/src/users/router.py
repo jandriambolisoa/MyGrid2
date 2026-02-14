@@ -13,7 +13,7 @@ router = APIRouter(
 
 
 @router.get("/search", response_model=list[User])
-def search_users(current_user: UserSelf = Depends(get_current_user), db: Database = Depends(get_db),
+async def search_users(current_user: UserSelf = Depends(get_current_user), db: Database = Depends(get_db),
                  q: str = "",
                  limit: int = QUERY_LIMIT,
                  page: int = 0):

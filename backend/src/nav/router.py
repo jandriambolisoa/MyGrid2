@@ -5,8 +5,9 @@ from backend.db.database import Database, get_db
 from backend.oauth2 import get_current_user
 from backend.src.events.dependencies import valid_championship_id, get_upcoming_event,\
     is_session_over, get_event_championship
-from backend.src.nav.schemas import NavMainEvent, NavMainEventSession, NavChampionship, NavChampionshipEvents
-from backend.src.predictions.dependencies import is_user_has_prono
+from backend.src.nav.schemas import NavMainEvent, NavMainEventSession, NavChampionship, NavChampionshipEvents, \
+    DriverChampionshipLeaderboardWithPrediction, TeamChampionshipLeaderboardWithPrediction
+from backend.src.predictions.dependencies import is_user_has_prono, get_user_wdc_prediction, get_user_wcc_prediction
 from backend.src.ranks.schemas import ChampionshipRanks
 from backend.src.users.schemas import UserSelf
 from backend.utils import get_nice_datetime
@@ -229,4 +230,101 @@ async def home_get_events(championship_id: int = Depends(valid_championship_id),
             {key.removeprefix("event_"): event[key] for key in event.keys() if key.startswith("event_")}
             for event in events
         ], key=lambda event: event["datetime"])
+    }
+
+
+@router.get("/standings/drivers", response_model=DriverChampionshipLeaderboardWithPrediction, status_code=status.HTTP_200_OK)
+async def get_championship_drivers_standings(championship_id: int = Depends(valid_championship_id), language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+    db.cursor.execute("""\
+        SELECT * FROM championships
+        WHERE id = %s""", (championship_id,))
+    championship = db.cursor.fetchone()
+
+    db.cursor.execute("""\
+        WITH last_registrations AS (
+            SELECT DISTINCT ON (sessionsregistrations.driver_id) sessionsregistrations.driver_id,
+            teams.id AS team_id,
+            teams.name AS team_name,
+            teams.color AS team_color
+            FROM sessionsregistrations
+            LEFT JOIN teams ON teams.id = sessionsregistrations.team_id
+            WHERE session_id IN (
+                SELECT sessions.id AS session_id
+                FROM sessions
+                WHERE sessions.datetime < NOW()
+                ORDER BY datetime DESC
+            )
+        )
+        SELECT drivers.id AS driver_id,
+        drivers.firstname AS driver_firstname,
+        drivers.lastname AS driver_lastname,
+        drivers.codename AS driver_codename,
+        last_registrations.team_id AS team_id,
+        last_registrations.team_name AS team_name,
+        last_registrations.team_color AS team_color,
+        SUM(sessionsresults.points) AS score,
+        ROW_NUMBER() OVER(ORDER BY SUM(sessionsresults.points) DESC) AS rank
+        FROM sessionsresults
+        LEFT JOIN drivers ON drivers.id = driver_id
+        LEFT JOIN last_registrations ON last_registrations.driver_id = drivers.id
+        LEFT JOIN sessions ON sessions.id = sessionsresults.session_id
+        LEFT JOIN events ON events.id = sessions.event_id
+        LEFT JOIN championships ON championships.id = events.championship_id
+        WHERE championships.id = %s
+        GROUP BY drivers.id, drivers.firstname, drivers.lastname, drivers.codename, last_registrations.team_id, last_registrations.team_name, last_registrations.team_color
+        ORDER BY score DESC""", (championship_id,))
+    wdc_leaderboard = db.cursor.fetchall()
+
+    return {
+        "championship": {**championship},
+        "ranks":[{
+            "rank": driver["rank"],
+            "driver": {key.removeprefix("driver_"): driver[key] for key in driver.keys() if key.startswith("driver_")},
+            "team": {key.removeprefix("team_"): driver[key] for key in driver.keys() if key.startswith("team_")},
+            "score": driver["score"]
+        } for driver in wdc_leaderboard],
+        "driver_id_prediction": await get_user_wdc_prediction(current_user.id, championship_id)
+    }
+
+
+@router.get("/standings/teams", response_model=TeamChampionshipLeaderboardWithPrediction, status_code=status.HTTP_200_OK)
+async def get_championship_teams_standings(championship_id: int = Depends(valid_championship_id), language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+    db.cursor.execute("""\
+        SELECT * FROM championships
+        WHERE id = %s""", (championship_id,))
+    championship = db.cursor.fetchone()
+
+    db.cursor.execute("""\
+        WITH drivers_teams AS (
+            SELECT sessionsregistrations.session_id,
+            sessionsregistrations.driver_id ,
+            teams.id AS team_id,
+            teams.name AS team_name,
+            teams.color AS team_color
+            FROM sessionsregistrations
+            LEFT JOIN teams ON teams.id = sessionsregistrations.team_id
+        )
+        SELECT drivers_teams.team_id,
+        drivers_teams.team_name,
+        drivers_teams.team_color,
+        SUM(sessionsresults.points) AS score,
+        ROW_NUMBER() OVER(ORDER BY SUM(sessionsresults.points) DESC) AS rank
+        FROM sessionsresults
+        LEFT JOIN drivers_teams ON drivers_teams.session_id = sessionsresults.session_id AND drivers_teams.driver_id = sessionsresults.driver_id
+        LEFT JOIN sessions ON sessions.id = sessionsresults.session_id
+        LEFT JOIN events ON events.id = sessions.event_id
+        LEFT JOIN championships ON championships.id = events.championship_id
+        WHERE championships.id = %s
+        GROUP BY drivers_teams.team_id, drivers_teams.team_name, drivers_teams.team_color
+        ORDER BY score DESC""", (championship_id,))
+    wcc_leaderboard = db.cursor.fetchall()
+
+    return {
+        "championship": {**championship},
+        "ranks":[{
+            "rank": team["rank"],
+            "team": {key.removeprefix("team_"): team[key] for key in team.keys() if key.startswith("team_")},
+            "score": team["score"]
+        } for team in wcc_leaderboard],
+        "team_id_prediction": await get_user_wcc_prediction(current_user.id, championship_id)
     }

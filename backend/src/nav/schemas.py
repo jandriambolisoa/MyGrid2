@@ -36,3 +36,10 @@ class NavEvent(Event):
 class NavChampionshipEvents(BaseModel):
     championship: Championship
     events: List[NavEvent]
+
+class DriverChampionshipLeaderboardWithPrediction(DriverChampionshipLeaderboard):
+    driver_id_prediction: Optional[int] = None
+
+class TeamChampionshipLeaderboardWithPrediction(TeamChampionshipLeaderboard):
+    team_id_prediction: Optional[int] = None
+
