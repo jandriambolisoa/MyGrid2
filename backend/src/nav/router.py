@@ -225,8 +225,8 @@ async def home_get_events(championship_id: int = Depends(valid_championship_id),
 
     return {
         "championship": {**championship},
-        "events": [
+        "events": sorted([
             {key.removeprefix("event_"): event[key] for key in event.keys() if key.startswith("event_")}
             for event in events
-        ]
+        ], key=lambda event: event["datetime"])
     }
