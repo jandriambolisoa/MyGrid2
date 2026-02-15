@@ -34,3 +34,17 @@ no_user_found_message = defaultdict(
         "fr": "Aucun utilisateur trouvé avec ce nom d'utilisateur."
     }
 )
+
+cannot_update_username_message = defaultdict(
+    lambda: "You are not allowed to change your username.",
+    {
+        "fr": "Vous n'êtes pas autorisé à changer votre nom d'utilisateur."
+    }
+)
+
+successful_password_update_message = defaultdict(
+    lambda: "You have successfully updated your password. You are now logged out, please login again.",
+    {
+        "fr": "Vous avez mis à jour votre mot de passe. Vous êtes maintenant déconnecté, merci de vous reconnecter."
+    }
+)

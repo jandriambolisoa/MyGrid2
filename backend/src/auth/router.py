@@ -498,7 +498,7 @@ async def logout(db: Database = Depends(get_db), current_user: UserSelf = Depend
     for refresh_token in refresh_tokens:
         db.cursor.execute("""
             INSERT INTO revokedtokens (token)
-            VALUES (%s)""", (refresh_token["token"]))
+            VALUES (%s)""", (refresh_token["token"],))
 
     db.cursor.execute("""
         INSERT INTO revokedtokens (token)

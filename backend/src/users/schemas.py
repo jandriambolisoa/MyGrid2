@@ -11,7 +11,16 @@ class User(BaseModel):
     id: int
     username: str
     created: datetime
-    image: Optional[str]
+    image: Optional[str] = None
+
+    @computed_field
+    @property
+    def image_url(self) -> str:
+        if self.image:
+            return f"{app_settings.api_url}/images/{self.image}"
+        else:
+            return str()
+
 
 class UserCreate(BaseModel):
     username: str
