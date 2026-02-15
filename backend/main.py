@@ -9,7 +9,7 @@ from fastapi.responses import RedirectResponse
 
 # from backend.src.appstatus import router as user_router
 from backend.src.auth import router as auth_router
-from backend.src.assets import router as assets_router
+from backend.src.collectibles import router as collectibles_router
 from backend.src.auth.apple import validate_apple_token
 from backend.src.drivers import router as drivers_router
 from backend.src.events import router as events_router
@@ -52,7 +52,7 @@ results_listener.init_listener()
 scores_listener.init_listener()
 
 app.include_router(auth_router.router)
-app.include_router(assets_router.router)
+app.include_router(collectibles_router.router)
 app.include_router(drivers_router.router)
 app.include_router(events_router.router)
 app.include_router(live_router.router)
@@ -69,7 +69,3 @@ scheduler.start()
 @app.get("/", response_class=RedirectResponse)
 def home():
     return RedirectResponse(settings.website_url)
-
-@app.get("/test")
-async def test(token: str, authorization_code: str):
-    return await validate_apple_token(token, authorization_code)

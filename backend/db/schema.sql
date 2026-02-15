@@ -1,4 +1,4 @@
-\restrict VAoBc0QDzlIjpCTvgSJ1fQ8GfFm0aXWrP7JgfB3DeMGLuPnek0nAXJhX27PfF6i
+\restrict 6tSwrZK82lxz6scSUmwHzMB69eCJVQGqaBtOvF2gF7RZfKWLhaoLLGuKb0Q5pbP
 
 -- Dumped from database version 18.1
 -- Dumped by pg_dump version 18.1
@@ -181,6 +181,37 @@ CREATE SEQUENCE public.championships_id_seq
 --
 
 ALTER SEQUENCE public.championships_id_seq OWNED BY public.championships.id;
+
+
+--
+-- Name: collectibles; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.collectibles (
+    id integer NOT NULL,
+    name character varying NOT NULL,
+    description character varying NOT NULL
+);
+
+
+--
+-- Name: collectibles_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.collectibles_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: collectibles_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.collectibles_id_seq OWNED BY public.collectibles.id;
 
 
 --
@@ -653,6 +684,18 @@ ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
 
 
 --
+-- Name: userscollectibles; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.userscollectibles (
+    user_id integer NOT NULL,
+    collectible_id integer NOT NULL,
+    created timestamp with time zone DEFAULT now() NOT NULL,
+    views integer DEFAULT 0 NOT NULL
+);
+
+
+--
 -- Name: wccpredictions; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -704,6 +747,13 @@ ALTER TABLE ONLY public.bannedusernames ALTER COLUMN id SET DEFAULT nextval('pub
 --
 
 ALTER TABLE ONLY public.championships ALTER COLUMN id SET DEFAULT nextval('public.championships_id_seq'::regclass);
+
+
+--
+-- Name: collectibles id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.collectibles ALTER COLUMN id SET DEFAULT nextval('public.collectibles_id_seq'::regclass);
 
 
 --
@@ -816,6 +866,22 @@ ALTER TABLE ONLY public.championships
 
 ALTER TABLE ONLY public.championships
     ADD CONSTRAINT championships_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: collectibles collectibles_name_unique; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.collectibles
+    ADD CONSTRAINT collectibles_name_unique UNIQUE (name);
+
+
+--
+-- Name: collectibles collectibles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.collectibles
+    ADD CONSTRAINT collectibles_pkey PRIMARY KEY (id);
 
 
 --
@@ -1059,6 +1125,14 @@ ALTER TABLE ONLY public.users
 
 
 --
+-- Name: userscollectibles userscollectibles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.userscollectibles
+    ADD CONSTRAINT userscollectibles_pkey PRIMARY KEY (user_id, collectible_id);
+
+
+--
 -- Name: wccpredictions wccpredictions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1298,6 +1372,22 @@ ALTER TABLE ONLY public.userobligations
 
 
 --
+-- Name: userscollectibles userscollectibles_collectibles_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.userscollectibles
+    ADD CONSTRAINT userscollectibles_collectibles_fkey FOREIGN KEY (collectible_id) REFERENCES public.collectibles(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: userscollectibles userscollectibles_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.userscollectibles
+    ADD CONSTRAINT userscollectibles_users_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
 -- Name: wccpredictions wccpredictions_championships_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1349,7 +1439,7 @@ ALTER TABLE ONLY public.wdcpredictions
 -- PostgreSQL database dump complete
 --
 
-\unrestrict VAoBc0QDzlIjpCTvgSJ1fQ8GfFm0aXWrP7JgfB3DeMGLuPnek0nAXJhX27PfF6i
+\unrestrict 6tSwrZK82lxz6scSUmwHzMB69eCJVQGqaBtOvF2gF7RZfKWLhaoLLGuKb0Q5pbP
 
 
 --
@@ -1387,4 +1477,7 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20251205204059'),
     ('20251214144418'),
     ('20260203215108'),
-    ('20260203215114');
+    ('20260203215114'),
+    ('20260214223501'),
+    ('20260215153537'),
+    ('20260215154056');

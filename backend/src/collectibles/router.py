@@ -3,13 +3,15 @@ from fastapi import APIRouter, Depends, status
 from starlette.responses import FileResponse, RedirectResponse, StreamingResponse
 
 from backend.config import settings as app_settings
+from backend.db.database import get_db, Database
 from backend.oauth2 import get_current_user
-from backend.src.assets.constants import CHUNK_SIZE
+from backend.src.collectibles.constants import CHUNK_SIZE
+from backend.src.users.exceptions import NotAUserError
 from backend.src.users.schemas import UserSelf
 
 router = APIRouter(
-    prefix="/assets",
-    tags= ["assets"]
+    prefix="/collectibles",
+    tags= ["collectibles"]
 )
 
 #
@@ -17,7 +19,17 @@ router = APIRouter(
 #
 
 @router.get("/{name}/model", response_class=FileResponse, status_code=status.HTTP_200_OK)
-async def get_collectible_model(name: str, current_user: UserSelf = Depends(get_current_user)):
+async def get_collectible_model(name: str, owner_id: int = None, db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+    if owner_id and owner_id != current_user.id:
+        db.cursor.execute("""\
+            UPDATE userscollectibles
+            SET views = userscollectibles.views + 1
+            FROM collectibles
+            WHERE userscollectibles.collectible_id = collectibles.id 
+            AND userscollectibles.user_id = %s
+            AND collectibles.name = %s""", (owner_id, name))
+        db.conn.commit()
+
     response = requests.get(f"{app_settings.ms_assets_url}/glb/{name}.glb",stream=True)
     return StreamingResponse(response.iter_content(chunk_size=CHUNK_SIZE), response.status_code, headers={
         "Content-Type": response.headers.get("Content-Type", "model/gltf-binary"),

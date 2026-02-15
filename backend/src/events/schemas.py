@@ -13,17 +13,17 @@ class Championship(BaseModel):
     @computed_field
     @property
     def trophee_model(self) -> str:
-        return f"{app_settings.api_url}/assets/championship_{self.id:04d}/model"
+        return f"{app_settings.api_url}/collectibles/championship_{self.id:04d}/model"
 
     @computed_field
     @property
     def trophee_textures(self) -> str:
-        return f"{app_settings.api_url}/assets/championship_{self.id:04d}/textures"
+        return f"{app_settings.api_url}/collectibles/championship_{self.id:04d}/textures"
 
     @computed_field
     @property
     def trophee_icon(self) -> str:
-        return f"{app_settings.api_url}/assets/championship_{self.id:04d}/icon"
+        return f"{app_settings.api_url}/collectibles/championship_{self.id:04d}/icon"
 
 class ChampionshipCreate(BaseModel):
     name: str
@@ -41,17 +41,17 @@ class Event(BaseModel):
     @computed_field
     @property
     def trophee_model(self) -> str:
-        return f"{app_settings.api_url}/assets/event_{self.id:04d}/model"
+        return f"{app_settings.api_url}/collectibles/event_{self.id:04d}/model"
 
     @computed_field
     @property
     def trophee_textures(self) -> str:
-        return f"{app_settings.api_url}/assets/event_{self.id:04d}/textures"
+        return f"{app_settings.api_url}/collectibles/event_{self.id:04d}/textures"
 
     @computed_field
     @property
     def trophee_icon(self) -> str:
-        return f"{app_settings.api_url}/assets/event_{self.id:04d}/icon"
+        return f"{app_settings.api_url}/collectibles/event_{self.id:04d}/icon"
 
 
 class EventCreate(BaseModel):
