@@ -1,4 +1,4 @@
-\restrict 6tSwrZK82lxz6scSUmwHzMB69eCJVQGqaBtOvF2gF7RZfKWLhaoLLGuKb0Q5pbP
+\restrict Ha7wmxazgRvzMSaIVorps8aeBkPYsqM6OeYxCpeVjDsz4G28z9u1nCDmu9ORhVe
 
 -- Dumped from database version 18.1
 -- Dumped by pg_dump version 18.1
@@ -633,6 +633,16 @@ ALTER SEQUENCE public.teams_id_seq OWNED BY public.teams.id;
 
 
 --
+-- Name: unsubscribed; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.unsubscribed (
+    user_id integer NOT NULL,
+    created timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
 -- Name: userobligations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1085,6 +1095,14 @@ ALTER TABLE ONLY public.teams
 
 
 --
+-- Name: unsubscribed unsubscribed_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.unsubscribed
+    ADD CONSTRAINT unsubscribed_pkey PRIMARY KEY (user_id);
+
+
+--
 -- Name: userobligations userobligations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1364,6 +1382,14 @@ ALTER TABLE ONLY public.sessionstranslations
 
 
 --
+-- Name: unsubscribed unsubscribed_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.unsubscribed
+    ADD CONSTRAINT unsubscribed_users_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
 -- Name: userobligations userobligations_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1439,7 +1465,7 @@ ALTER TABLE ONLY public.wdcpredictions
 -- PostgreSQL database dump complete
 --
 
-\unrestrict 6tSwrZK82lxz6scSUmwHzMB69eCJVQGqaBtOvF2gF7RZfKWLhaoLLGuKb0Q5pbP
+\unrestrict Ha7wmxazgRvzMSaIVorps8aeBkPYsqM6OeYxCpeVjDsz4G28z9u1nCDmu9ORhVe
 
 
 --
@@ -1480,4 +1506,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20260203215114'),
     ('20260214223501'),
     ('20260215153537'),
-    ('20260215154056');
+    ('20260215154056'),
+    ('20260215204125');
