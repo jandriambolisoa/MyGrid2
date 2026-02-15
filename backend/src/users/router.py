@@ -50,6 +50,16 @@ async def search_users(current_user: UserSelf = Depends(get_current_user), db: D
 
 @router.get("/profile", response_model=UserProfile)
 async def get_user_profile(username: str = Depends(valid_user_username), current_user: UserSelf = Depends(get_current_user), db: Database = Depends(get_db)):
+    """
+    If no username is given, will return the current user profile.
+    Args:
+        username: optionnal, the user to look for
+        current_user:
+        db:
+
+    Returns:
+        UserProfile schema
+    """
     if username:
         db.cursor.execute("""\
             SELECT * FROM users
