@@ -72,8 +72,7 @@ export type EventCalendarProps = {
 }
 
 export function EventCalendar ({
-  datas = null,
-  ...otherProps
+  datas = null
 }: EventCalendarProps) {
 
   // Function to sort events by date (may be removed later)

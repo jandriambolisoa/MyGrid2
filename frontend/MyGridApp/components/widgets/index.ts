@@ -9,3 +9,4 @@ export * from './ShadowSetup';
 export * from './PagerTabBar';
 export * from './ChampionshipWidget';
 export * from './EventCalendar';
+export * from './ScrollContainer';

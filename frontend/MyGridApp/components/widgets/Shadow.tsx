@@ -76,8 +76,6 @@ export function Shadow({
 
   const stopColor = color ? color : light ? Colors.light.lightShadow : Colors.light.darkShadow;
 
-  console.log(stopColor)
-
   return (
     <Svg height="100%" width="100%" style={[StyleSheet.absoluteFill]}>
       <Defs>

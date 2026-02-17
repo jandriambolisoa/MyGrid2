@@ -28,7 +28,7 @@ export default function HomePagerView () {
       >
         <Social />
         <Events tabBarHeight={tabBarHeight}/>
-        <Profile />
+        <Profile tabBarHeight={tabBarHeight}/>
       </PagerView>
       <PagerTabBar setPage={(page) => pagerRef.current?.setPage(page)} scroll={scroll} onLayout={(e) => setTabBarHeight(e.nativeEvent.layout.height)}/>
     </View>

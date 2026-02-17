@@ -5,6 +5,12 @@
       "signInApple": "Se connecter avec Apple"
     }
   },
+  "home": {
+    "profile": {
+      "memberSince": "Membre depuis le",
+      "editProfile": "Modifier le profil"
+    }
+  },
   "utils": {
     "niceDatetime": {
       "on": "Le",

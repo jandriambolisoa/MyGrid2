@@ -46,5 +46,13 @@ export const GlobalStyles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     alignSelf: 'stretch'
+  },
+  profilePicture: {
+    width: 200,
+    height: 200,
+    borderRadius: 500,
+    borderWidth: 1,
+    borderColor: Colors.light.borders,
+    marginVertical: 36
   }
 });
