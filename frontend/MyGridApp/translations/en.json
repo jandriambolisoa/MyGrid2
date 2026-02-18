@@ -4,5 +4,41 @@
       "signInGoogle": "Sign in with Google",
       "signInApple": "Sign in with Apple"
     }
+  },
+  "home": {
+    "profile": {
+      "memberSince": "Member since",
+      "editProfile": "Edit profile"
+    }
+  },
+  "utils": {
+    "niceDatetime": {
+      "on": "On",
+      "at": "at"
+    },
+    "fromToDatetime": {
+      "from": "From",
+      "to": "to"
+    }
+  },
+  "widgets": {
+    "mainWidget": {
+      "showResults": "Show results",
+      "live": "Live"
+    },
+    "pagerTabBar": {
+      "social": "Social",
+      "home": "Home",
+      "profile": "Profile"
+    },
+    "championshipWidget": {
+      "championship": "Championship",
+      "drivers": "Drivers",
+      "constructors": "Constructors",
+      "noPrediction": "No prediction yet"
+    },
+    "eventCalendar": {
+      "calendar": "Calendar"
+    }
   }
 }
