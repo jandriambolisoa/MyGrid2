@@ -6,6 +6,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StyleSheet, View } from 'react-native';
 import { MyGridBackground } from '@/components/widgets';
 import { Colors } from '@/theme';
+import { AuthProvider } from '@/contexts/AuthContext';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -25,14 +26,16 @@ export default function Layout() {
 
   return (
     <SafeAreaProvider onLayout={onLayoutRootView}>
-      <View style={{ flex: 1, alignSelf: 'stretch', backgroundColor: Colors.light.background}}>
-        <View style={StyleSheet.absoluteFill}>
-          <MyGridBackground />
+      <AuthProvider>
+        <View style={{ flex: 1, alignSelf: 'stretch', backgroundColor: Colors.light.background}}>
+          <View style={StyleSheet.absoluteFill}>
+            <MyGridBackground />
+          </View>
+          <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: 'transparent' } }}>
+            <Stack.Screen name="index" />
+          </Stack>
         </View>
-        <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: 'transparent' } }}>
-          <Stack.Screen name="index" />
-        </Stack>
-      </View>
+      </AuthProvider>
     </SafeAreaProvider>
   );
 }

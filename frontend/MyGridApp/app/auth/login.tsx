@@ -4,6 +4,7 @@ import { Dimensions, Keyboard, TextInput, TouchableWithoutFeedback, TouchableOpa
 import { scopedI18n } from "@/translations/i18n";
 import { GlobalStyles, Colors, Constants } from "@/theme";
 import { Octicons } from '@expo/vector-icons';
+import { useEmailLogin } from "@/hooks";
 
 export default function Login () {
 
@@ -13,6 +14,12 @@ export default function Login () {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPass, setShowPass] = useState(false);
+
+  const { emailLogin, error, loading } = useEmailLogin();
+
+  function handleLogin () {
+    emailLogin(username, password);
+  }
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
@@ -46,7 +53,7 @@ export default function Login () {
           <Octicons name={showPass ? 'eye-closed' : 'eye'} size={20} color={Colors.light.lightText}/>
         </TouchableOpacity>}
         </View>
-        <LiteButton style={[GlobalStyles.loginButton, { width: width * 0.5, marginTop: Constants.spacing.buttonMargin  }]}>
+        <LiteButton style={[GlobalStyles.loginButton, { width: width * 0.5, marginTop: Constants.spacing.buttonMargin  }]} onPress={handleLogin}>
           <MainText>{t('login')}</MainText>
         </LiteButton>
       </Container>
