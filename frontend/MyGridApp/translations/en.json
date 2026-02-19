@@ -2,7 +2,10 @@
   "auth": {
     "login": {
       "signInGoogle": "Sign in with Google",
-      "signInApple": "Sign in with Apple"
+      "signInApple": "Sign in with Apple",
+      "usernameEmail": "Username or email",
+      "password": "Password",
+      "login": "Login"
     }
   },
   "home": {

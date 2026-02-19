@@ -1,78 +1,55 @@
-import { Container } from "@/components/widgets/Container";
-import { MainText } from "@/components/widgets/MainText";
-import { TouchableOpacity, StyleSheet, View } from "react-native";
-import { AntDesign } from "@expo/vector-icons";
+import { useState } from "react";
+import { Container, LiteButton, MainText } from "@/components/widgets";
+import { Dimensions, Keyboard, TextInput, TouchableWithoutFeedback, TouchableOpacity, View } from "react-native";
 import { scopedI18n } from "@/translations/i18n";
-import * as AppleAuthentication from 'expo-apple-authentication';
-import * as Google from 'expo-auth-session/providers/google';
-import * as WebBrowser from 'expo-web-browser';
-import { SpotLight } from "@/components/widgets/SpotLight";
-import { useEffect } from "react";
-
-const t = scopedI18n('auth.login')
-
-WebBrowser.maybeCompleteAuthSession();
+import { GlobalStyles, Colors, Constants } from "@/theme";
+import { Octicons } from '@expo/vector-icons';
 
 export default function Login () {
 
-  const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
-    webClientId: "506627688155-vnssthto3rl9d12ts93o9nsnc0bhdobs.apps.googleusercontent.com",
-    iosClientId: "506627688155-gk31l5ohis7ded2596lm5447mcrc5apl.apps.googleusercontent.com",
-    scopes: ['openid', 'profile', 'email']
-  })
+  const t = scopedI18n('auth.login');
+  const width = Dimensions.get('window').width;
 
-  /*const [request, response, promptAsync] = Google.useAuthRequest({
-    webClientId: "506627688155-vnssthto3rl9d12ts93o9nsnc0bhdobs.apps.googleusercontent.com",
-    iosClientId: "506627688155-gk31l5ohis7ded2596lm5447mcrc5apl.apps.googleusercontent.com",
-    scopes: ['profile', 'email']
-  })*/
-
-  useEffect(() => {
-    if (response?.type === 'success') {
-      //const { authentication } = response;
-      console.log("Auth:", response.params.id_token);
-    }
-  }, [response])
-
-  async function handleGoogle () {
-    await promptAsync()
-  }
-
-  async function handleApple () {
-    try {
-      const credential = await AppleAuthentication.signInAsync({
-        requestedScopes: [
-          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
-          AppleAuthentication.AppleAuthenticationScope.EMAIL,
-        ],
-      });
-      
-      if (credential) {
-        console.log(credential)
-      }
-    } catch (e: any) {
-      if (e.code === 'ERR_REQUEST_CANCELED') {
-        // handle that the user canceled the sign-in flow
-      } else {
-        // handle other errors
-      }
-    }
-  }
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPass, setShowPass] = useState(false);
 
   return (
-    <View style={{flex: 1}}>
-      <SpotLight color="#00FFEE" cx="75%" cy="25%" fx="80%" fy="20%"/>
-      <SpotLight color="#FF9900" cx="25%" cy="75%" fx="20%" fy="80%"/>
-      <Container style={{ justifyContent: 'center', alignItems: 'center', backgroundColor: '#dddddd'}}>
-        <TouchableOpacity onPress={handleGoogle} style={{borderWidth: 1, borderColor: 'white', padding: 10, borderRadius: 4, flexDirection: 'row'}}>
-          <MainText>{t('signInGoogle')}</MainText>
-          <AntDesign name="google" size={18} color="white" style={{ marginLeft: 8 }} />
-        </TouchableOpacity>
-        <TouchableOpacity onPress={handleApple} style={{borderWidth: 1, borderColor: 'white', padding: 10, borderRadius: 4, marginTop: 18, flexDirection: 'row'}}>
-          <MainText>{t('signInApple')}</MainText>
-          <AntDesign name="apple" size={18} color="white" style={{ marginLeft: 8}} />
-        </TouchableOpacity>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <Container style={{ backgroundColor: 'transparent' }}>
+        
+        <MainText style={{fontSize: Constants.fontSizes.big, marginBottom: 40}}>{t('login')}</MainText>
+        <TextInput
+          value={username}
+          placeholder={t('usernameEmail')}
+          keyboardType="email-address"
+          cursorColor={Colors.light.lightText}
+          selectionColor={Colors.light.lightText}
+          style={[GlobalStyles.button, GlobalStyles.loginButton, { width: width * 0.7, color: Colors.light.lightText, marginBottom: Constants.spacing.buttonMargin }]}
+          placeholderTextColor={Colors.light.disabledText}
+          autoComplete='username'
+          onChangeText={text => setUsername(text)}
+        />
+        <View>
+        <TextInput
+          value={password}
+          placeholder={t('password')}
+          placeholderTextColor={Colors.light.disabledText}
+          cursorColor={Colors.light.lightText}
+          selectionColor={Colors.light.lightText}
+          style={[GlobalStyles.button, GlobalStyles.loginButton, { width: width * 0.7, color: Colors.light.lightText }]}
+          secureTextEntry={showPass ? false : true}
+          autoComplete='password'
+          onChangeText={text => setPassword(text)}
+        />
+        {password.length > 0 && <TouchableOpacity style={GlobalStyles.eye} onPress={() => setShowPass(!showPass)}>
+          <Octicons name={showPass ? 'eye-closed' : 'eye'} size={20} color={Colors.light.lightText}/>
+        </TouchableOpacity>}
+        </View>
+        <LiteButton style={[GlobalStyles.loginButton, { width: width * 0.5, marginTop: Constants.spacing.buttonMargin  }]}>
+          <MainText>{t('login')}</MainText>
+        </LiteButton>
       </Container>
-    </View>
+    </TouchableWithoutFeedback>
   )
 }

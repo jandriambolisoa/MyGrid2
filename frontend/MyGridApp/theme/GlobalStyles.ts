@@ -3,6 +3,10 @@ import { Colors } from "./Colors";
 import { Constants } from "./Constants";
 
 export const GlobalStyles = StyleSheet.create({
+  loginButton: {
+    padding: Constants.spacing.buttonPadding,
+    fontSize: 16
+  },
   button: {
     borderColor: Colors.light.borders,
     borderWidth: 1,
@@ -54,5 +58,13 @@ export const GlobalStyles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.light.borders,
     marginVertical: 36
+  },
+  eye: {
+      position: 'absolute',
+      justifyContent: 'center',
+      alignItems: 'center',
+      end: 0,
+      width: 40,
+      height: '100%'
   }
 });
