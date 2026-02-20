@@ -5,7 +5,8 @@
       "signInApple": "Sign in with Apple",
       "usernameEmail": "Username or email",
       "password": "Password",
-      "login": "Login"
+      "login": "Login",
+      "missingInfo": "Missing information"
     }
   },
   "home": {

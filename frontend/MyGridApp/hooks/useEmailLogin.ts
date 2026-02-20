@@ -8,7 +8,7 @@ export  function useEmailLogin () {
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  async function emailLogin (username: string, password: string) {
+  async function emailLogin (username: string, password: string, locale: string) {
 
     const body = `${encodeURIComponent('username')}=${encodeURIComponent(username)}&${encodeURIComponent('password')}=${encodeURIComponent(password)}`
 
@@ -23,11 +23,10 @@ export  function useEmailLogin () {
 
     try {
       setLoading(true);
+      setError(null);
 
-      const response = await fetch(`${API_URL}/auth/login-email?username=${username}&password=${password}`, options);
+      const response = await fetch(`${API_URL}/auth/login-email?username=${username}&password=${password}&language=${locale}`, options);
       const data = await response.json()
-
-      console.log(data);
 
       if (data.detail) {
         setError(data.detail);
