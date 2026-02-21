@@ -14,6 +14,7 @@ export type AuthContextType = {
   refreshToken: string | null;
   login: (authData: AuthData) => void;
   logout: () => void;
+  isAuthenticated: boolean;
 }
 
 export function AuthProvider ({ children }: any) {
@@ -31,7 +32,11 @@ export function AuthProvider ({ children }: any) {
   }
 
   async function logout () {
-    
+    setUser(null);
+    setAccessToken(null);
+    setRefreshToken(null);
+
+    // Clear tokens from storage here
   }
 
   return (
@@ -40,7 +45,8 @@ export function AuthProvider ({ children }: any) {
       accessToken,
       refreshToken,
       login,
-      logout
+      logout,
+      isAuthenticated: !!user
       }}>
       {children}
     </AuthContext.Provider>
