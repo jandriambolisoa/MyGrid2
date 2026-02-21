@@ -6,12 +6,15 @@ import { GlobalStyles, Colors, Constants } from "@/theme";
 import { Octicons } from '@expo/vector-icons';
 import { useEmailLogin } from "@/hooks";
 import * as Localization from 'expo-localization';
+import { useRouter } from "expo-router";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function Login () {
 
   const t = scopedI18n('auth.login');
   const width = Dimensions.get('window').width;
   const locale = Localization.getLocales()[0]?.languageCode || 'en';
+  const router = useRouter();
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -19,6 +22,7 @@ export default function Login () {
   const [errorMsg, setErrorMsg] = useState('');
 
   const { emailLogin, error, loading } = useEmailLogin();
+  const { login } = useAuth();
 
   useEffect(() => {
     if (error) {
@@ -26,7 +30,7 @@ export default function Login () {
     }
   }, [error])
 
-  function handleLogin () {
+  async function handleLogin () {
 
     setErrorMsg('');
 
@@ -35,7 +39,13 @@ export default function Login () {
       return;
     }
 
-    emailLogin(username, password, locale);
+    const data = await emailLogin(username, password, locale);
+
+    if (data) {
+      await login(data);
+
+      router.replace('/home')
+    }
   }
 
   return (

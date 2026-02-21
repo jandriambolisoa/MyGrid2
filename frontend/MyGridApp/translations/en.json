@@ -12,7 +12,8 @@
   "home": {
     "profile": {
       "memberSince": "Member since",
-      "editProfile": "Edit profile"
+      "editProfile": "Edit profile",
+      "logout": "Logout"
     }
   },
   "utils": {

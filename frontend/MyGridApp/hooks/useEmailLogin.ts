@@ -25,16 +25,25 @@ export  function useEmailLogin () {
       setLoading(true);
       setError(null);
 
-      const response = await fetch(`${API_URL}/auth/login-email?username=${username}&password=${password}&language=${locale}`, options);
+      const response = await fetch(`${API_URL}/auth/login-email?language=${locale}`, options);
       const data = await response.json()
 
       if (data.detail) {
         setError(data.detail);
-        return
+        return false;
       }
+
+      console.log(data)
+
+      return {
+        user: data.user,
+        accessToken: data.access_token.access_token,
+        refreshToken: data.refresh_token.refresh_token
+      };
 
     } catch (e: any) {
       setError(e.message);
+      return false;
     } finally {
       setLoading(false);
     }
