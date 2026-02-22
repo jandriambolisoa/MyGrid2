@@ -5,7 +5,11 @@ import { Constants } from "./Constants";
 export const GlobalStyles = StyleSheet.create({
   loginButton: {
     padding: Constants.spacing.buttonPadding,
-    fontSize: 16
+    fontSize: 16,
+    width: '70%',
+    alignSelf: 'center',
+    marginBottom: Constants.spacing.buttonMargin,
+    color: Colors.light.lightText
   },
   button: {
     borderColor: Colors.light.borders,
@@ -60,11 +64,24 @@ export const GlobalStyles = StyleSheet.create({
     marginVertical: 36
   },
   eye: {
-      position: 'absolute',
-      justifyContent: 'center',
-      alignItems: 'center',
-      end: 0,
-      width: 40,
-      height: '100%'
+    position: 'absolute',
+    justifyContent: 'center',
+    alignItems: 'center',
+    end: '15%',
+    width: 40,
+    bottom: Constants.spacing.buttonMargin,
+    top: 0
+  },
+  authLink: {
+    padding: 2,
+    marginTop: Constants.spacing.buttonMargin
+  },
+  warning: {
+    position: 'absolute',
+    bottom: '15%',
+    color: Colors.light.warning,
+    left: '10%',
+    right: '10%',
+    textAlign: 'center'
   }
 });

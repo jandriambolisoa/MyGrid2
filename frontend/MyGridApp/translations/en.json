@@ -6,7 +6,18 @@
       "usernameEmail": "Username or email",
       "password": "Password",
       "login": "Login",
-      "missingInfo": "Missing information"
+      "missingInfo": "Missing information",
+      "signup": "Don't have an account? Sign up"
+    },
+    "signup": {
+      "username": "Username",
+      "email": "Email",
+      "password": "Password",
+      "confirmPassword": "Confirm password",
+      "missingInfo": "Missing information",
+      "signup": "Sign up",
+      "passwordsDontMatch": "Passwords don't match",
+      "login": "Already have an account? Login"
     }
   },
   "home": {

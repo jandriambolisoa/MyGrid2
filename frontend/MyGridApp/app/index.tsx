@@ -14,7 +14,7 @@ export default function MainScreen () {
         <MainText>Welcome to</MainText>
         <MainText style={{fontSize: Constants.fontSizes.giant, marginBottom: 40}}>Mygrid</MainText>
       </View>
-      <LiteButton onPress={() => router.push('/auth/login')} style={[{position: 'absolute', bottom: "30%"}]}>
+      <LiteButton onPress={() => router.push('/login')} style={[{position: 'absolute', bottom: "30%"}]}>
         <MainText>Sign in</MainText>
       </LiteButton>
     </Container>

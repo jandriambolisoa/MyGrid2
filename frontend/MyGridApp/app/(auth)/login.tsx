@@ -64,26 +64,29 @@ export default function Login () {
             autoComplete='username'
             onChangeText={text => setUsername(text)}
           />
-          <View>
-          <TextInput
-            value={password}
-            placeholder={t('password')}
-            placeholderTextColor={Colors.light.disabledText}
-            cursorColor={Colors.light.lightText}
-            selectionColor={Colors.light.lightText}
-            style={[GlobalStyles.button, GlobalStyles.loginButton, { width: width * 0.7, color: Colors.light.lightText }]}
-            secureTextEntry={showPass ? false : true}
-            autoComplete='password'
-            onChangeText={text => setPassword(text)}
-          />
-          {password.length > 0 && <TouchableOpacity style={GlobalStyles.eye} onPress={() => setShowPass(!showPass)}>
-            <Octicons name={showPass ? 'eye-closed' : 'eye'} size={20} color={Colors.light.lightText}/>
-          </TouchableOpacity>}
+          <View style={{ alignSelf: 'stretch' }}>
+            <TextInput
+              value={password}
+              placeholder={t('password')}
+              placeholderTextColor={Colors.light.disabledText}
+              cursorColor={Colors.light.lightText}
+              selectionColor={Colors.light.lightText}
+              style={[GlobalStyles.button, GlobalStyles.loginButton]}
+              secureTextEntry={showPass ? false : true}
+              autoComplete='password'
+              onChangeText={text => setPassword(text)}
+            />
+            {password.length > 0 && <TouchableOpacity style={GlobalStyles.eye} onPress={() => setShowPass(!showPass)}>
+              <Octicons name={showPass ? 'eye-closed' : 'eye'} size={20} color={Colors.light.lightText}/>
+            </TouchableOpacity>}
           </View>
-          <LiteButton style={[GlobalStyles.loginButton, { width: width * 0.5, marginTop: Constants.spacing.buttonMargin  }]} onPress={handleLogin}>
+          <LiteButton style={[GlobalStyles.loginButton, { width: width * 0.5 }]} onPress={handleLogin}>
             {loading ? <ActivityIndicator color={Colors.light.lightText}/> : <MainText>{t('login')}</MainText>}
           </LiteButton>
-          <MainText style={{ position: 'absolute', bottom: '20%', color: Colors.light.warning }}>{errorMsg}</MainText>
+          <TouchableOpacity style={GlobalStyles.authLink} onPress={() => router.replace('/signup')}>
+            <MainText>{t('signup')}</MainText>
+          </TouchableOpacity>
+          <MainText style={GlobalStyles.warning}>{errorMsg}</MainText>
         </Container>
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
