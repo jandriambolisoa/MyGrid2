@@ -137,6 +137,7 @@ async def search_event(db:Database = Depends(get_db),
         events.id AS event_id,
         COALESCE(events_translations.name, events.name) AS event_name,
         events.color AS event_color,
+        events.flag AS event_flag,
         championships.id AS championship_id,
         championships.name AS championship_name
         FROM sessions
@@ -272,10 +273,10 @@ async def update_event(datas: EventUpdate, event_id: int = Depends(valid_event_i
     try:
         db.cursor.execute("""\
             UPDATE events
-            SET name = %s, color = %s, flag = %s, collectible = %s, collectibletextures = %s
+            SET name = %s, color = %s, flag = %s
             WHERE id = %s
             RETURNING *
-            """, (datas.name["en"], datas.color, datas.flag, datas.collectible.model, datas.collectible.textures, event_id))
+            """, (datas.name["en"], datas.color, datas.flag, event_id))
         updated = db.cursor.fetchone()
 
         for lang in translations:
