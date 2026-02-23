@@ -1,6 +1,7 @@
 from typing import List
 
 from fastapi import Depends
+from psycopg.errors import ForeignKeyViolation, UniqueViolation
 
 from backend.db.database import get_db
 from backend.oauth2 import get_current_user
@@ -26,3 +27,17 @@ async def get_user_collectibles(user_id: int = None, current_user: UserSelf = De
         return []
 
     return [Collectible(**collectible) for collectible in collectibles]
+
+async def distribute_collectible(user_id: int, collectible_id: int):
+    db = get_db()
+    try:
+        db.cursor.execute("""\
+            INSERT INTO userscollectibles (user_id, collectible_id)
+            VALUES (%s, %s)""", (user_id, collectible_id))
+        db.conn.commit()
+
+    except ForeignKeyViolation:
+        db.conn.rollback()
+
+    except UniqueViolation:
+        db.conn.rollback()
