@@ -1,4 +1,4 @@
-\restrict oxliJAPtW600MgzTwlv6eZcydCmd0P7ipDIlyw2a7HJoVZCNJ8bJvY0cLoUxc8G
+\restrict Ha7wmxazgRvzMSaIVorps8aeBkPYsqM6OeYxCpeVjDsz4G28z9u1nCDmu9ORhVe
 
 -- Dumped from database version 18.1
 -- Dumped by pg_dump version 18.1
@@ -74,6 +74,17 @@ CREATE SEQUENCE public.appstatus_id_seq
 --
 
 ALTER SEQUENCE public.appstatus_id_seq OWNED BY public.appstatus.id;
+
+
+--
+-- Name: apscheduler_jobs; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.apscheduler_jobs (
+    id character varying(191) NOT NULL,
+    next_run_time double precision,
+    job_state bytea NOT NULL
+);
 
 
 --
@@ -173,6 +184,37 @@ ALTER SEQUENCE public.championships_id_seq OWNED BY public.championships.id;
 
 
 --
+-- Name: collectibles; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.collectibles (
+    id integer NOT NULL,
+    name character varying NOT NULL,
+    description character varying NOT NULL
+);
+
+
+--
+-- Name: collectibles_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.collectibles_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: collectibles_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.collectibles_id_seq OWNED BY public.collectibles.id;
+
+
+--
 -- Name: drivers; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -212,7 +254,10 @@ CREATE TABLE public.events (
     id integer NOT NULL,
     name character varying NOT NULL,
     color character varying NOT NULL,
-    championship_id integer NOT NULL
+    championship_id integer NOT NULL,
+    flag character varying DEFAULT 'https://flagsapi.com/BE/flat/64.png'::character varying NOT NULL,
+    collectible character varying,
+    collectibletextures character varying
 );
 
 
@@ -588,6 +633,16 @@ ALTER SEQUENCE public.teams_id_seq OWNED BY public.teams.id;
 
 
 --
+-- Name: unsubscribed; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.unsubscribed (
+    user_id integer NOT NULL,
+    created timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
 -- Name: userobligations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -639,6 +694,44 @@ ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
 
 
 --
+-- Name: userscollectibles; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.userscollectibles (
+    user_id integer NOT NULL,
+    collectible_id integer NOT NULL,
+    created timestamp with time zone DEFAULT now() NOT NULL,
+    views integer DEFAULT 0 NOT NULL
+);
+
+
+--
+-- Name: wccpredictions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.wccpredictions (
+    user_id integer NOT NULL,
+    championship_id integer NOT NULL,
+    team_id integer NOT NULL,
+    potential integer NOT NULL,
+    created timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: wdcpredictions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.wdcpredictions (
+    user_id integer NOT NULL,
+    championship_id integer NOT NULL,
+    driver_id integer NOT NULL,
+    potential integer NOT NULL,
+    created timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
 -- Name: appstatus id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -664,6 +757,13 @@ ALTER TABLE ONLY public.bannedusernames ALTER COLUMN id SET DEFAULT nextval('pub
 --
 
 ALTER TABLE ONLY public.championships ALTER COLUMN id SET DEFAULT nextval('public.championships_id_seq'::regclass);
+
+
+--
+-- Name: collectibles id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.collectibles ALTER COLUMN id SET DEFAULT nextval('public.collectibles_id_seq'::regclass);
 
 
 --
@@ -739,6 +839,14 @@ ALTER TABLE ONLY public.appstatus
 
 
 --
+-- Name: apscheduler_jobs apscheduler_jobs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.apscheduler_jobs
+    ADD CONSTRAINT apscheduler_jobs_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: bannedhistory bannedhistory_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -768,6 +876,22 @@ ALTER TABLE ONLY public.championships
 
 ALTER TABLE ONLY public.championships
     ADD CONSTRAINT championships_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: collectibles collectibles_name_unique; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.collectibles
+    ADD CONSTRAINT collectibles_name_unique UNIQUE (name);
+
+
+--
+-- Name: collectibles collectibles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.collectibles
+    ADD CONSTRAINT collectibles_pkey PRIMARY KEY (id);
 
 
 --
@@ -971,6 +1095,14 @@ ALTER TABLE ONLY public.teams
 
 
 --
+-- Name: unsubscribed unsubscribed_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.unsubscribed
+    ADD CONSTRAINT unsubscribed_pkey PRIMARY KEY (user_id);
+
+
+--
 -- Name: userobligations userobligations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1008,6 +1140,37 @@ ALTER TABLE ONLY public.users
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_username_unique UNIQUE (username);
+
+
+--
+-- Name: userscollectibles userscollectibles_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.userscollectibles
+    ADD CONSTRAINT userscollectibles_pkey PRIMARY KEY (user_id, collectible_id);
+
+
+--
+-- Name: wccpredictions wccpredictions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.wccpredictions
+    ADD CONSTRAINT wccpredictions_pkey PRIMARY KEY (user_id, championship_id);
+
+
+--
+-- Name: wdcpredictions wdcpredictions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.wdcpredictions
+    ADD CONSTRAINT wdcpredictions_pkey PRIMARY KEY (user_id, championship_id);
+
+
+--
+-- Name: ix_apscheduler_jobs_next_run_time; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ix_apscheduler_jobs_next_run_time ON public.apscheduler_jobs USING btree (next_run_time);
 
 
 --
@@ -1219,6 +1382,14 @@ ALTER TABLE ONLY public.sessionstranslations
 
 
 --
+-- Name: unsubscribed unsubscribed_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.unsubscribed
+    ADD CONSTRAINT unsubscribed_users_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
 -- Name: userobligations userobligations_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1227,10 +1398,74 @@ ALTER TABLE ONLY public.userobligations
 
 
 --
+-- Name: userscollectibles userscollectibles_collectibles_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.userscollectibles
+    ADD CONSTRAINT userscollectibles_collectibles_fkey FOREIGN KEY (collectible_id) REFERENCES public.collectibles(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: userscollectibles userscollectibles_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.userscollectibles
+    ADD CONSTRAINT userscollectibles_users_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: wccpredictions wccpredictions_championships_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.wccpredictions
+    ADD CONSTRAINT wccpredictions_championships_fkey FOREIGN KEY (championship_id) REFERENCES public.championships(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: wccpredictions wccpredictions_teams_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.wccpredictions
+    ADD CONSTRAINT wccpredictions_teams_fkey FOREIGN KEY (team_id) REFERENCES public.teams(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: wccpredictions wccpredictions_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.wccpredictions
+    ADD CONSTRAINT wccpredictions_users_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: wdcpredictions wdcpredictions_championships_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.wdcpredictions
+    ADD CONSTRAINT wdcpredictions_championships_fkey FOREIGN KEY (championship_id) REFERENCES public.championships(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: wdcpredictions wdcpredictions_drivers_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.wdcpredictions
+    ADD CONSTRAINT wdcpredictions_drivers_fkey FOREIGN KEY (driver_id) REFERENCES public.drivers(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: wdcpredictions wdcpredictions_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.wdcpredictions
+    ADD CONSTRAINT wdcpredictions_users_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
 -- PostgreSQL database dump complete
 --
 
-\unrestrict oxliJAPtW600MgzTwlv6eZcydCmd0P7ipDIlyw2a7HJoVZCNJ8bJvY0cLoUxc8G
+\unrestrict Ha7wmxazgRvzMSaIVorps8aeBkPYsqM6OeYxCpeVjDsz4G28z9u1nCDmu9ORhVe
 
 
 --
@@ -1266,4 +1501,10 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20251108095319'),
     ('20251108095327'),
     ('20251205204059'),
-    ('20251214144418');
+    ('20251214144418'),
+    ('20260203215108'),
+    ('20260203215114'),
+    ('20260214223501'),
+    ('20260215153537'),
+    ('20260215154056'),
+    ('20260215204125');
