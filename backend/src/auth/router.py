@@ -38,7 +38,7 @@ router = APIRouter(
 
 
 @router.post("/signup", status_code=status.HTTP_201_CREATED, response_model=UserSelf)
-async def signup_user(user: UserCreate, referral_code: str = None, language: str = None, db: Database = Depends(get_db)):
+async def signup_user(user: UserCreate, referral_code: str = None, language: str = "en", db: Database = Depends(get_db)):
     # Removed the server maintenance condition
     # We must worship a user initiative to sing-up and therefore
     # try our best to make it happen in any condition
@@ -67,7 +67,7 @@ async def signup_user(user: UserCreate, referral_code: str = None, language: str
         if referral_code:
             await assign_user_referral(referral_code, new_user["id"], language=language)
 
-        await users_signals.created.send(UserSelf(**new_user))
+        await users_signals.created.send(new_user["id"])
 
         # TODO: include full profile return
         return new_user
@@ -337,6 +337,8 @@ async def login_google(credential: str, referral_code: str = None, language: str
     if not is_google_email:
         await create_obligation(code= "newpwd", user_id= new_user["id"], language= language)
 
+    auth_signals.validate_mail.send(new_user["id"])
+
     return Response(status_code= status.HTTP_202_ACCEPTED)
 
 
@@ -482,6 +484,8 @@ async def login_apple(credential: str, nonce: str, referral_code: str = None, la
     # Create a new username and, if not a google_email, a new password
     await create_obligation(code= "newname", user_id= new_user["id"], language= language)
 
+    auth_signals.validate_mail.send(new_user["id"])
+
     return Response(status_code= status.HTTP_202_ACCEPTED)
 
 
@@ -509,29 +513,29 @@ async def logout(db: Database = Depends(get_db), current_user: UserSelf = Depend
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
-@router.post("/confirm-email", status_code=status.HTTP_202_ACCEPTED, response_class=RedirectResponse)
-async def confirm_email(token: AccessToken, db: Database = Depends(get_db)):
+@router.get("/confirm-email", response_class=RedirectResponse)
+async def confirm_email(token: str, db: Database = Depends(get_db)):
     # A very exceptional occasion where the token is read
     # without validation to extract the user language
-    token_payload = jwt.decode(token.access_token, app_settings.secret_key, app_settings.algorithm, options={"verify_signature": False})
+    token_payload = jwt.decode(token, app_settings.secret_key, app_settings.algorithm, options={"verify_signature": False})
     language = token_payload.get("language", "en")
 
-    datas = await verify_access_token(token.access_token, language=language, verify_exp=False)
+    datas = await verify_access_token(token, language=language, verify_exp=False)
 
     try:
         db.cursor.execute("""
             UPDATE users
             SET verified = true
-            WHERE username = %s AND email = %s
+            WHERE username = %s AND id = %s
             RETURNING *
-            """, (datas.username, datas.email))
+            """, (datas.username, datas.user_id))
         db.conn.commit()
 
         user = db.cursor.fetchone()
 
-        await auth_signals.validate_mail.send(UserSelf(**user))
+        await auth_signals.validate_mail.send(user["id"])
 
-        return RedirectResponse(app_settings.confirmed_email_url)
+        return RedirectResponse(app_settings.confirmed_email_redirect_url)
     except:
         db.cursor.execute("ROLLBACK")
         db.conn.commit()
