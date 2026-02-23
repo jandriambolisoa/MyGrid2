@@ -33,6 +33,7 @@ class Settings (BaseSettings):
     api_url: str
     website_url: str
     confirmed_email_url: str
+    confirmed_email_redirect_url: str
 
     # Microservices related settings
     ms: int = 1 # 0 is off

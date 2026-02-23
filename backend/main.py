@@ -22,7 +22,9 @@ from backend.src.registrations import router as registrations_router
 from backend.src.results import router as results_router
 from backend.src.scores import router as scores_router
 from backend.src.users import router as users_router
+
 from backend.src.live import listener as live_listener
+from backend.src.auth import listener as auth_listener
 from backend.src.predictions import listener as predictions_listener
 from backend.src.ranks import listener as ranks_listener
 from backend.src.results import listener as results_listener
@@ -46,6 +48,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+auth_listener.init_listener()
 live_listener.init_listener()
 predictions_listener.init_listener()
 ranks_listener.init_listener()
