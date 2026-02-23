@@ -23,6 +23,7 @@ from backend.src.results import router as results_router
 from backend.src.scores import router as scores_router
 from backend.src.users import router as users_router
 
+from backend.src.collectibles import listener as collectibles_listener
 from backend.src.live import listener as live_listener
 from backend.src.auth import listener as auth_listener
 from backend.src.predictions import listener as predictions_listener
@@ -48,6 +49,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+collectibles_listener.init_listener()
 auth_listener.init_listener()
 live_listener.init_listener()
 predictions_listener.init_listener()

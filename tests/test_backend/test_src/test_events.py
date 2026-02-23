@@ -42,7 +42,8 @@ def mock_create_event(user_obj: MockUser, championship: Championship):
     res = user_obj.client.post(f"/events", json={
         "name": to_create_names,
         "championship_id": championship.id,
-        "color": to_create_color
+        "color": to_create_color,
+        "flag": 'some_url'
     })
     yield res.status_code
 
@@ -50,7 +51,8 @@ def mock_create_event(user_obj: MockUser, championship: Championship):
         res = user_obj.client.post(f"/events", json={
             "name": to_create_names,
             "championship_id": championship.id,
-            "color": to_create_color
+            "color": to_create_color,
+            "flag": 'some_url'
         })
         yield res.status_code == status.HTTP_409_CONFLICT
     else:
