@@ -2,6 +2,7 @@ from typing import List, Optional
 
 from pydantic import BaseModel
 
+from backend.src.drivers.schemas import Driver, Team
 from backend.src.users.schemas import User
 from backend.src.events.schemas import Championship, Event, Session
 
@@ -32,3 +33,22 @@ class EventRanks(BaseModel):
 class SessionRanks(BaseModel):
     championship: Championship
     ranks: List[UserSessionRank]
+
+class DriverRank(BaseModel):
+    rank: int
+    driver: Driver
+    team: Team
+    score: Optional[int] = 0
+
+class DriverChampionshipLeaderboard(BaseModel):
+    championship: Championship
+    ranks: List[DriverRank]
+
+class TeamRank(BaseModel):
+    rank: int
+    team: Team
+    score: Optional[int] = 0
+
+class TeamChampionshipLeaderboard(BaseModel):
+    championship: Championship
+    ranks: List[TeamRank]

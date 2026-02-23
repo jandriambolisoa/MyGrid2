@@ -9,10 +9,10 @@ def get_glb_folder():
         os.mkdir(folderpath)
     return folderpath.replace("\\", "/")
 
-async def valid_glb_name_uniqueness(name, language: str = "en"):
-    await valid_file_name_uniqueness(name, get_glb_folder(), language)
+async def valid_glb_name_uniqueness(glb_name, language: str = "en"):
+    await valid_file_name_uniqueness(glb_name, get_glb_folder(), language)
 
-    return name
+    return glb_name
 
 async def valid_glb_filename(filename, language: str = "en"):
     valid_name = await valid_filename(filename, get_glb_folder(), language)
