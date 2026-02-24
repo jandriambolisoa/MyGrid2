@@ -11,6 +11,7 @@ import { AuthProvider } from '@/contexts/AuthContext';
 SplashScreen.preventAutoHideAsync();
 
 export default function Layout() {
+
   const [fontsLoaded] = useFonts({
     AlteHaasGrotesk: require('../assets/fonts/AlteHaasGroteskRegular.ttf'),
     'AlteHaasGrotesk-Bold': require('../assets/fonts/AlteHaasGroteskBold.ttf'),

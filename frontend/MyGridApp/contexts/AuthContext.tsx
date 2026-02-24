@@ -1,4 +1,5 @@
 import { createContext, useContext, useState } from "react";
+import * as SecureStore from "expo-secure-store";
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -24,19 +25,23 @@ export function AuthProvider ({ children }: any) {
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
 
   async function login (authData: AuthData) {
+
     setUser(authData.user);
     setAccessToken(authData.accessToken);
     setRefreshToken(authData.refreshToken);
 
-    // Store tokens in secure storage or AsyncStorage here
+    await SecureStore.setItemAsync('accessToken', authData.accessToken)
+    await SecureStore.setItemAsync('refreshToken', authData.refreshToken)
   }
 
   async function logout () {
+
     setUser(null);
     setAccessToken(null);
     setRefreshToken(null);
 
-    // Clear tokens from storage here
+    await SecureStore.deleteItemAsync('accessToken')
+    await SecureStore.deleteItemAsync('refreshToken')
   }
 
   return (
@@ -46,7 +51,7 @@ export function AuthProvider ({ children }: any) {
       refreshToken,
       login,
       logout,
-      isAuthenticated: !!user
+      isAuthenticated: !!accessToken
       }}>
       {children}
     </AuthContext.Provider>

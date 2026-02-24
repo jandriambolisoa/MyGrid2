@@ -5,7 +5,6 @@ import { scopedI18n } from "@/translations/i18n";
 import { GlobalStyles, Colors, Constants } from "@/theme";
 import { Octicons } from '@expo/vector-icons';
 import { useEmailLogin } from "@/hooks";
-import * as Localization from 'expo-localization';
 import { useRouter } from "expo-router";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -13,7 +12,6 @@ export default function Login () {
 
   const t = scopedI18n('auth.login');
   const width = Dimensions.get('window').width;
-  const locale = Localization.getLocales()[0]?.languageCode || 'en';
   const router = useRouter();
 
   const [username, setUsername] = useState('');
@@ -39,7 +37,7 @@ export default function Login () {
       return;
     }
 
-    const data = await emailLogin(username, password, locale);
+    const data = await emailLogin(username, password);
 
     if (data) {
       await login(data);

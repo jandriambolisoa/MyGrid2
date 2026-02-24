@@ -27,12 +27,14 @@ export  function useLogout () {
       setError(null);
 
       const response = await fetch(`${API_URL}/auth/logout`, options);
-      const data = await response.json()
 
-      if (data.detail) {
-        setError(data.detail);
-        console.log(data.detail)
-        return false;
+      if (!response.ok) {
+        
+        const data = await response.json()
+        if (data.detail) {
+          setError(data.detail);
+          return false;
+        }
       }
 
       return true;
