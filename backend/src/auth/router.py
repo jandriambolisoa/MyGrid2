@@ -37,7 +37,7 @@ router = APIRouter(
 )
 
 
-@router.post("/signup", status_code=status.HTTP_201_CREATED, response_model=UserSelf)
+@router.post("/signup", status_code=status.HTTP_201_CREATED, response_model=LoginResponse)
 async def signup_user(user: UserCreate, referral_code: str = None, language: str = "en", db: Database = Depends(get_db)):
     # Removed the server maintenance condition
     # We must worship a user initiative to sing-up and therefore
@@ -61,21 +61,45 @@ async def signup_user(user: UserCreate, referral_code: str = None, language: str
         new_user = db.cursor.fetchone()
         db.conn.commit()
 
-        # TODO: add user in leaderboards
-
-        # TODO include referral system
         if referral_code:
             await assign_user_referral(referral_code, new_user["id"], language=language)
 
         await users_signals.created.send(new_user["id"])
 
-        # TODO: include full profile return
-        return new_user
+        access_token = await create_jwt_token({
+            "user_id": new_user["id"],
+            "username": new_user["username"],
+            "language": language
+        })
+
+        refresh_token = await create_jwt_token({
+            "user_id": new_user["id"],
+            "makeunique": random_code(32)
+        }, datetime.timedelta(minutes=app_settings.refresh_token_expires_minutes))
+
+        # Register the refresh token in the database to
+        # be able to revoke it when logging out
+        db.cursor.execute("""\
+            INSERT INTO refreshtokens (user_id, token)
+            VALUES (%s, %s)""", (new_user["id"], refresh_token))
+        db.conn.commit()
+
+        return {
+            "access_token": {
+                "access_token": access_token,
+                "token_type": "bearer"
+            },
+            "refresh_token": {
+                "refresh_token": refresh_token,
+                "token_type": "bearer"
+            },
+            "user": new_user
+        }
 
     except UniqueViolation as err:
         db.cursor.execute("ROLLBACK")
         db.conn.commit()
-        raise app_exceptions.UnexpectedError(language=language)
+        raise auth_exceptions.NotAvailableEmailError(language=language)
 
 
 @router.post("/login-email", response_model=LoginResponse)
