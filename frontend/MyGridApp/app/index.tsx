@@ -5,7 +5,7 @@ import { Constants } from '@/theme';
 import { useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import * as SecureStore from 'expo-secure-store';
-import { refreshLogin } from '@/api/auth';
+import { refreshLogin } from '@/api/refresh';
 
 export default function MainScreen () {
 
