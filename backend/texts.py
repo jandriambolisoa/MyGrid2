@@ -1,19 +1,5 @@
 from collections import defaultdict
 
-days_of_the_week = defaultdict(
-    lambda: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
-    {
-        "fr": ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"]
-    }
-)
-
-nice_datetime_format = defaultdict(
-    lambda: "{{ day }} at {{ time }}",
-    {
-        "fr": "Le {{ day }} à {{ time }}"
-    }
-)
-
 unexpected_message = defaultdict(
     lambda: "An error occured, please try again.",
     {

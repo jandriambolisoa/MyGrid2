@@ -20,6 +20,3 @@ _f1_points = defaultdict(
 CHAMPIONSHIP_POINTS = {
     1: _f1_points
 }
-
-WDC_PREDICTION_POINTS = 1000
-WCC_PREDICTION_POINTS = 1000

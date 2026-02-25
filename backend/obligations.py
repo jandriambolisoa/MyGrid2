@@ -4,7 +4,6 @@ from psycopg.errors import ForeignKeyViolation
 from starlette import status
 
 from backend import texts
-from backend.config import settings as app_settings
 from backend.db.database import get_db
 from backend.schemas import ObligationResponse
 from backend.src.users.exceptions import NotAUserError
@@ -30,13 +29,6 @@ async def create_obligation(code: str, user_id: int, language: str = "en"):
         db.conn.rollback()
         raise NotAUserError(language= language)
 
-async def delete_obligation(code: str, user_id: int, language: str = "en"):
-    db = get_db()
-    db.cursor.execute("""\
-        DELETE FROM userobligations
-        WHERE user_id = %s AND obligation = %s""", (user_id, code))
-    db.conn.commit()
-
 
 def obligation_content(code: str, language: str = "en"):
     """
@@ -45,18 +37,18 @@ def obligation_content(code: str, language: str = "en"):
     obligations = {
         "newname": ObligationResponse(
             message= texts.obligation_newname[language],
-            redirection= f"{app_settings.api_url}/users/profile/edit/username",
+            redirection= "/users/self/change_username",
             fields= {
-                "username": "str"
+                "new_username": "str"
             }
         ),
         "newpwd": ObligationResponse(
             message= texts.obligation_newpwd[language],
-            redirection= f"{app_settings.api_url}/users/profile/edit/password",
-            fields= {"body": {
+            redirection= "/users/self/change_password",
+            fields= {
                 "old_password": "str",
                 "new_password": "str"
-            }}
+            }
         ),
     }
     return obligations[code]

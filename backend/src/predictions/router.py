@@ -58,7 +58,7 @@ async def get_user_prediction(session_id: int = Depends(valid_session_id), user_
                 FROM sessionstranslations
                 WHERE language = %s
             )
-            SELECT drivers.id  AS driver_id, 
+            SELECT  drivers.id  AS driver_id, 
             drivers.firstname AS driver_firstname,
             drivers.lastname AS driver_lastname,
             drivers.codename AS driver_codename,

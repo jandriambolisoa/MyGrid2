@@ -2,59 +2,7 @@
   "auth": {
     "login": {
       "signInGoogle": "Sign in with Google",
-      "signInApple": "Sign in with Apple",
-      "usernameEmail": "Username or email",
-      "password": "Password",
-      "login": "Login",
-      "missingInfo": "Missing information",
-      "signup": "Don't have an account? Sign up"
-    },
-    "signup": {
-      "username": "Username",
-      "email": "Email",
-      "password": "Password",
-      "confirmPassword": "Confirm password",
-      "missingInfo": "Missing information",
-      "signup": "Sign up",
-      "passwordsDontMatch": "Passwords don't match",
-      "login": "Already have an account? Login"
-    }
-  },
-  "home": {
-    "profile": {
-      "memberSince": "Member since",
-      "editProfile": "Edit profile",
-      "logout": "Logout"
-    }
-  },
-  "utils": {
-    "niceDatetime": {
-      "on": "On",
-      "at": "at"
-    },
-    "fromToDatetime": {
-      "from": "From",
-      "to": "to"
-    }
-  },
-  "widgets": {
-    "mainWidget": {
-      "showResults": "Show results",
-      "live": "Live"
-    },
-    "pagerTabBar": {
-      "social": "Social",
-      "home": "Home",
-      "profile": "Profile"
-    },
-    "championshipWidget": {
-      "championship": "Championship",
-      "drivers": "Drivers",
-      "constructors": "Constructors",
-      "noPrediction": "No prediction yet"
-    },
-    "eventCalendar": {
-      "calendar": "Calendar"
+      "signInApple": "Sign in with Apple"
     }
   }
 }

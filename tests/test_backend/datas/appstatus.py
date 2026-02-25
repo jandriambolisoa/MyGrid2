@@ -11,7 +11,7 @@ def create_appstatus(maintenance: bool, notes: str = "Some notes"):
         version = "2.0.0"
 
     else:
-        version = ".".join(last_appstatus["version"].split(".")[0:-1])+f".{int(last_appstatus['version'].split('.')[-1])+1}"
+        version = ".".join(last_appstatus["version"].split(".")[0:-1])+f".{int(last_appstatus["version"].split(".")[-1])+1}"
 
     db.cursor.execute("""
         INSERT INTO appstatus (version, maintenance, notes)

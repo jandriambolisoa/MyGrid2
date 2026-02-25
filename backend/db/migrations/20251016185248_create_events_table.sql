@@ -4,7 +4,6 @@ CREATE TABLE public.events
     id serial NOT NULL,
     name character varying NOT NULL,
     color character varying NOT NULL,
-    flag character varying NOT NULL,
     championship_id integer NOT NULL,
     PRIMARY KEY (id),
     UNIQUE (championship_id, name),
