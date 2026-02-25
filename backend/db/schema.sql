@@ -1,4 +1,4 @@
-\restrict Ha7wmxazgRvzMSaIVorps8aeBkPYsqM6OeYxCpeVjDsz4G28z9u1nCDmu9ORhVe
+\restrict aLeIlNyHOhxz1JVO8oWcy7EQlESIulfOI5LcL4bzkVnM4USQsTBHUNg1kXBhaFi
 
 -- Dumped from database version 18.1
 -- Dumped by pg_dump version 18.1
@@ -181,6 +181,37 @@ CREATE SEQUENCE public.championships_id_seq
 --
 
 ALTER SEQUENCE public.championships_id_seq OWNED BY public.championships.id;
+
+
+--
+-- Name: coll_multiple_drivers_perfect_prediction; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.coll_multiple_drivers_perfect_prediction (
+    id integer NOT NULL,
+    collectible_id integer CONSTRAINT coll_multiple_drivers_perfect_predictio_collectible_id_not_null NOT NULL,
+    drivers_id integer[] NOT NULL
+);
+
+
+--
+-- Name: coll_multiple_drivers_perfect_prediction_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.coll_multiple_drivers_perfect_prediction_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: coll_multiple_drivers_perfect_prediction_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.coll_multiple_drivers_perfect_prediction_id_seq OWNED BY public.coll_multiple_drivers_perfect_prediction.id;
 
 
 --
@@ -376,6 +407,17 @@ CREATE SEQUENCE public.promotedhistory_id_seq
 --
 
 ALTER SEQUENCE public.promotedhistory_id_seq OWNED BY public.promotedhistory.id;
+
+
+--
+-- Name: pushtokens; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.pushtokens (
+    user_id integer NOT NULL,
+    token character varying NOT NULL,
+    created timestamp with time zone DEFAULT now() NOT NULL
+);
 
 
 --
@@ -760,6 +802,13 @@ ALTER TABLE ONLY public.championships ALTER COLUMN id SET DEFAULT nextval('publi
 
 
 --
+-- Name: coll_multiple_drivers_perfect_prediction id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.coll_multiple_drivers_perfect_prediction ALTER COLUMN id SET DEFAULT nextval('public.coll_multiple_drivers_perfect_prediction_id_seq'::regclass);
+
+
+--
 -- Name: collectibles id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -879,6 +928,14 @@ ALTER TABLE ONLY public.championships
 
 
 --
+-- Name: coll_multiple_drivers_perfect_prediction coll_multiple_drivers_perfect_prediction_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.coll_multiple_drivers_perfect_prediction
+    ADD CONSTRAINT coll_multiple_drivers_perfect_prediction_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: collectibles collectibles_name_unique; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -964,6 +1021,14 @@ ALTER TABLE ONLY public.premiumhistory
 
 ALTER TABLE ONLY public.promotedhistory
     ADD CONSTRAINT promotedhistory_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: pushtokens pushtokens_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.pushtokens
+    ADD CONSTRAINT pushtokens_pkey PRIMARY KEY (user_id);
 
 
 --
@@ -1206,6 +1271,14 @@ ALTER TABLE ONLY public.bannedusernames
 
 
 --
+-- Name: coll_multiple_drivers_perfect_prediction collmdpp_collectibles_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.coll_multiple_drivers_perfect_prediction
+    ADD CONSTRAINT collmdpp_collectibles_fkey FOREIGN KEY (collectible_id) REFERENCES public.collectibles(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
 -- Name: events events_championships_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1251,6 +1324,14 @@ ALTER TABLE ONLY public.promotedhistory
 
 ALTER TABLE ONLY public.promotedhistory
     ADD CONSTRAINT promotedhistory_users_fkey2 FOREIGN KEY (by) REFERENCES public.users(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: pushtokens pushtokens_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.pushtokens
+    ADD CONSTRAINT pushtokens_users_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -1465,7 +1546,7 @@ ALTER TABLE ONLY public.wdcpredictions
 -- PostgreSQL database dump complete
 --
 
-\unrestrict Ha7wmxazgRvzMSaIVorps8aeBkPYsqM6OeYxCpeVjDsz4G28z9u1nCDmu9ORhVe
+\unrestrict aLeIlNyHOhxz1JVO8oWcy7EQlESIulfOI5LcL4bzkVnM4USQsTBHUNg1kXBhaFi
 
 
 --
@@ -1507,4 +1588,6 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20260214223501'),
     ('20260215153537'),
     ('20260215154056'),
-    ('20260215204125');
+    ('20260215204125'),
+    ('20260222162507'),
+    ('20260225212055');
