@@ -10,3 +10,4 @@ export * from './PagerTabBar';
 export * from './ChampionshipWidget';
 export * from './EventCalendar';
 export * from './ScrollContainer';
+export * from './MyGridBackground';
