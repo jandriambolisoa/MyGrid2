@@ -3,24 +3,36 @@ import { refreshLogin } from "./refresh";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL
 
-export async function apiFetch(
-  endpoint: string,
-  body: any,
-  auth: AuthContextType
-) {
+export type FetchProps = {
+  endpoint: string;
+  body?: unknown;
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+  auth: AuthContextType;
+}
+
+export async function apiFetch<T>({
+  endpoint,
+  body,
+  method='GET',
+  auth
+}: FetchProps): Promise<T> {
   
   const accessToken = auth.accessToken;
 
   async function request (token: string | null) {
 
-    const options = {
-      method: "POST",
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(body)
+  const options: RequestInit = {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+      ...(token && { Authorization: `Bearer ${token}` }),
     }
+  };
+  
+  if (body !== undefined) {
+    options.body = JSON.stringify(body)
+  }
     
     return fetch(`${API_URL}${endpoint}`, options)
   }
@@ -42,5 +54,5 @@ export async function apiFetch(
     throw new Error("API request failed")
   }
 
-  return response
+  return response.json()
 }
