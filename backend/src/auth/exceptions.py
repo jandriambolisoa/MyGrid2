@@ -75,3 +75,9 @@ class UnverifiedUserError(HTTPException):
     def __init__(self, language: str = "en", **kwargs):
         super().__init__(self.status_code, **kwargs)
         self.detail = unverified_user_message[language]
+
+class VerificationMailNotSentError(HTTPException):
+    status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+    def __init__(self, language: str = "en", **kwargs):
+        super().__init__(self.status_code, **kwargs)
+        self.detail = verification_mail_not_sent_error_message[language]
