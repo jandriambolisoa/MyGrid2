@@ -5,7 +5,7 @@ from argon2 import verify_password
 from fastapi import APIRouter, Depends, UploadFile
 from sqlalchemy.sql.functions import user
 from starlette import status
-from starlette.responses import StreamingResponse
+from starlette.responses import StreamingResponse, Response, JSONResponse
 
 from backend.constants import QUERY_LIMIT
 from backend.config import settings as app_settings
@@ -13,6 +13,7 @@ from backend.db.database import Database, get_db
 from backend.oauth2 import get_current_user, get_current_token
 from backend.obligations import delete_obligation
 from backend.src.auth.exceptions import WrongCredentialsError
+from backend.src.auth.listener import send_verification_email
 from backend.src.auth.router import logout
 from backend.src.auth.schemas import ChangePassword, AccessToken
 from backend.src.auth.syntax import valid_username, valid_password
@@ -22,7 +23,7 @@ from backend.src.images.dependencies import generate_user_image_name
 from backend.src.users.dependencies import valid_user_username
 from backend.src.users.exceptions import NoUserFoundError, CannotUpdateUsernameError
 from backend.src.users.schemas import User, UserSelf, UserProfile
-from backend.src.users.texts import successful_password_update_message
+from backend.src.users.texts import successful_password_update_message, email_verification_sent_message
 from backend.utils import verify, hash_password
 
 router = APIRouter(
@@ -164,3 +165,11 @@ async def update_user_profile_password(datas: ChangePassword, db:Database = Depe
     return {
         "message": successful_password_update_message[current_user.language]
     }
+
+@router.get("/send-verification-email", status_code=status.HTTP_200_OK)
+async def resend_verification_email(language: str = "en", db:Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+    await send_verification_email(current_user.id)
+
+    return JSONResponse({
+        "detail": email_verification_sent_message[language]
+    })

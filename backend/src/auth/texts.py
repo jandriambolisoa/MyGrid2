@@ -148,10 +148,3 @@ mailing_verification_title = defaultdict(
         "fr": "Cher {{ USERNAME }},",
     }
 )
-
-verification_mail_not_sent_error_message = defaultdict(
-    lambda: "We successfully created the account but an error occured and you will not receive the verification mail. Contact us at contact@mygrid-app.com.",
-    {
-        "fr": "Votre compte a été créé mais une erreur est survenue et vous ne recevrez pas l'email de vérification. Contactez nous à contact@mygrid-app.com",
-    }
-)

@@ -41,4 +41,7 @@ class Settings (BaseSettings):
     ms_mailings_url: str
     ms_openf1_url: str
 
+    # Secret store
+    contact_email: str
+
 settings = Settings()
