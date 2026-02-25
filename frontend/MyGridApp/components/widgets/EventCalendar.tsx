@@ -80,7 +80,7 @@ export function EventCalendar ({
     return DateTime.fromISO(a.datetime).toMillis() - DateTime.fromISO(b.datetime).toMillis()
   }
   
-  const sortedDatas = datas ? datas.events.sort(compareDates) : [];
+  const sortedDatas = datas?.events?.sort(compareDates) ?? [];
 
   const windowWidth = Dimensions.get('window').width;
   const size = windowWidth * 0.65;

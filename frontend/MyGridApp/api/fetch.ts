@@ -22,7 +22,7 @@ export async function apiFetch<T>({
   async function request (token: string | null) {
 
   const options: RequestInit = {
-    method: "POST",
+    method: method,
     headers: {
       Accept: "application/json",
       "Content-Type": "application/json",
