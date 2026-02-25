@@ -3,7 +3,8 @@ from typing import List, Optional
 
 class PushToken(BaseModel):
     token: str
+    language: Optional[str] = "en"
 
 class PushNotification(BaseModel):
-    title: str
-    body: str
+    title: dict # {'language': 'text'}
+    body: dict # {'language': 'text'}

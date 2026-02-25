@@ -14,6 +14,7 @@ from backend.src.drivers import router as drivers_router
 from backend.src.events import router as events_router
 from backend.src.images import router as images_router
 from backend.src.live import router as live_router
+from backend.src.manager import router as manager_router
 from backend.src.nav import router as nav_router
 from backend.src.notifications import router as notifications_router
 from backend.src.predictions import router as predictions_router
@@ -63,6 +64,7 @@ app.include_router(drivers_router.router)
 app.include_router(events_router.router)
 app.include_router(images_router.router)
 app.include_router(live_router.router)
+app.include_router(manager_router.router)
 app.include_router(nav_router.router)
 app.include_router(notifications_router.router)
 app.include_router(predictions_router.router)

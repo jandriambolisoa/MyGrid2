@@ -176,6 +176,7 @@ async def login_refresh_token(request: Request, tokens: LoginRefreshTokenPost, l
     db.conn.commit()
 
     access_token = await create_jwt_token({
+        "user_id": user["id"],
         "username": user["username"],
         "language": language
     })
