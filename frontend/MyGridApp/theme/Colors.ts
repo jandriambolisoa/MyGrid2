@@ -7,7 +7,16 @@ export const Colors = {
   light: {
     borders: '#ffffff',
     background: '#dddddd',
+    lightBackground: '#ffffff',
     lightText: '#ffffff',
-    darkText: '#000000'
+    darkText: '#000000',
+    orangeLogo: '#ff7300',
+    cyanLogo: '#00fff0',
+    lightShadow: '#ffffff',
+    darkShadow: '#000000',
+    disabled: '#e1e1e1',
+    live: '#E31B00',
+    warning: '#FF2F12',
+    disabledText: '#f1f1f1',
   },
 };

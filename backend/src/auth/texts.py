@@ -85,3 +85,66 @@ unverified_user_message = defaultdict(
         "fr": "Votre compte doit être vérifié pour pouvoir continuer.",
     }
 )
+
+mailing_welcome_subject = defaultdict(
+    lambda: "👋 Welcome to MyGrid!",
+    {
+        "fr": "👋 Bienvenue sur MyGrid !",
+    }
+)
+
+mailing_welcome_preview = defaultdict(
+    lambda: "Nice to meet you, {{ USERNAME }}.",
+    {
+        "fr": "Enchanté, {{ USERNAME }}.",
+    }
+)
+
+mailing_welcome_body = defaultdict(
+    lambda: "It’s time to turn your F1 intuition into glory. Go to the app now to make your first prediction, outsmart the competition, and start your climb to the top of the leaderboard.",
+    {
+        "fr": "Il est temps de faire valoir votre flair en F1. Rendez-vous sur l'application dès maintenant pour faire votre premier pronostic, surpasser la concurrence et entamer votre ascension vers le sommet du classement.",
+    }
+)
+
+mailing_welcome_title = defaultdict(
+    lambda: "Welcome {{ USERNAME }}!",
+    {
+        "fr": "Bienvenue {{ USERNAME }} !",
+    }
+)
+
+mailing_verification_subject = defaultdict(
+    lambda: "Verify your email.",
+    {
+        "fr": "Confirmez votre email.",
+    }
+)
+
+mailing_verification_confirm = defaultdict(
+    lambda: "Verify Email Address",
+    {
+        "fr": "Vérifiez votre email",
+    }
+)
+
+mailing_verification_preview = defaultdict(
+    lambda: "You will be able to compete on MyGrid.",
+    {
+        "fr": "Vous pourrez faire vos pronostics sur MyGrid.",
+    }
+)
+
+mailing_verification_body = defaultdict(
+    lambda: "Thank you for joining MyGrid. Please verify your email by clicking the following link :",
+    {
+        "fr": "Merci d'avoir rejoins MyGrid. Veuillez cliquer sur le lien qui suit pour valider votre email :",
+    }
+)
+
+mailing_verification_title = defaultdict(
+    lambda: "Dear {{ USERNAME }},",
+    {
+        "fr": "Cher {{ USERNAME }},",
+    }
+)

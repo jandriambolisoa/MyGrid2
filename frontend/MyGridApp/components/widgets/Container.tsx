@@ -1,6 +1,6 @@
-import { Colors } from '@/constants/Colors';
-import { View, type ViewProps, StyleSheet } from 'react-native';
+import { View, type ViewProps } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { GlobalStyles } from '@/theme';
 
 export function Container({ style, ...otherProps }: ViewProps) {
 
@@ -8,7 +8,7 @@ export function Container({ style, ...otherProps }: ViewProps) {
 
   return (
     <View style={[
-      styles.container,
+      GlobalStyles.container,
       {
         paddingTop: insets.top,
         paddingBottom: insets.bottom,
@@ -21,12 +21,3 @@ export function Container({ style, ...otherProps }: ViewProps) {
     </View>
   );
 }
-
-
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.light.background
-  }
-})
