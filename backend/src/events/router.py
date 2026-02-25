@@ -64,7 +64,7 @@ async def create_event(to_create: EventCreate, language: str = "en", db: Databas
         db.cursor.execute("""
             INSERT INTO events (name, championship_id, color, flag)
             VALUES (%s, %s, %s, %s)
-            RETURNING *""", (to_create.name["en"].title(), to_create.championship_id, to_create.color, to_create.flag))
+            RETURNING *""", (to_create.name["en"].title(), to_create.championship_id, to_create.colors, to_create.flag))
         created = db.cursor.fetchone()
 
         for lang in translations:
@@ -202,7 +202,7 @@ async def update_championship(datas: ChampionshipUpdate, championship_id: int = 
     return updated
 
 
-@router.put("/sessions/{session_id}", response_model=Championship)
+@router.put("/sessions/{session_id}", response_model=Session)
 async def update_session(datas: SessionUpdate, session_id: int = Depends(valid_session_id), language: str = "en", db:Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     if not await is_user_moderator_or_admin(current_user.id):
         raise ForbiddenAccessException(language=language)
@@ -247,7 +247,7 @@ async def update_session(datas: SessionUpdate, session_id: int = Depends(valid_s
     return updated
 
 
-@router.put("/{event_id}", response_model=Championship)
+@router.put("/{event_id}", response_model=Event)
 async def update_event(datas: EventUpdate, event_id: int = Depends(valid_event_id), language: str = "en", db:Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     if not await is_user_moderator_or_admin(current_user.id):
         raise ForbiddenAccessException(language=language)
@@ -265,8 +265,8 @@ async def update_event(datas: EventUpdate, event_id: int = Depends(valid_event_i
     else:
         translations = await valid_translations(datas.name, language=language)
         datas.name["en"] = datas.name.get("en", orig["name"])
-    if not datas.color:
-        datas.color = orig["color"]
+    if not datas.colors:
+        datas.colors = orig["color"]
     if not datas.flag:
         datas.flag = orig["flag"]
 
@@ -276,7 +276,7 @@ async def update_event(datas: EventUpdate, event_id: int = Depends(valid_event_i
             SET name = %s, color = %s, flag = %s
             WHERE id = %s
             RETURNING *
-            """, (datas.name["en"], datas.color, datas.flag, event_id))
+            """, (datas.name["en"], datas.colors, datas.flag, event_id))
         updated = db.cursor.fetchone()
 
         for lang in translations:
