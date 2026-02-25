@@ -38,11 +38,11 @@ def mock_create_event(user_obj: MockUser, championship: Championship):
         "en": random_code(32, digits=False, letters=True),
         "fr": random_code(32, digits=False, letters=True)
     })
-    to_create_color = random_color()
+    to_create_colors = [random_color(), random_color()]
     res = user_obj.client.post(f"/events", json={
         "name": to_create_names,
         "championship_id": championship.id,
-        "color": to_create_color,
+        "colors": to_create_colors,
         "flag": 'some_url'
     })
     yield res.status_code
@@ -51,7 +51,7 @@ def mock_create_event(user_obj: MockUser, championship: Championship):
         res = user_obj.client.post(f"/events", json={
             "name": to_create_names,
             "championship_id": championship.id,
-            "color": to_create_color,
+            "colors": to_create_colors,
             "flag": 'some_url'
         })
         yield res.status_code == status.HTTP_409_CONFLICT
@@ -172,12 +172,12 @@ def mock_update_event(user_obj: MockUser, championship: Championship):
         "en": random_code(12, digits=False, letters=True),
         "fr": random_code(12, digits=False, letters=True)
     }
-    to_update_color = random_color()
+    to_update_colors = [random_color()]
 
     res = user_obj.client.put(f"/events/{to_update.id}", json={"name": to_update_names})
     yield res.status_code
 
-    res = user_obj.client.put(f"/events/{to_update.id}", json={"color": to_update_color})
+    res = user_obj.client.put(f"/events/{to_update.id}", json={"colors": to_update_colors})
     yield res.status_code
 
 

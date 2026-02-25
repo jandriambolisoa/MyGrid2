@@ -40,6 +40,11 @@ class Event(BaseModel):
 
     @computed_field
     @property
+    def colors(self) -> List[str]:
+        return self.color.strip("{}").split(",")
+
+    @computed_field
+    @property
     def trophee_model(self) -> str:
         return f"{app_settings.api_url}/collectibles/event_{self.id:04d}/model"
 
@@ -57,12 +62,12 @@ class Event(BaseModel):
 class EventCreate(BaseModel):
     name: dict # {language: translation}
     championship_id: int
-    color: str
+    colors: List[str]
     flag: str
 
 class EventUpdate(BaseModel):
     name: Optional[dict] = None # {language: translation}
-    color: Optional[str] = None
+    colors: Optional[List[str]] = None
     flag: Optional[str] = None
 
 class Session(BaseModel):
