@@ -25,7 +25,7 @@ export function SpotLight({
   borderRadius = 3
 }: SpotLightProps) {
   return (
-    <Svg height="100%" width="100%" style={[StyleSheet.absoluteFill]}>
+    <Svg height="100%" width="100%" style={StyleSheet.absoluteFill}>
       <Defs>
         <RadialGradient
           id="grad1"

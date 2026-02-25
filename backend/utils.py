@@ -7,10 +7,6 @@ from argon2.exceptions import VerifyMismatchError
 from passlib.context import CryptContext
 from passlib.exc import UnknownHashError
 
-from datetime import datetime
-from jinja2 import Environment
-
-from backend.texts import days_of_the_week, nice_datetime_format
 
 def random_code(length: int, digits: bool = True, letters: bool = True) -> str:
     pool = ''
@@ -58,33 +54,3 @@ def verify(password: str, target: str):
             return ph.verify(target, password)
         except VerifyMismatchError:
             return False
-
-# Nice datetime helpers
-def get_nice_datetime(date_time: datetime, language: str = "en") -> str:
-    """
-    Returns a nice datetime containing a day of the week and the time.
-    Args:
-        date_time: the date to get the nice datetime from
-        language: the language to use, defaults to 'en'
-
-    Returns:
-        str: a nice datetime to read
-    """
-    day = days_of_the_week[language][date_time.weekday()]
-    time_hour = date_time.hour
-    time_min = date_time.minute
-    moment = "AM"
-
-    match language:
-        case "en":
-            if time_hour > 12:
-                time_hour -= 12
-                moment = "PM"
-            time = str(time_hour) + ":" + str(time_min) + moment
-        case "fr":
-            time = str(time_hour) + "h" + str(time_min)
-        case _:
-            time = str(time_hour) + ":" + str(time_min)
-
-    jinja_template = Environment().from_string(nice_datetime_format[language])
-    return jinja_template.render(day=day, time=time)

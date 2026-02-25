@@ -1,7 +1,8 @@
 from fastapi import HTTPException, status
 
 from backend.db.database import get_db
-from backend.src.users.texts import *
+from backend.src.users.texts import failed_authorization_message, expired_session_message, not_a_user_message, \
+    no_user_found_message, banned_user_message
 
 
 class FailedAuthorizationError(HTTPException):
@@ -49,10 +50,3 @@ class NoUserFoundError(HTTPException):
     def __init__(self, language: str = "en", **kwargs):
         super().__init__(self.status_code, **kwargs)
         self.detail = no_user_found_message[language]
-
-class CannotUpdateUsernameError(HTTPException):
-    status_code = status.HTTP_403_FORBIDDEN
-    headers = {"WWW-Authenticate": "Bearer"}
-    def __init__(self, language: str = "en", **kwargs):
-        super().__init__(self.status_code, **kwargs)
-        self.detail = cannot_update_username_message[language]

@@ -289,6 +289,3 @@ bruno-*
 
 # Docker dev
 docker-compose-dev.yml
-
-# Expo folder
-.expo/
