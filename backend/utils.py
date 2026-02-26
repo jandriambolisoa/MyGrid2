@@ -88,3 +88,16 @@ def get_nice_datetime(date_time: datetime, language: str = "en") -> str:
 
     jinja_template = Environment().from_string(nice_datetime_format[language])
     return jinja_template.render(day=day, time=time)
+
+async def exponential_backoff(attempts: int, cap: int, base: int):
+    """
+    Computes an exponential backoff value in function of the number of attempts.
+    Args:
+        attempts: the number of attempts
+        cap: the maximum backoff value
+        base: the base which changes the backoff sensitivity
+
+    Returns:
+        The backoff value
+    """
+    return round(min(cap, base*2**attempts))

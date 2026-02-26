@@ -6,3 +6,10 @@ driver_not_registered_for_session_message = defaultdict(
         "fr": "Tous les pilotes donnés ne font pas parti de cette session. Votre prédiction est effacée.",
     }
 )
+
+championship_leaderboard_not_available_message = defaultdict(
+    lambda: "Championship leaderboards are not available yet.",
+    {
+        "fr": "Les classements du championnat ne sont pas encore disponibles.",
+    }
+)

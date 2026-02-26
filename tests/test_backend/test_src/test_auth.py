@@ -30,32 +30,34 @@ from tests.test_backend.datas.users import predictable_password, create_random_u
     ("BADPW-11", "password11@example.com", "$$**/&#€-_", status.HTTP_406_NOT_ACCEPTABLE),
 ])
 def test_signup_user(username: str, email: str, password: str, status_code, client):
-    # Create the user
-    res = client.post("/auth/signup", json={
-        "username": username,
-        "email": email,
-        "password": password
-    })
-    assert res.status_code == status_code
-
-    if res.status_code == status.HTTP_201_CREATED:
-        current_user = UserSelf(**res.json())
-        assert current_user.username == username
-        assert current_user.email == email
-
-        # Try to recreate the same user
-        res = client.post("/auth/signup/", json={
+    with patch("backend.src.users.signals.created.send", return_value= None):
+        # Create the user
+        res = client.post("/auth/signup", json={
             "username": username,
             "email": email,
             "password": password
         })
-        assert res.status_code == status.HTTP_406_NOT_ACCEPTABLE
+        assert res.status_code == status_code
 
-        db = get_db()
-        db.cursor.execute("""\
-            DELETE FROM users
-            WHERE username = %s""", (username,))
-        db.conn.commit()
+        if res.status_code == status.HTTP_201_CREATED:
+            user = res.json()["user"]
+            current_user = UserSelf(**user)
+            assert current_user.username == username
+            assert current_user.email == email
+
+            # Try to recreate the same user
+            res = client.post("/auth/signup/", json={
+                "username": username,
+                "email": email,
+                "password": password
+            })
+            assert res.status_code == status.HTTP_406_NOT_ACCEPTABLE
+
+            db = get_db()
+            db.cursor.execute("""\
+                DELETE FROM users
+                WHERE username = %s""", (username,))
+            db.conn.commit()
 
 def mocking_login_email(user_obj):
     password = predictable_password(user_obj.user.username)
@@ -145,12 +147,8 @@ def test_confirm_email(client):
     mock_payload = {"language": "en"}
 
     with patch("backend.src.auth.router.verify_access_token", return_value=mock_token), \
-            patch("backend.src.auth.router.jwt.decode", return_value=mock_payload):
+            patch("backend.src.auth.router.jwt.decode", return_value=mock_payload), \
+            patch("backend.src.auth.signals.validate_mail.send", return_value=None):
 
-        res = mock_unverified_user.client.post("/auth/confirm-email", json=
-            {
-                "access_token": "mock.token.jwt",
-                "token_type": "bearer"
-            }, follow_redirects=False
-        )
+        res = mock_unverified_user.client.get("/auth/confirm-email?token=mock.jwt.token", follow_redirects=False)
         assert res.status_code == status.HTTP_307_TEMPORARY_REDIRECT

@@ -18,6 +18,7 @@ class Settings (BaseSettings):
     algorithm: str
     token_expires_minutes: int
     refresh_token_expires_minutes: int
+    expo_access_token: str
     apple_dev_nonce_secret: str
     apple_app_iss: str
     apple_app_iss: str
@@ -40,5 +41,8 @@ class Settings (BaseSettings):
     ms_assets_url: str
     ms_mailings_url: str
     ms_openf1_url: str
+
+    # Secret store
+    contact_email: str
 
 settings = Settings()

@@ -5,6 +5,7 @@ from backend.db.database import Database, get_db
 from backend.oauth2 import get_current_user
 from backend.src.events.dependencies import valid_championship_id, get_upcoming_event,\
     is_session_over, get_event_championship
+from backend.src.nav.exceptions import ChampionshipLeaderboardNotAvailableError
 from backend.src.nav.schemas import NavMainEvent, NavMainEventSession, NavChampionship, NavChampionshipEvents, \
     DriverChampionshipLeaderboardWithPrediction, TeamChampionshipLeaderboardWithPrediction
 from backend.src.predictions.dependencies import is_user_has_prono, get_user_wdc_prediction, get_user_wcc_prediction
@@ -154,6 +155,9 @@ async def home_get_championships(championship_id: int = Depends(valid_championsh
         SELECT * FROM wccpredictions
         WHERE championship_id = %s AND user_id = %s""", (championship_id, current_user.id))
     wcc_prono = db.cursor.fetchone()
+
+    if not wcc_leaderboard or not wdc_leaderboard:
+        ChampionshipLeaderboardNotAvailableError(language= language)
 
     # From here, convert queries results into dict
     ## DriverRank
