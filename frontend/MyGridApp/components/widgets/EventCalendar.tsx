@@ -85,7 +85,7 @@ export function EventCalendar ({
   const windowWidth = Dimensions.get('window').width;
   const size = windowWidth * 0.65;
   const blankSpace = (windowWidth - size) / 2;
-  const index = sortedDatas.findIndex((item: any) => DateTime.fromISO(item.datetime) > DateTime.now()) || sortedDatas.length - 1;
+  const index = sortedDatas.findIndex((item: any) => DateTime.fromISO(item.datetime) > DateTime.now());
   const firstPage = index === -1 ? sortedDatas.length - 1 : index;
   const initialScrollX = firstPage * (size + Constants.spacing.buttonPadding);
   const scrollX = useRef(new Animated.Value(initialScrollX)).current;

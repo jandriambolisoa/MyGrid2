@@ -35,21 +35,21 @@ export default function Events ({
     })
   }, [auth])
 
-  useEffect(() => {
+  /*useEffect(() => {
     auth && !mainLoading && getChamp({
       endpoint: '/nav/home/championships?championship_id=1',
       method: 'GET',
       auth: auth
     })
-  }, [mainLoading])
+  }, [mainLoading])*/
 
   useEffect(() => {
-    auth && !champLoading && getCalendar({
+    auth && !mainLoading && getCalendar({
       endpoint: '/nav/home/events?championship_id=1',
       method: 'GET',
       auth: auth
     })
-  }, [champLoading])
+  }, [mainLoading])
 
   return (
     <ScrollContainer tabBarHeight={tabBarHeight}>
