@@ -14,6 +14,7 @@ from backend.obligations import create_obligation
 
 from backend.db.database import get_db, Database
 from backend.config import settings as app_settings
+from backend.src.appstatus.server import get_latest_appstatus
 from backend.utils import hash_password, verify, random_code
 from backend.oauth2 import create_jwt_token, get_current_token, get_current_user, verify_refresh_token, \
     verify_access_token
@@ -85,6 +86,7 @@ async def signup_user(user: UserCreate, referral_code: str = None, language: str
         db.conn.commit()
 
         return {
+            "app_status": await get_latest_appstatus(),
             "access_token": {
                 "access_token": access_token,
                 "token_type": "bearer"
@@ -151,6 +153,7 @@ async def login_email(request: Request, language: str = "en", db: Database = Dep
     # TODO : return full profile
 
     return {
+        "app_status": await get_latest_appstatus(),
         "access_token": {
             "access_token": access_token,
             "token_type": "bearer"
@@ -206,6 +209,7 @@ async def login_refresh_token(request: Request, tokens: LoginRefreshTokenPost, l
     })
 
     return {
+        "app_status": await get_latest_appstatus(),
         "access_token": {
             "access_token": access_token,
             "token_type": "bearer"
@@ -271,6 +275,7 @@ async def login_google(credential: str, referral_code: str = None, language: str
         }, datetime.timedelta(minutes=app_settings.refresh_token_expires_minutes))
 
         return {
+            "app_status": await get_latest_appstatus(),
             "access_token": {
                 "access_token": access_token,
                 "token_type": "bearer"
@@ -303,6 +308,7 @@ async def login_google(credential: str, referral_code: str = None, language: str
         })
 
         return {
+            "app_status": await get_latest_appstatus(),
             "access_token": {
                 "access_token": access_token,
                 "token_type": "bearer"
@@ -364,8 +370,29 @@ async def login_google(credential: str, referral_code: str = None, language: str
 
     auth_signals.validate_mail.send(new_user["id"])
 
-    return Response(status_code= status.HTTP_202_ACCEPTED)
+    access_token = await create_jwt_token({
+        "user_id": new_user["id"],
+        "username": new_user["username"],
+        "language": language
+    })
 
+    refresh_token = await create_jwt_token({
+        "user_id": new_user["id"],
+        "makeunique": random_code(32)
+    })
+
+    return {
+        "app_status": await get_latest_appstatus(),
+        "access_token": {
+            "access_token": access_token,
+            "token_type": "bearer"
+        },
+        "refresh_token": {
+            "refresh_token": refresh_token,
+            "token_type": "bearer"
+        },
+        "user": new_user
+    }
 
 @router.post("/login-apple", response_model=LoginResponse, status_code= status.HTTP_202_ACCEPTED)
 async def login_apple(credential: str, nonce: str, referral_code: str = None, language: str = "en", db: Database = Depends(get_db)):
@@ -425,6 +452,7 @@ async def login_apple(credential: str, nonce: str, referral_code: str = None, la
         }, datetime.timedelta(minutes=app_settings.refresh_token_expires_minutes))
 
         return {
+            "app_status": await get_latest_appstatus(),
             "access_token": {
                 "access_token": access_token,
                 "token_type": "bearer"
@@ -457,6 +485,7 @@ async def login_apple(credential: str, nonce: str, referral_code: str = None, la
         })
 
         return {
+            "app_status": await get_latest_appstatus(),
             "access_token": {
                 "access_token": access_token,
                 "token_type": "bearer"
@@ -511,7 +540,29 @@ async def login_apple(credential: str, nonce: str, referral_code: str = None, la
 
     auth_signals.validate_mail.send(new_user["id"])
 
-    return Response(status_code= status.HTTP_202_ACCEPTED)
+    access_token = await create_jwt_token({
+        "user_id": new_user["id"],
+        "username": new_user["username"],
+        "language": language
+    })
+
+    refresh_token = await create_jwt_token({
+        "user_id": new_user["id"],
+        "makeunique": random_code(32)
+    })
+
+    return {
+        "app_status": await get_latest_appstatus(),
+        "access_token": {
+            "access_token": access_token,
+            "token_type": "bearer"
+        },
+        "refresh_token": {
+            "refresh_token": refresh_token,
+            "token_type": "bearer"
+        },
+        "user": new_user
+    }
 
 
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
