@@ -36,6 +36,7 @@ jobs:
       TOKEN_EXPIRES_MINUTES: 12
       REFRESH_TOKEN_EXPIRES_MINUTES: 24
       CONTACT_EMAIL: abc@123.com
+      API_URL: https://mygrid-app.com/
       WEBSITE_URL: https://mygrid-app.com/
       CONFIRMED_EMAIL_URL: https://mygrid-app.com/
       CONFIRMED_EMAIL_REDIRECT_URL: https://mygrid-app.com/
