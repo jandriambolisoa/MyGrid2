@@ -4,41 +4,5 @@
       "signInGoogle": "Se connecter avec Google",
       "signInApple": "Se connecter avec Apple"
     }
-  },
-  "home": {
-    "profile": {
-      "memberSince": "Membre depuis le",
-      "editProfile": "Modifier le profil"
-    }
-  },
-  "utils": {
-    "niceDatetime": {
-      "on": "Le",
-      "at": "à"
-    },
-    "fromToDatetime": {
-      "from": "Du",
-      "to": "au"
-    }
-  },
-  "widgets": {
-    "mainWidget": {
-      "showResults": "Voir les résultats",
-      "live": "En direct"
-    },
-    "pagerTabBar": {
-      "social": "Social",
-      "home": "Accueil",
-      "profile": "Profil"
-    },
-    "championshipWidget": {
-      "championship": "Championnat",
-      "drivers": "Pilotes",
-      "constructors": "Constructeurs",
-      "noPrediction": "Pas encore de prono"
-    },
-    "eventCalendar": {
-      "calendar": "Calendrier"
-    }
   }
 }

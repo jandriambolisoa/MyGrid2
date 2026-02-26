@@ -19,8 +19,8 @@ def create_championship(name: str) -> Championship:
 def create_event(name: str, championship_id: int):
     db = get_db()
     db.cursor.execute("""
-        INSERT INTO events (name, color, championship_id, flag)
-        VALUES (%s, %s, %s, 'some_url')
+        INSERT INTO events (name, color, championship_id)
+        VALUES (%s, %s, %s)
         RETURNING *
         """, (name, random_color(), championship_id))
     new = db.cursor.fetchone()

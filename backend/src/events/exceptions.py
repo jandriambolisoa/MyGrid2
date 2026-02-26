@@ -83,9 +83,3 @@ class SessionStartedError(HTTPException):
     def __init__(self, language: str = "en", **kwargs):
         super().__init__(self.status_code, **kwargs)
         self.detail = session_started_message[language]
-
-class TooLateToMakeAChampionshipPrediction(HTTPException):
-    status_code = status.HTTP_403_FORBIDDEN
-    def __init__(self, language: str = "en", **kwargs):
-        super().__init__(self.status_code, **kwargs)
-        self.detail = too_late_to_make_a_championship_prediction_message[language]

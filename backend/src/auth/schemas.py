@@ -47,7 +47,3 @@ class AppleTokenData(BaseModel):
 class AppleIdTokenData(BaseModel):
     email: str
     sub: str
-
-class ChangePassword(BaseModel):
-    old_password: str
-    new_password: str
