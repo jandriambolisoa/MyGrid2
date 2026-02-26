@@ -14,6 +14,7 @@ from backend.obligations import create_obligation
 
 from backend.db.database import get_db, Database
 from backend.config import settings as app_settings
+from backend.src.appstatus.server import get_latest_appstatus
 from backend.utils import hash_password, verify, random_code
 from backend.oauth2 import create_jwt_token, get_current_token, get_current_user, verify_refresh_token, \
     verify_access_token
@@ -37,8 +38,8 @@ router = APIRouter(
 )
 
 
-@router.post("/signup", status_code=status.HTTP_201_CREATED, response_model=UserSelf)
-async def signup_user(user: UserCreate, referral_code: str = None, language: str = None, db: Database = Depends(get_db)):
+@router.post("/signup", status_code=status.HTTP_201_CREATED, response_model=LoginResponse)
+async def signup_user(user: UserCreate, referral_code: str = None, language: str = "en", db: Database = Depends(get_db)):
     # Removed the server maintenance condition
     # We must worship a user initiative to sing-up and therefore
     # try our best to make it happen in any condition
@@ -61,21 +62,46 @@ async def signup_user(user: UserCreate, referral_code: str = None, language: str
         new_user = db.cursor.fetchone()
         db.conn.commit()
 
-        # TODO: add user in leaderboards
-
-        # TODO include referral system
         if referral_code:
             await assign_user_referral(referral_code, new_user["id"], language=language)
 
-        await users_signals.created.send(UserSelf(**new_user))
+        await users_signals.created.send(new_user["id"])
 
-        # TODO: include full profile return
-        return new_user
+        access_token = await create_jwt_token({
+            "user_id": new_user["id"],
+            "username": new_user["username"],
+            "language": language
+        })
+
+        refresh_token = await create_jwt_token({
+            "user_id": new_user["id"],
+            "makeunique": random_code(32)
+        }, datetime.timedelta(minutes=app_settings.refresh_token_expires_minutes))
+
+        # Register the refresh token in the database to
+        # be able to revoke it when logging out
+        db.cursor.execute("""\
+            INSERT INTO refreshtokens (user_id, token)
+            VALUES (%s, %s)""", (new_user["id"], refresh_token))
+        db.conn.commit()
+
+        return {
+            "app_status": await get_latest_appstatus(),
+            "access_token": {
+                "access_token": access_token,
+                "token_type": "bearer"
+            },
+            "refresh_token": {
+                "refresh_token": refresh_token,
+                "token_type": "bearer"
+            },
+            "user": new_user
+        }
 
     except UniqueViolation as err:
         db.cursor.execute("ROLLBACK")
         db.conn.commit()
-        raise app_exceptions.UnexpectedError(language=language)
+        raise auth_exceptions.NotAvailableEmailError(language=language)
 
 
 @router.post("/login-email", response_model=LoginResponse)
@@ -127,6 +153,7 @@ async def login_email(request: Request, language: str = "en", db: Database = Dep
     # TODO : return full profile
 
     return {
+        "app_status": await get_latest_appstatus(),
         "access_token": {
             "access_token": access_token,
             "token_type": "bearer"
@@ -176,11 +203,13 @@ async def login_refresh_token(request: Request, tokens: LoginRefreshTokenPost, l
     db.conn.commit()
 
     access_token = await create_jwt_token({
+        "user_id": user["id"],
         "username": user["username"],
         "language": language
     })
 
     return {
+        "app_status": await get_latest_appstatus(),
         "access_token": {
             "access_token": access_token,
             "token_type": "bearer"
@@ -246,6 +275,7 @@ async def login_google(credential: str, referral_code: str = None, language: str
         }, datetime.timedelta(minutes=app_settings.refresh_token_expires_minutes))
 
         return {
+            "app_status": await get_latest_appstatus(),
             "access_token": {
                 "access_token": access_token,
                 "token_type": "bearer"
@@ -278,6 +308,7 @@ async def login_google(credential: str, referral_code: str = None, language: str
         })
 
         return {
+            "app_status": await get_latest_appstatus(),
             "access_token": {
                 "access_token": access_token,
                 "token_type": "bearer"
@@ -337,8 +368,31 @@ async def login_google(credential: str, referral_code: str = None, language: str
     if not is_google_email:
         await create_obligation(code= "newpwd", user_id= new_user["id"], language= language)
 
-    return Response(status_code= status.HTTP_202_ACCEPTED)
+    auth_signals.validate_mail.send(new_user["id"])
 
+    access_token = await create_jwt_token({
+        "user_id": new_user["id"],
+        "username": new_user["username"],
+        "language": language
+    })
+
+    refresh_token = await create_jwt_token({
+        "user_id": new_user["id"],
+        "makeunique": random_code(32)
+    })
+
+    return {
+        "app_status": await get_latest_appstatus(),
+        "access_token": {
+            "access_token": access_token,
+            "token_type": "bearer"
+        },
+        "refresh_token": {
+            "refresh_token": refresh_token,
+            "token_type": "bearer"
+        },
+        "user": new_user
+    }
 
 @router.post("/login-apple", response_model=LoginResponse, status_code= status.HTTP_202_ACCEPTED)
 async def login_apple(credential: str, nonce: str, referral_code: str = None, language: str = "en", db: Database = Depends(get_db)):
@@ -398,6 +452,7 @@ async def login_apple(credential: str, nonce: str, referral_code: str = None, la
         }, datetime.timedelta(minutes=app_settings.refresh_token_expires_minutes))
 
         return {
+            "app_status": await get_latest_appstatus(),
             "access_token": {
                 "access_token": access_token,
                 "token_type": "bearer"
@@ -430,6 +485,7 @@ async def login_apple(credential: str, nonce: str, referral_code: str = None, la
         })
 
         return {
+            "app_status": await get_latest_appstatus(),
             "access_token": {
                 "access_token": access_token,
                 "token_type": "bearer"
@@ -482,7 +538,31 @@ async def login_apple(credential: str, nonce: str, referral_code: str = None, la
     # Create a new username and, if not a google_email, a new password
     await create_obligation(code= "newname", user_id= new_user["id"], language= language)
 
-    return Response(status_code= status.HTTP_202_ACCEPTED)
+    auth_signals.validate_mail.send(new_user["id"])
+
+    access_token = await create_jwt_token({
+        "user_id": new_user["id"],
+        "username": new_user["username"],
+        "language": language
+    })
+
+    refresh_token = await create_jwt_token({
+        "user_id": new_user["id"],
+        "makeunique": random_code(32)
+    })
+
+    return {
+        "app_status": await get_latest_appstatus(),
+        "access_token": {
+            "access_token": access_token,
+            "token_type": "bearer"
+        },
+        "refresh_token": {
+            "refresh_token": refresh_token,
+            "token_type": "bearer"
+        },
+        "user": new_user
+    }
 
 
 @router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
@@ -498,7 +578,7 @@ async def logout(db: Database = Depends(get_db), current_user: UserSelf = Depend
     for refresh_token in refresh_tokens:
         db.cursor.execute("""
             INSERT INTO revokedtokens (token)
-            VALUES (%s)""", (refresh_token["token"]))
+            VALUES (%s)""", (refresh_token["token"],))
 
     db.cursor.execute("""
         INSERT INTO revokedtokens (token)
@@ -509,29 +589,29 @@ async def logout(db: Database = Depends(get_db), current_user: UserSelf = Depend
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
-@router.post("/confirm-email", status_code=status.HTTP_202_ACCEPTED, response_class=RedirectResponse)
-async def confirm_email(token: AccessToken, db: Database = Depends(get_db)):
+@router.get("/confirm-email", response_class=RedirectResponse)
+async def confirm_email(token: str, db: Database = Depends(get_db)):
     # A very exceptional occasion where the token is read
     # without validation to extract the user language
-    token_payload = jwt.decode(token.access_token, app_settings.secret_key, app_settings.algorithm, options={"verify_signature": False})
+    token_payload = jwt.decode(token, app_settings.secret_key, app_settings.algorithm, options={"verify_signature": False})
     language = token_payload.get("language", "en")
 
-    datas = await verify_access_token(token.access_token, language=language, verify_exp=False)
+    datas = await verify_access_token(token, language=language, verify_exp=False)
 
     try:
         db.cursor.execute("""
             UPDATE users
             SET verified = true
-            WHERE username = %s AND email = %s
+            WHERE username = %s AND id = %s
             RETURNING *
-            """, (datas.username, datas.email))
+            """, (datas.username, datas.user_id))
         db.conn.commit()
 
         user = db.cursor.fetchone()
 
-        await auth_signals.validate_mail.send(UserSelf(**user))
+        await auth_signals.validate_mail.send(user["id"])
 
-        return RedirectResponse(app_settings.confirmed_email_url)
+        return RedirectResponse(app_settings.confirmed_email_redirect_url)
     except:
         db.cursor.execute("ROLLBACK")
         db.conn.commit()

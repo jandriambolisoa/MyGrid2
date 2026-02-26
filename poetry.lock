@@ -576,6 +576,22 @@ dnspython = ">=2.0.0"
 idna = ">=2.0.0"
 
 [[package]]
+name = "exponent-server-sdk"
+version = "2.2.0"
+description = "Expo Server SDK for Python"
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "exponent_server_sdk-2.2.0-py3-none-any.whl", hash = "sha256:ee5825baa9870fcdb28f93b3404a5e042c3784d861060e59f7dfd549347a6f0c"},
+    {file = "exponent_server_sdk-2.2.0.tar.gz", hash = "sha256:162f3b9732a05e8dd8c1263a7ea2aa27c235a2927a4ca08440ba171c95beb449"},
+]
+
+[package.dependencies]
+requests = "*"
+six = "*"
+
+[[package]]
 name = "fastapi"
 version = "0.119.1"
 description = "FastAPI framework, high performance, easy to learn, fast to code, ready for production"
@@ -2191,4 +2207,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11"
-content-hash = "b432e924baebf02f77aeef78dc1a3309475c78cd4ed21825664b7062a6269a48"
+content-hash = "36f60efab75c646322c3733f7e4e800ff0bc959cafc0f7e7e641170599849750"

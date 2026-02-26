@@ -2,6 +2,7 @@ from typing import Optional
 
 from pydantic import BaseModel
 
+from backend.src.appstatus.schemas import AppStatus
 from backend.src.users.schemas import UserSelf
 
 class AccessToken(BaseModel):
@@ -13,6 +14,7 @@ class RefreshToken(BaseModel):
     token_type: str
 
 class LoginResponse(BaseModel):
+    app_status: AppStatus
     access_token: AccessToken
     refresh_token: Optional[RefreshToken] = None
     user: UserSelf

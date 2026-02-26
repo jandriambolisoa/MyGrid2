@@ -5,6 +5,8 @@ from datetime import datetime, UTC, timedelta
 from starlette import status
 
 from backend.db.database import get_db
+from backend.openf1.schemas import Driver
+from backend.src.drivers.schemas import Team
 from backend.src.events.schemas import Championship, Event
 from backend.utils import random_code, random_color
 from tests.test_backend.datas.events import create_championship, create_event, create_session
@@ -36,11 +38,12 @@ def mock_create_event(user_obj: MockUser, championship: Championship):
         "en": random_code(32, digits=False, letters=True),
         "fr": random_code(32, digits=False, letters=True)
     })
-    to_create_color = random_color()
+    to_create_colors = [random_color(), random_color()]
     res = user_obj.client.post(f"/events", json={
         "name": to_create_names,
         "championship_id": championship.id,
-        "color": to_create_color
+        "colors": to_create_colors,
+        "flag": 'some_url'
     })
     yield res.status_code
 
@@ -48,7 +51,8 @@ def mock_create_event(user_obj: MockUser, championship: Championship):
         res = user_obj.client.post(f"/events", json={
             "name": to_create_names,
             "championship_id": championship.id,
-            "color": to_create_color
+            "colors": to_create_colors,
+            "flag": 'some_url'
         })
         yield res.status_code == status.HTTP_409_CONFLICT
     else:
@@ -168,12 +172,12 @@ def mock_update_event(user_obj: MockUser, championship: Championship):
         "en": random_code(12, digits=False, letters=True),
         "fr": random_code(12, digits=False, letters=True)
     }
-    to_update_color = random_color()
+    to_update_colors = [random_color()]
 
     res = user_obj.client.put(f"/events/{to_update.id}", json={"name": to_update_names})
     yield res.status_code
 
-    res = user_obj.client.put(f"/events/{to_update.id}", json={"color": to_update_color})
+    res = user_obj.client.put(f"/events/{to_update.id}", json={"colors": to_update_colors})
     yield res.status_code
 
 
@@ -272,3 +276,32 @@ def test_delete_sessions(test_championship, test_upcoming_events, unauthorized_u
     assert tuple(mock_delete_session(moderator_user, event)) == (status.HTTP_204_NO_CONTENT, True)
     assert tuple(mock_delete_session(banned_user, event)) == (status.HTTP_401_UNAUTHORIZED, False)
 
+
+def mock_override_wdc_prediction(user_obj: MockUser, championship: Championship, driver: Driver):
+    res = user_obj.client.post(f"/events/championships/{championship.id}/wdc-prediction", json={
+        "driver_id": driver.id
+    })
+    return res.status_code
+
+def test_override_wdc_prediction(test_championship, test_upcoming_events, test_drivers, unauthorized_user, unverified_user, authorized_user, moderator_user, banned_user):
+    driver = random.choice(test_drivers)
+    assert mock_override_wdc_prediction(unauthorized_user, test_championship, driver) == status.HTTP_401_UNAUTHORIZED
+    assert mock_override_wdc_prediction(unverified_user, test_championship, driver) == status.HTTP_200_OK
+    assert mock_override_wdc_prediction(authorized_user, test_championship, driver) == status.HTTP_200_OK
+    assert mock_override_wdc_prediction(moderator_user, test_championship, driver) == status.HTTP_200_OK
+    assert mock_override_wdc_prediction(banned_user, test_championship, driver) == status.HTTP_401_UNAUTHORIZED
+
+
+def mock_override_wcc_prediction(user_obj: MockUser, championship: Championship, team: Team):
+    res = user_obj.client.post(f"/events/championships/{championship.id}/wcc-prediction", json={
+        "team_id": team.id
+    })
+    return res.status_code
+
+def test_override_wcc_prediction(test_championship, test_upcoming_events, test_drivers, test_teams, unauthorized_user, unverified_user, authorized_user, moderator_user, banned_user):
+    team = random.choice(test_teams)
+    assert mock_override_wcc_prediction(unauthorized_user, test_championship, team) == status.HTTP_401_UNAUTHORIZED
+    assert mock_override_wcc_prediction(unverified_user, test_championship, team) == status.HTTP_200_OK
+    assert mock_override_wcc_prediction(authorized_user, test_championship, team) == status.HTTP_200_OK
+    assert mock_override_wcc_prediction(moderator_user, test_championship, team) == status.HTTP_200_OK
+    assert mock_override_wcc_prediction(banned_user, test_championship, team) == status.HTTP_401_UNAUTHORIZED
