@@ -36,9 +36,3 @@ class DriversTeams(Driver):
 
 class TeamsDrivers(Team):
     drivers: List[Driver]
-
-class DriverRegistration(BaseModel):
-    driver: Driver
-    team: Team
-    prediction: int
-    mygrid: Optional[int] = None

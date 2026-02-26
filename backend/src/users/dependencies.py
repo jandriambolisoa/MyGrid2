@@ -23,21 +23,3 @@ async def valid_user_id(user_id: int = None, current_user: UserSelf = Depends(ge
         raise NotAUserError(current_user.language)
 
     return user_id
-
-async def valid_user_username(username: str = None, current_user: UserSelf = Depends(get_current_user)) -> str or None:
-    if not username:
-        return None
-
-    db = get_db()
-    db.cursor.execute("""
-        SELECT id, username FROM users
-        WHERE username = %s""", (username,))
-    user = db.cursor.fetchone()
-
-    if not user:
-        raise NotAUserError(current_user.language)
-
-    if await is_user_banned(user["id"]):
-        raise NotAUserError(current_user.language)
-
-    return user["username"]

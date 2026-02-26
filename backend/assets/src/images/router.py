@@ -5,7 +5,6 @@ from fastapi.responses import FileResponse
 
 from PIL import Image
 
-from backend.assets.schemas import RenameAsset
 from backend.assets.src.images import exceptions as images_exceptions
 from backend.assets.src.images.dependencies import valid_image_name_uniqueness, get_images_folder, valid_image_filename
 from backend.assets.src.images.constants import IMAGE_MAX_SIZE
@@ -18,7 +17,7 @@ router = APIRouter(
 
 
 @router.post("/{image_name}", status_code=status.HTTP_201_CREATED)
-async def upload_image(file: UploadFile, image_name: str = Depends(valid_image_name_uniqueness), max_size: int = IMAGE_MAX_SIZE, extension: str = ".jpg", language: str ="en"):
+async def upload_image(file: UploadFile, image_name: str = Depends(valid_image_name_uniqueness), max_size: int = IMAGE_MAX_SIZE, extension: str = ".jpg", language ="en"):
     # Format extension in the right way
     extension = extension if extension.startswith(".") else "." + extension
 
@@ -42,10 +41,10 @@ async def upload_image(file: UploadFile, image_name: str = Depends(valid_image_n
         image = image.resize((round(width*ratio), round(height*ratio)), Image.Resampling.BICUBIC)
         image.save(filepath, quality=66)
 
-    return filepath
+    return f"{image_name}{extension}"
 
 @router.get("/search", response_model=list[str])
-async def search_images(limit: int = SEARCH_LIMIT, page: int = 0, language: str = "en"):
+async def search_images(limit: int = SEARCH_LIMIT, page: int = 0, language = "en"):
     offset = limit * page
 
     images_files = [
@@ -64,19 +63,6 @@ async def read_image(filename: str = Depends(valid_image_filename), language: st
     filepath = os.path.join(get_images_folder(), filename)
     return FileResponse(filepath)
 
-@router.put("/rename", status_code=status.HTTP_200_OK)
-async def rename_glb(datas: RenameAsset, language: str = "en", extension: str = ".jpg"):
-    old_name = datas.old_name if datas.old_name.endswith(f".{extension}") == -1 else f"{datas.old_name}.{extension}"
-    new_name = datas.new_name if datas.new_name.endswith(f".{extension}") == -1 else f"{datas.new_name}.{extension}"
-
-    old_filepath = os.path.join(get_images_folder(), old_name)
-    new_filepath = os.path.join(get_images_folder(), new_name)
-    if not os.path.isfile(old_filepath):
-        raise images_exceptions.ImageNotFoundException(language=language)
-
-    os.renames(old_filepath, new_filepath)
-
-    return new_filepath
 
 @router.delete("/{filename}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_image(filename: str = Depends(valid_image_filename), language: str = "en"):

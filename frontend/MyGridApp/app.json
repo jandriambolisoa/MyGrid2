@@ -11,10 +11,7 @@
     "ios": {
       "supportsTablet": true,
       "usesAppleSignIn": true,
-      "bundleIdentifier": "com.theoduh.mygridapp",
-      "config": {
-        "usesNonExemptEncryption": false
-      }
+      "bundleIdentifier": "com.theoduh.mygridapp"
     },
     "android": {
       "adaptiveIcon": {
@@ -50,8 +47,7 @@
         }
       ],
       "expo-localization",
-      "expo-apple-authentication",
-      "expo-secure-store"
+      "expo-apple-authentication"
     ],
     "experiments": {
       "typedRoutes": true
