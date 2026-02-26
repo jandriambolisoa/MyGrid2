@@ -47,7 +47,6 @@ export default function MainScreen () {
 
   return (
     <Container style={{ backgroundColor: 'transparent'}}>
-      
       <View style={{alignItems: 'center', justifyContent: 'center', position: 'absolute', top: "45%"}}>
         <MainText>Welcome to</MainText>
         <MainText style={{fontSize: Constants.fontSizes.giant, marginBottom: 40}}>Mygrid</MainText>

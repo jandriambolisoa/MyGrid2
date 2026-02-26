@@ -59,8 +59,9 @@ export function MainWidget({
       <SpotLight color={color2} cx="70%" cy="70%" fx="95%" fy="95%" radius="45%"/>
       <ShadowSetup />
       <View style={[StyleSheet.absoluteFill, { padding: Constants.spacing.buttonPadding , alignItems: 'center' }]}>
-        <MainText style={{ fontSize: 28, marginTop: 20 }}>{datas.event.name}</MainText>
+        <MainText style={{ fontSize: Constants.fontSizes.big, marginTop: 20 }}>{datas.event.name}</MainText>
         <Image resizeMode="stretch" style={{ position: 'absolute', width: 50, height: 50, top: 20, right: "10%" }} source={require('@/assets/images/demo/spa.png')}/>
+        <Image source={{ uri: datas.event.flag }} style={{ width: 200, height: 50, margin: Constants.spacing.buttonPadding }} resizeMode="contain"/>
         <Image resizeMode="contain" style={{ height: "30%", marginVertical: 30 }} source={require('@/assets/images/demo/trophy_belgium.png')}/>
         <FlatList
           data={datas.sessions}

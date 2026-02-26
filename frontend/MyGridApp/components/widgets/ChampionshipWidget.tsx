@@ -13,25 +13,28 @@ export function ChampionshipWidget ({
 }: ChampionshipWidgetProps) {
 
   const t = scopedI18n('widgets.championshipWidget')
+  const fontSize = Constants.fontSizes.header
 
   return (
     <View style={[GlobalStyles.button, GlobalStyles.mainWidget]}>
       <ShadowSetup/>
-      <MainText bold={true} style={{ marginTop: Constants.spacing.buttonPadding, fontSize: 20 }}>{t('championship')}</MainText>
+      <MainText bold={true} style={{ marginTop: Constants.spacing.buttonPadding, fontSize: fontSize }}>{t('championship')}</MainText>
       <View style={GlobalStyles.rowWidget}>
         <LiteButton style={style.button}>
           <SpotLight cx='45%' cy='45%' fx='20%' fy='20%' radius='60%' color={datas.wdc.leaderboard.ranks[0].team.color}/>
           <MainText style={{ marginBottom: 10 }}>{t('drivers')}</MainText>
-          <MainText bold={true} style={{ fontSize: 20 }}>{datas.wdc.leaderboard.ranks[0].driver.codename}</MainText>
-          <MainText style={{ fontSize: 20, marginBottom: 10 }}>+ {datas.wdc.leaderboard.ranks[0].score} Pts</MainText>
-          <MainText style={{ fontSize: 14, color: Colors.light.warning }}>{t('noPrediction')}</MainText>
+          {datas.wdc.leaderboard.ranks.map((item: any) => (
+            <View key={item.rank} style={{ flexDirection: 'row' }}>
+              <MainText bold={true} style={{ marginEnd: 10 }}>{item.driver.codename}</MainText>
+              <MainText >+ {item.score} Pts</MainText>
+            </View>
+          ))}
         </LiteButton>
         <LiteButton style={style.button}>
           <SpotLight cx='55%' cy='55%' fx='80%' fy='80%' radius='60%' color={datas.wcc.leaderboard.ranks[0].team.color}/>
           <MainText style={{ marginBottom: 10 }}>{t('constructors')}</MainText>
           <MainText bold={true} style={{ fontSize: 20 }}>{datas.wcc.leaderboard.ranks[0].team.name.slice(0, 10)}</MainText>
-          <MainText style={{ fontSize: 20, marginBottom: 10 }}>+ {datas.wcc.leaderboard.ranks[0].score} Pts</MainText>
-          <MainText style={{ fontSize: 14, color: Colors.light.warning }}>{t('noPrediction')}</MainText>
+          <MainText style={{ fontSize: fontSize, marginBottom: 10 }}>+ {datas.wcc.leaderboard.ranks[0].score} Pts</MainText>
         </LiteButton>
       </View>
     </View>
