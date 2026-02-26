@@ -57,6 +57,16 @@ services:
     networks:
       - app-network
 
+  assets:
+    build:
+      context: .
+      dockerfile: Dockerfile-test
+    ports:
+      - "8001:8001"
+    command: poetry run uvicorn backend.mailings.main:app --port 8001
+    networks:
+      - app-network
+
   api:
     build:
       context: .
@@ -70,9 +80,13 @@ services:
       - TOKEN_EXPIRES_MINUTES=${TOKEN_EXPIRES_MINUTES}
       - REFRESH_TOKEN_EXPIRES_MINUTES=${REFRESH_TOKEN_EXPIRES_MINUTES}
       - WEBSITE_URL=${WEBSITE_URL}
+      - CONTACT_EMAIL=${CONTACT_EMAIL}
       - CONFIRMED_EMAIL_URL=${CONFIRMED_EMAIL_URL}
+      - CONFIRMED_EMAIL_REDIRECT_URL=${CONFIRMED_EMAIL_REDIRECT_URL}
+      - MS_ASSETS_URL=${MS_ASSETS_URL}
       - MS_MAILINGS_URL=${MS_MAILINGS_URL}
       - MS_OPENF1_URL=${MS_OPENF1_URL}
+      - EXPO_ACCESS_TOKEN=${EXPO_ACCESS_TOKEN}
       - APPLE_DEV_NONCE_SECRET=${APPLE_DEV_NONCE_SECRET}
       - APPLE_APP_ISS=${APPLE_APP_ISS}
       - APPLE_CLIENT_ID=${APPLE_CLIENT_ID}
