@@ -90,15 +90,13 @@ async def home_get_championships(championship_id: int = Depends(valid_championsh
             SELECT DISTINCT ON (sessionsregistrations.driver_id) sessionsregistrations.driver_id,
             teams.id AS team_id,
             teams.name AS team_name,
-            teams.color AS team_color
+            teams.color AS team_color,
+            sessions.datetime AS session_datetime
             FROM sessionsregistrations
             LEFT JOIN teams ON teams.id = sessionsregistrations.team_id
-            WHERE session_id IN (
-                SELECT sessions.id AS session_id
-                FROM sessions
-                WHERE sessions.datetime < NOW()
-                ORDER BY datetime DESC
-            )
+            LEFT JOIN sessions ON sessions.id = sessionsregistrations.session_id
+            WHERE sessions.datetime < NOW()
+            ORDER BY sessionsregistrations.driver_id, sessions.datetime DESC
         )
         SELECT drivers.id AS driver_id,
         drivers.firstname AS driver_firstname,
