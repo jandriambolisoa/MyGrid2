@@ -52,7 +52,7 @@ export default function Events ({
   }, [champLoading])
 
   return (
-    <ScrollContainer tabBarHeight={tabBarHeight}>
+    <ScrollContainer footerHeight={tabBarHeight}>
       {mainDatas && !mainLoading && !mainError && <MainWidget datas={mainDatas} style={{ height: Dimensions.get('window').height - insets.top - tabBarHeight - Constants.spacing.mainWidgetMargin}}/>}
       {champDatas && !champLoading && !champError && <ChampionshipWidget datas={champDatas}/>}
       {calendarDatas && !calendarLoading && !calendarError && <EventCalendar datas={calendarDatas}/>}

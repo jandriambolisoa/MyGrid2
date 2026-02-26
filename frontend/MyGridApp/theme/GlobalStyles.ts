@@ -25,17 +25,23 @@ export const GlobalStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center'
   },
-  tabBar: {
+  frame: {
     position: 'absolute',
+    width: '100%',
+    borderWidth: 0,
+    borderColor: Colors.light.borders
+  },
+  header: {
+    padding: Constants.spacing.buttonPadding,
+    alignItems: 'center'
+  },
+  tabBar: {
     bottom: 0,
     flexDirection: 'row',
-    width: '100%',
     alignItems: 'center',
     justifyContent: 'space-around',
     paddingTop: 10,
-    borderWidth: 0,
     borderTopWidth: 1,
-    borderColor: '#fff'
   },
   tabBarSlider: {
     position: 'absolute',
@@ -83,5 +89,11 @@ export const GlobalStyles = StyleSheet.create({
     left: '10%',
     right: '10%',
     textAlign: 'center'
+  },
+  mainWidgetButton: {
+    alignSelf: "stretch",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: Constants.spacing.buttonPadding
   }
 });

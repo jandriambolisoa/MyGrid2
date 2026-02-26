@@ -3,21 +3,25 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Container }  from '@/components/widgets';
 
 export type ScrollContainerProps = {
-  tabBarHeight?: number;
+  footerHeight?: number;
+  headerHeight?: number
 } & ViewProps
 
 // Scrollable container for home pages
 
 export function ScrollContainer ({
-  tabBarHeight=0,
+  footerHeight=0,
+  headerHeight=0,
   style,
   ...otherProps }: ScrollContainerProps ) {
 
   const insets = useSafeAreaInsets();
+  const paddingBottom = footerHeight ? footerHeight : insets.bottom
+  const paddingTop = headerHeight ? headerHeight : insets.top
 
   return (
     <Container style={{ paddingBottom: 0, paddingTop: 0 }}>
-      <ScrollView style={{ alignSelf: 'stretch' }} contentContainerStyle={{ paddingBottom: tabBarHeight, paddingTop: insets.top }} showsVerticalScrollIndicator={false}>
+      <ScrollView style={{ alignSelf: 'stretch' }} contentContainerStyle={{ paddingBottom: paddingBottom, paddingTop: paddingTop }} showsVerticalScrollIndicator={false}>
         {otherProps.children}
       </ScrollView>
     </Container>

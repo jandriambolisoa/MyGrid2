@@ -4,7 +4,8 @@ export const Constants = {
     sliderWidth: 24,
     mainWidgetMargin: 14,
     buttonHeight: 38,
-    buttonMargin: 14
+    buttonMargin: 14,
+    borderWidth: 1
   },
   shadow: {
     topThickness: 18,
@@ -21,6 +22,7 @@ export const Constants = {
     mainText: 16,
     giant: 64,
     big: 40,
-    header: 20
+    header: 20,
+    title: 28
   }
 }

@@ -11,3 +11,5 @@ export * from './ChampionshipWidget';
 export * from './EventCalendar';
 export * from './ScrollContainer';
 export * from './MyGridBackground';
+export * from './layout/Frame';
+export * from './layout/Header';

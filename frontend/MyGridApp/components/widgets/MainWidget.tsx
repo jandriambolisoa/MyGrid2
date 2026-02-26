@@ -4,6 +4,7 @@ import { ShadowSetup, MainText, SpotLight, LiteButton } from "@/components/widge
 import { DateTime } from "luxon"
 import { niceDatetime } from "@/utils"
 import { scopedI18n } from "@/translations/i18n";
+import { useRouter } from "expo-router";
 
 export type MainWidgetProps = ViewProps & {
   datas?: any
@@ -19,11 +20,16 @@ export function MainWidget({
   const dateTemp = "2026-01-25T03:41:44.092651+01:00";
 
   const t = scopedI18n('widgets.mainWidget');
+  const router = useRouter()
 
   const color1 = datas.event.colors[0];
   const color2 = datas.event.colors.length > 1 ? datas.event.colors[1] : color1;
 
   function renderItem({item} : any) {
+
+    function handlePress () {
+      router.push(`/predictions/${item.id}`)
+    }
 
     const disabledColor = item.is_over ? { color: Colors.light.disabled, borderColor: Colors.light.disabled } : { }
 
@@ -46,7 +52,7 @@ export function MainWidget({
     }
 
     return(
-      <LiteButton style={[disabledColor, { alignSelf: "stretch", flexDirection: "row", justifyContent: "space-between", marginBottom: Constants.spacing.buttonPadding }]}>
+      <LiteButton style={[disabledColor, GlobalStyles.mainWidgetButton]} onPress={handlePress}>
         <MainText style={[disabledColor]}>{item.name}</MainText>
         {rightItem()}
       </LiteButton>
@@ -59,8 +65,8 @@ export function MainWidget({
       <SpotLight color={color2} cx="70%" cy="70%" fx="95%" fy="95%" radius="45%"/>
       <ShadowSetup />
       <View style={[StyleSheet.absoluteFill, { padding: Constants.spacing.buttonPadding , alignItems: 'center' }]}>
-        <MainText style={{ fontSize: Constants.fontSizes.big, marginTop: 20 }}>{datas.event.name}</MainText>
-        <Image resizeMode="stretch" style={{ position: 'absolute', width: 50, height: 50, top: 20, right: "10%" }} source={require('@/assets/images/demo/spa.png')}/>
+        <MainText style={{ fontSize: Constants.fontSizes.title, marginTop: 20 }}>{datas.event.name}</MainText>
+        <Image resizeMode="stretch" style={{ position: 'absolute', width: 50, height: 50, top: 20, right: "5%" }} source={require('@/assets/images/demo/spa.png')}/>
         <Image source={{ uri: datas.event.flag }} style={{ width: 200, height: 50, margin: Constants.spacing.buttonPadding }} resizeMode="contain"/>
         <Image resizeMode="contain" style={{ height: "30%", marginVertical: 30 }} source={require('@/assets/images/demo/trophy_belgium.png')}/>
         <FlatList

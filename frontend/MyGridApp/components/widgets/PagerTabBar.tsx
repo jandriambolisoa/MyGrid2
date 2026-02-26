@@ -34,7 +34,7 @@ export function PagerTabBar ({
   }, [firstTabDim, lastTabDim]);
 
   return (
-    <BlurView tint="light" intensity={10} style={[GlobalStyles.tabBar, { paddingBottom: insets.bottom }]} {...otherProps}>
+    <BlurView tint="light" intensity={10} style={[GlobalStyles.frame, GlobalStyles.tabBar, { paddingBottom: insets.bottom }]} {...otherProps}>
       <TouchableOpacity onPress={() => setPage?.(0)} onLayout={(e) => setFirstTabDim(e.nativeEvent.layout)}>
         <MainText>{t('social')}</MainText>
       </TouchableOpacity>
