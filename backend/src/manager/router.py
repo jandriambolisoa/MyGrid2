@@ -46,8 +46,8 @@ async def send_global_push_notification(to_send: PushNotification, language: str
     )
 
     print("# PUSH NOTIFICATIONS: start")
-    print(f"#\t{to_send.title["en"]}")
-    print(f"#\t{to_send.body["en"]}")
+    print(f"#\t{to_send.title['en']}")
+    print(f"#\t{to_send.body['en']}")
 
     for token in tokens:
         # Limit the number of attempt in an exponential backoff
