@@ -23,9 +23,6 @@ def test_get_user_prediction(
 
     passed_session = get_competitive_sessions_from_event_id(passed_event.id)[0]
     upcoming_session = get_competitive_sessions_from_event_id(upcoming_event.id)[0]
-    print(f"# DEBUG - {user_obj}")
-    print(f"# DEBUG - {passed_session}")
-    print(f"# DEBUG - {upcoming_session}")
 
     res = user_obj.client.get(f"/events/sessions/predictions/{passed_session.id}")
     res_json = res.json()

@@ -53,6 +53,14 @@ services:
     networks:
       - app-network
 
+  assets:
+    image: jandriambolisoa/mygrid2
+    ports:
+      - "8001:8001"
+    command: poetry run uvicorn backend.mailings.main:app --port 8001
+    networks:
+      - app-network
+
   api:
     image: jandriambolisoa/mygrid2
     depends_on:
@@ -63,6 +71,7 @@ services:
       - ALGORITHM=${ALGORITHM}
       - TOKEN_EXPIRES_MINUTES=${TOKEN_EXPIRES_MINUTES}
       - REFRESH_TOKEN_EXPIRES_MINUTES=${REFRESH_TOKEN_EXPIRES_MINUTES}
+      - API_URL=${API_URL}
       - WEBSITE_URL=${WEBSITE_URL}
       - CONTACT_EMAIL=${CONTACT_EMAIL}
       - CONFIRMED_EMAIL_URL=${CONFIRMED_EMAIL_URL}
