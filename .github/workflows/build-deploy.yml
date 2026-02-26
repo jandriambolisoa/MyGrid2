@@ -35,11 +35,14 @@ jobs:
       ALGORITHM: ${{ secrets.ALGORITHM }}
       TOKEN_EXPIRES_MINUTES: 12
       REFRESH_TOKEN_EXPIRES_MINUTES: 24
+      CONTACT_EMAIL: abc@123.com
       WEBSITE_URL: https://mygrid-app.com/
       CONFIRMED_EMAIL_URL: https://mygrid-app.com/
+      CONFIRMED_EMAIL_REDIRECT_URL: https://mygrid-app.com/
       MS_MAILINGS_URL: https://mygrid-app.com/
       MS_OPENF1_URL: https://mygrid-app.com/
       MS: 0
+      EXPO_ACCESS_TOKEN: abc123
       APPLE_DEV_NONCE_SECRET: abc123
       APPLE_APP_ISS: ABC123
       APPLE_CLIENT_ID: ${{ secrets.APPLE_CLIENT_ID }}
