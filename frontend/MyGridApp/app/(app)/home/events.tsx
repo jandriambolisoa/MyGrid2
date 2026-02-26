@@ -35,26 +35,25 @@ export default function Events ({
     })
   }, [auth])
 
-  /*useEffect(() => {
+  useEffect(() => {
     auth && !mainLoading && getChamp({
       endpoint: '/nav/home/championships?championship_id=1',
       method: 'GET',
       auth: auth
     })
-  }, [mainLoading])*/
+  }, [mainLoading])
 
   useEffect(() => {
-    auth && !mainLoading && getCalendar({
+    auth && !champLoading && getCalendar({
       endpoint: '/nav/home/events?championship_id=1',
       method: 'GET',
       auth: auth
     })
-  }, [mainLoading])
+  }, [champLoading])
 
   return (
     <ScrollContainer tabBarHeight={tabBarHeight}>
       {mainDatas && !mainLoading && !mainError && <MainWidget datas={mainDatas} style={{ height: Dimensions.get('window').height - insets.top - tabBarHeight - Constants.spacing.mainWidgetMargin}}/>}
-
       {champDatas && !champLoading && !champError && <ChampionshipWidget datas={champDatas}/>}
       {calendarDatas && !calendarLoading && !calendarError && <EventCalendar datas={calendarDatas}/>}
     </ScrollContainer>

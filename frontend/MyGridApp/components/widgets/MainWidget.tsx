@@ -16,9 +16,12 @@ export function MainWidget({
 }: MainWidgetProps) {
 
   // Temporary date to test with example datas
-  const dateTemp = "2026-01-25T03:41:44.092651+01:00"
+  const dateTemp = "2026-01-25T03:41:44.092651+01:00";
 
-  const t = scopedI18n('widgets.mainWidget')
+  const t = scopedI18n('widgets.mainWidget');
+
+  const color1 = datas.event.colors[0];
+  const color2 = datas.event.colors.length > 1 ? datas.event.colors[1] : color1;
 
   function renderItem({item} : any) {
 
@@ -52,11 +55,11 @@ export function MainWidget({
 
   return (
     <View style={[GlobalStyles.button, GlobalStyles.mainWidget, style]} {...otherProps}>
-      <SpotLight color="#ef333f" cx="35%" cy="35%" fx="5%" fy="5%" radius="50%"/>
-      <SpotLight color="#fdda25" cx="70%" cy="70%" fx="95%" fy="95%" radius="45%"/>
+      <SpotLight color={color1} cx="35%" cy="35%" fx="5%" fy="5%" radius="50%"/>
+      <SpotLight color={color2} cx="70%" cy="70%" fx="95%" fy="95%" radius="45%"/>
       <ShadowSetup />
       <View style={[StyleSheet.absoluteFill, { padding: Constants.spacing.buttonPadding , alignItems: 'center' }]}>
-        <MainText style={{ fontSize: 28, marginTop: 20 }}>Belgium</MainText>
+        <MainText style={{ fontSize: 28, marginTop: 20 }}>{datas.event.name}</MainText>
         <Image resizeMode="stretch" style={{ position: 'absolute', width: 50, height: 50, top: 20, right: "10%" }} source={require('@/assets/images/demo/spa.png')}/>
         <Image resizeMode="contain" style={{ height: "30%", marginVertical: 30 }} source={require('@/assets/images/demo/trophy_belgium.png')}/>
         <FlatList
