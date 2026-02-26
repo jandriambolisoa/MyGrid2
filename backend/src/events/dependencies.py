@@ -76,7 +76,7 @@ async def get_upcoming_event(language: str = "en"):
         )
         SELECT events.id AS id,
         COALESCE(events_translations.name, events.name) AS name,
-        events.color,
+        events.colors,
         events.flag,
         events.championship_id
         FROM sessions

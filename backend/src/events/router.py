@@ -62,7 +62,7 @@ async def create_event(to_create: EventCreate, language: str = "en", db: Databas
 
     try:
         db.cursor.execute("""
-            INSERT INTO events (name, championship_id, color, flag)
+            INSERT INTO events (name, championship_id, colors, flag)
             VALUES (%s, %s, %s, %s)
             RETURNING *""", (to_create.name["en"].title(), to_create.championship_id, to_create.colors, to_create.flag))
         created = db.cursor.fetchone()
@@ -136,7 +136,7 @@ async def search_event(db:Database = Depends(get_db),
         sessions.competitive AS session_competitive,
         events.id AS event_id,
         COALESCE(events_translations.name, events.name) AS event_name,
-        events.color AS event_color,
+        events.colors AS event_colors,
         events.flag AS event_flag,
         championships.id AS championship_id,
         championships.name AS championship_name
@@ -266,14 +266,14 @@ async def update_event(datas: EventUpdate, event_id: int = Depends(valid_event_i
         translations = await valid_translations(datas.name, language=language)
         datas.name["en"] = datas.name.get("en", orig["name"])
     if not datas.colors:
-        datas.colors = orig["color"]
+        datas.colors = orig["colors"]
     if not datas.flag:
         datas.flag = orig["flag"]
 
     try:
         db.cursor.execute("""\
             UPDATE events
-            SET name = %s, color = %s, flag = %s
+            SET name = %s, colors = %s, flag = %s
             WHERE id = %s
             RETURNING *
             """, (datas.name["en"], datas.colors, datas.flag, event_id))

@@ -1,4 +1,4 @@
-\restrict aLeIlNyHOhxz1JVO8oWcy7EQlESIulfOI5LcL4bzkVnM4USQsTBHUNg1kXBhaFi
+\restrict f2al03pLkIDbjfMOD1nbeNOA6wGXRbHHkcwWm8ZIHQDf8j3uR9Wg63tnNZBlAgx
 
 -- Dumped from database version 18.1
 -- Dumped by pg_dump version 18.1
@@ -74,17 +74,6 @@ CREATE SEQUENCE public.appstatus_id_seq
 --
 
 ALTER SEQUENCE public.appstatus_id_seq OWNED BY public.appstatus.id;
-
-
---
--- Name: apscheduler_jobs; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.apscheduler_jobs (
-    id character varying(191) NOT NULL,
-    next_run_time double precision,
-    job_state bytea NOT NULL
-);
 
 
 --
@@ -284,11 +273,9 @@ ALTER SEQUENCE public.drivers_id_seq OWNED BY public.drivers.id;
 CREATE TABLE public.events (
     id integer NOT NULL,
     name character varying NOT NULL,
-    color character varying NOT NULL,
-    championship_id integer NOT NULL,
-    flag character varying DEFAULT 'https://flagsapi.com/BE/flat/64.png'::character varying NOT NULL,
-    collectible character varying,
-    collectibletextures character varying
+    colors character varying[] NOT NULL,
+    flag character varying NOT NULL,
+    championship_id integer NOT NULL
 );
 
 
@@ -468,17 +455,32 @@ CREATE TABLE public.users (
 --
 
 CREATE MATERIALIZED VIEW public.ranks_championships_mv AS
+ WITH ranked_scores AS (
+         SELECT scores.user_id,
+            scores.session_id,
+            championships_1.id AS championship_id,
+            sum(scores.score) AS score,
+            row_number() OVER (PARTITION BY scores.user_id, championships_1.id ORDER BY (sum(scores.score)) DESC) AS session_rank
+           FROM (((public.scores
+             LEFT JOIN public.sessions sessions_1 ON ((sessions_1.id = scores.session_id)))
+             LEFT JOIN public.events events_1 ON ((events_1.id = sessions_1.event_id)))
+             LEFT JOIN public.championships championships_1 ON ((championships_1.id = events_1.championship_id)))
+          GROUP BY championships_1.id, scores.user_id, scores.session_id
+          ORDER BY (sum(scores.score)) DESC
+        )
  SELECT championships.id AS championship_id,
     users.id AS user_id,
-    COALESCE(sum(scores.score), (0)::bigint) AS score,
-    row_number() OVER (PARTITION BY championships.id ORDER BY (sum(scores.score)) DESC) AS rank
-   FROM ((((public.scores
-     LEFT JOIN public.users ON ((users.id = scores.user_id)))
-     LEFT JOIN public.sessions ON ((sessions.id = scores.session_id)))
+    COALESCE(sum(ranked_scores.score), (0)::numeric) AS score,
+    row_number() OVER (PARTITION BY championships.id ORDER BY (sum(ranked_scores.score)) DESC) AS rank,
+    string_agg((ranked_scores.session_id)::text, ','::text ORDER BY ranked_scores.score DESC) AS session_list
+   FROM ((((ranked_scores
+     LEFT JOIN public.users ON ((users.id = ranked_scores.user_id)))
+     LEFT JOIN public.sessions ON ((sessions.id = ranked_scores.session_id)))
      LEFT JOIN public.events ON ((events.id = sessions.event_id)))
      LEFT JOIN public.championships ON ((championships.id = events.championship_id)))
+  WHERE (ranked_scores.session_rank <= 8)
   GROUP BY championships.id, users.id
-  ORDER BY COALESCE(sum(scores.score), (0)::bigint) DESC
+  ORDER BY COALESCE(sum(ranked_scores.score), (0)::numeric) DESC
   WITH NO DATA;
 
 
@@ -888,14 +890,6 @@ ALTER TABLE ONLY public.appstatus
 
 
 --
--- Name: apscheduler_jobs apscheduler_jobs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.apscheduler_jobs
-    ADD CONSTRAINT apscheduler_jobs_pkey PRIMARY KEY (id);
-
-
---
 -- Name: bannedhistory bannedhistory_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1232,13 +1226,6 @@ ALTER TABLE ONLY public.wdcpredictions
 
 
 --
--- Name: ix_apscheduler_jobs_next_run_time; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX ix_apscheduler_jobs_next_run_time ON public.apscheduler_jobs USING btree (next_run_time);
-
-
---
 -- Name: appleids appleids_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1546,7 +1533,7 @@ ALTER TABLE ONLY public.wdcpredictions
 -- PostgreSQL database dump complete
 --
 
-\unrestrict aLeIlNyHOhxz1JVO8oWcy7EQlESIulfOI5LcL4bzkVnM4USQsTBHUNg1kXBhaFi
+\unrestrict f2al03pLkIDbjfMOD1nbeNOA6wGXRbHHkcwWm8ZIHQDf8j3uR9Wg63tnNZBlAgx
 
 
 --
@@ -1585,7 +1572,6 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20251214144418'),
     ('20260203215108'),
     ('20260203215114'),
-    ('20260214223501'),
     ('20260215153537'),
     ('20260215154056'),
     ('20260215204125'),
