@@ -56,12 +56,12 @@ export function EventCalendarWidget ({
     <TouchableOpacity style={[GlobalStyles.button, { height: size, width: size, alignSelf: 'center', transform: [{ scale: scale }]  }]}>
       {showShadow && 
         <>
-          <SpotLight color={datas?.color || Colors.light.background} cx="35%" cy="35%" fx="5%" fy="5%" radius="50%"/>
+          <SpotLight color={datas?.colors[0] || Colors.light.background} cx="35%" cy="35%" fx="5%" fy="5%" radius="50%"/>
           <ShadowSetup />
         </>
       }
-      <MainText>{datas?.name}</MainText>
-      <Image source={{ uri: datas?.flag }} style={{ height: 50, width: 80, margin: Constants.spacing.buttonPadding }} resizeMode="cover"/>
+      <MainText style={{ fontSize: Constants.fontSizes.header }}>{datas?.name}</MainText>
+      <Image source={{ uri: datas?.flag }} style={{ width: 200, height: 50, margin: Constants.spacing.buttonPadding }} resizeMode="contain"/>
       <MainText>{fromToDatetime(datas?.datetime)}</MainText>
     </TouchableOpacity>
   )
@@ -80,12 +80,12 @@ export function EventCalendar ({
     return DateTime.fromISO(a.datetime).toMillis() - DateTime.fromISO(b.datetime).toMillis()
   }
   
-  const sortedDatas = datas ? datas.events.sort(compareDates) : [];
+  const sortedDatas = datas?.events?.sort(compareDates) ?? [];
 
   const windowWidth = Dimensions.get('window').width;
   const size = windowWidth * 0.65;
   const blankSpace = (windowWidth - size) / 2;
-  const index = sortedDatas.findIndex((item: any) => DateTime.fromISO(item.datetime) > DateTime.now()) || sortedDatas.length - 1;
+  const index = sortedDatas.findIndex((item: any) => DateTime.fromISO(item.datetime) > DateTime.now());
   const firstPage = index === -1 ? sortedDatas.length - 1 : index;
   const initialScrollX = firstPage * (size + Constants.spacing.buttonPadding);
   const scrollX = useRef(new Animated.Value(initialScrollX)).current;

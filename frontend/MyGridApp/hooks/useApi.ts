@@ -1,0 +1,39 @@
+import { apiFetch, FetchProps } from "@/api/fetch";
+import { useState } from "react";
+
+export function useApi<T = any> () {
+
+  const [datas, setDatas] = useState<T | null>(null);
+  const [error, setError] = useState<unknown>(null);
+  const [loading, setLoading] = useState(true);
+
+  /**
+   * Makes an API call using `apiFetch` and updates state.
+   *
+   * @param {FetchProps} props - Object containing request info:
+   * @param {string} props.endpoint - API endpoint (e.g., '/users').
+   * @param {unknown} [props.body] - Optional request body for POST/PUT requests.
+   * @param {'GET' | 'POST' | 'PUT' | 'DELETE'} props.method - HTTP method.
+   * @param {AuthContextType} props.auth - Authentication context with tokens and login/logout methods.
+   *
+   * @returns {Promise<T | undefined>} - Resolves with API response data of type T, or undefined if there is an error.
+   */
+
+  async function api (props: FetchProps) {
+
+    setLoading(true)
+    setError(null)
+
+    try {
+      const data = await apiFetch<T>(props);
+      setDatas(data);
+      return data;
+    } catch (e) {
+      setError(e)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return { datas, error, loading, api }
+}

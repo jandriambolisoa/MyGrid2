@@ -18,6 +18,12 @@ export default function MainScreen () {
       const oldAccessToken = await SecureStore.getItemAsync('accessToken');
       const oldRefreshToken = await SecureStore.getItemAsync('refreshToken');
 
+      if (!oldRefreshToken) {
+        logout();
+        router.replace('/login')
+        return
+      }
+
       try {
         const data = await refreshLogin(oldAccessToken, oldRefreshToken);
 
@@ -27,23 +33,20 @@ export default function MainScreen () {
           refreshToken: oldRefreshToken
         }
 
-        console.log(loginDatas)
-
         await login(loginDatas)
         router.replace('/home')
+
       } catch (e) {
-        console.log(e)
         logout();
         router.replace('/login')
       }
     }
 
     initAuth()
-  })
+  }, [])
 
   return (
     <Container style={{ backgroundColor: 'transparent'}}>
-      
       <View style={{alignItems: 'center', justifyContent: 'center', position: 'absolute', top: "45%"}}>
         <MainText>Welcome to</MainText>
         <MainText style={{fontSize: Constants.fontSizes.giant, marginBottom: 40}}>Mygrid</MainText>
