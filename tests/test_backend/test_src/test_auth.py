@@ -40,7 +40,8 @@ def test_signup_user(username: str, email: str, password: str, status_code, clie
         assert res.status_code == status_code
 
         if res.status_code == status.HTTP_201_CREATED:
-            current_user = UserSelf(**res.json())
+            user = res.json()["user"]
+            current_user = UserSelf(**user)
             assert current_user.username == username
             assert current_user.email == email
 
