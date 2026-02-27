@@ -3,7 +3,7 @@ import { useLocalSearchParams } from "expo-router";
 import { View } from "react-native"
 import { useState } from "react"
 
-export default function Predictions () {
+export default function Results () {
 
   const { id } = useLocalSearchParams();
 
@@ -17,7 +17,11 @@ export default function Predictions () {
 
         </View>
       </ScrollContainer>
-      <Header onLayout={(e: any) => setHeaderHeight(e.nativeEvent.layout.height)}/>
+      <Header
+        onLayout={(e: any) => setHeaderHeight(e.nativeEvent.layout.height)}
+        title="Bahrain"
+        subtitle="Le 25 février 2026"
+      />
     </View>
   )
 }

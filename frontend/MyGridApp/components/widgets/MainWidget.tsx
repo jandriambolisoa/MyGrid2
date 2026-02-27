@@ -28,7 +28,11 @@ export function MainWidget({
   function renderItem({item} : any) {
 
     function handlePress () {
-      router.push(`/predictions/${item.id}`)
+      if (item.is_over) {
+        router.push(`/results/${item.id}`);
+      } else {
+        router.push(`/predictions/${item.id}`)
+      }
     }
 
     const disabledColor = item.is_over ? { color: Colors.light.disabled, borderColor: Colors.light.disabled } : { }

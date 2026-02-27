@@ -1,8 +1,6 @@
-import { Frame, FrameProps, MainText } from '@/components/widgets'
-import { Colors, Constants, GlobalStyles } from '@/theme'
-import { Feather } from '@expo/vector-icons'
-import { View, TouchableOpacity } from "react-native"
-import { useRouter } from 'expo-router'
+import { BackButton, Frame, FrameProps, MainText } from '@/components/widgets'
+import { Constants, GlobalStyles } from '@/theme'
+import { View } from "react-native"
 
 export type HeaderProps = FrameProps & {
   title?: string,
@@ -19,19 +17,12 @@ export function Header({
   ...otherProps
 }: HeaderProps) {
 
-  const router = useRouter()
-
   return (
     <Frame {...otherProps}>
       <View style={GlobalStyles.header}>
-        <MainText style={{ fontSize: Constants.fontSizes.header }} bold={true}>Prediction</MainText>
-        <MainText >Make your prediction now</MainText>
-        <TouchableOpacity
-          style={{ position: 'absolute', width: 60, left: 0, bottom: 0, top: 0, alignItems: 'center', justifyContent: 'center' }}
-          onPress={router.back}
-        >
-          <Feather name="arrow-left" size={36} color={Colors.light.lightText}/>
-        </TouchableOpacity>
+        {title && <MainText style={{ fontSize: Constants.fontSizes.header }} bold={true}>{title}</MainText>}
+        {subtitle && <MainText style={{ margin: 2 }}>{subtitle}</MainText>}
+        <BackButton />
       </View>
     </Frame>
   )

@@ -3,6 +3,8 @@ import { Colors } from "./Colors";
 import { Constants } from "./Constants";
 
 export const GlobalStyles = StyleSheet.create({
+  
+  // Buttons
   loginButton: {
     padding: Constants.spacing.buttonPadding,
     fontSize: 16,
@@ -19,6 +21,17 @@ export const GlobalStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center'
   },
+  backButton: {
+    position: 'absolute',
+    width: 60,
+    left: 0,
+    bottom: 0,
+    top: 0,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
+
+  // Layout
   container: {
     flex: 1,
     backgroundColor: Colors.light.background,
@@ -35,6 +48,8 @@ export const GlobalStyles = StyleSheet.create({
     padding: Constants.spacing.buttonPadding,
     alignItems: 'center'
   },
+
+  // TabBar
   tabBar: {
     bottom: 0,
     flexDirection: 'row',
