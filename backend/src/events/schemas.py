@@ -1,10 +1,11 @@
+import asyncio
 from datetime import datetime
 from pydantic import BaseModel, computed_field
 from typing import List, Optional
 
 from backend.config import settings as app_settings
+from backend.db.database import get_db
 from backend.src.drivers.schemas import Driver, Team, DriverRegistration
-
 
 class Championship(BaseModel):
     id: int
@@ -72,6 +73,22 @@ class Session(BaseModel):
     event_id: int
     competitive: bool
 
+    @computed_field
+    @property
+    def event_colors(self) -> list[str]:
+        db = get_db()
+        db.cursor.execute("""\
+            SELECT colors FROM events
+            WHERE id = %s""", (self.event_id,))
+        result = db.cursor.fetchone()
+
+        if not result:
+            return None
+
+        else:
+            return result["colors"]
+
+
 class SessionCreate(BaseModel):
     name: dict # {language: translation}
     datetime: datetime
@@ -101,5 +118,5 @@ class PredictionWCCPotentialResponse(BaseModel):
     potential: int
 
 class SessionDrivers(BaseModel):
-    session_name: str
+    session: Session
     drivers: List[DriverRegistration]

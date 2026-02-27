@@ -9,7 +9,7 @@ from backend.src.drivers.schemas import DriverRegistration
 from backend.src.events.constants import WDC_PREDICTION_POINTS, WCC_PREDICTION_POINTS
 from backend.src.events.dependencies import valid_championship_id, valid_session_id, valid_event_id, \
     valid_session_creation_datetime, get_number_of_races_left, get_number_of_races, get_session_full_name, \
-    get_event_championship, get_session_championship
+    get_event_championship, get_session_championship, get_session_from_id
 from backend.src.events.exceptions import ChampionshipAlreadyExistsError, EventAlreadyExistsError, \
     SessionAlreadyExistsError, EventNotFoundError, ChampionshipNotFoundError, SessionNotFoundError, \
     ChampionshipDoesNotExistsError, TooLateToMakeAChampionshipPrediction
@@ -503,7 +503,7 @@ async def get_session_drivers(session_id: int = Depends(valid_session_id), champ
     Returns:
         SessionDrivers schema
     """
-    session_name = await get_session_full_name(session_id, language)
+    session = await get_session_from_id(session_id, language)
     championship = await get_session_championship(session_id, language)
     has_prono = await is_user_has_prono(current_user.id, session_id)
 
@@ -569,7 +569,7 @@ async def get_session_drivers(session_id: int = Depends(valid_session_id), champ
             session_registration.prediction,             
             SUM(sessionsresults.points) AS score
             FROM sessionsresults
-            LEFT JOIN session_registration ON session_registration.driver_id = sessionsresults.driver_id
+            RIGHT JOIN session_registration ON session_registration.driver_id = sessionsresults.driver_id
             LEFT JOIN sessions ON sessions.id = sessionsresults.session_id
             LEFT JOIN events ON events.id = sessions.event_id
             LEFT JOIN championships ON championships.id = events.championship_id
@@ -589,19 +589,19 @@ async def get_session_drivers(session_id: int = Depends(valid_session_id), champ
         db.cursor.execute("""\
             WITH session_registration AS (
                 SELECT drivers.id AS driver_id, 
-            drivers.firstname AS driver_firstname,
-            drivers.lastname AS driver_lastname,
-            drivers.codename AS driver_codename,
-            teams.id AS team_id,
-            teams.name AS team_name,
-            teams.color AS team_color,
-            sessionsregistrations.prediction,
-            sessionspredictions.mygrid
-            FROM sessionspredictions
-            LEFT JOIN sessionsregistrations ON sessionsregistrations.driver_id = sessionspredictions.driver_id
-            LEFT JOIN drivers ON drivers.id = sessionsregistrations.driver_id
-            LEFT JOIN teams ON teams.id = sessionsregistrations.team_id
-            WHERE sessionsregistrations.session_id = %s AND sessionspredictions.session_id = %s AND sessionspredictions.user_id = %s
+                drivers.firstname AS driver_firstname,
+                drivers.lastname AS driver_lastname,
+                drivers.codename AS driver_codename,
+                teams.id AS team_id,
+                teams.name AS team_name,
+                teams.color AS team_color,
+                sessionsregistrations.prediction,
+                sessionspredictions.mygrid
+                FROM sessionspredictions
+                LEFT JOIN sessionsregistrations ON sessionsregistrations.driver_id = sessionspredictions.driver_id
+                LEFT JOIN drivers ON drivers.id = sessionsregistrations.driver_id
+                LEFT JOIN teams ON teams.id = sessionsregistrations.team_id
+                WHERE sessionsregistrations.session_id = %s AND sessionspredictions.session_id = %s AND sessionspredictions.user_id = %s
             )
             SELECT session_registration.driver_id,
             session_registration.driver_firstname,
@@ -614,7 +614,7 @@ async def get_session_drivers(session_id: int = Depends(valid_session_id), champ
             session_registration.mygrid,
             SUM(sessionsresults.points) AS score
             FROM sessionsresults
-            LEFT JOIN session_registration ON session_registration.driver_id = sessionsresults.driver_id
+            RIGHT JOIN session_registration ON session_registration.driver_id = sessionsresults.driver_id
             LEFT JOIN sessions ON sessions.id = sessionsresults.session_id
             LEFT JOIN events ON events.id = sessions.event_id
             LEFT JOIN championships ON championships.id = events.championship_id
@@ -632,7 +632,7 @@ async def get_session_drivers(session_id: int = Depends(valid_session_id), champ
         drivers = db.cursor.fetchall()
 
     return {
-        "session_name": session_name,
+        "session": session,
         "drivers": [{
             "driver": {key.removeprefix("driver_"): driver[key] for key in driver.keys() if key.startswith("driver_")},
             "team": {key.removeprefix("team_"): driver[key] for key in driver.keys() if key.startswith("team_")},

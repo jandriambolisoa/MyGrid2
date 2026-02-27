@@ -13,3 +13,10 @@ invalid_session_result_attempt_message = defaultdict(
         "fr": "La tentative d'ajout des résultats à une session a échouée. Les résultats déjà existants ont été supprimés. Assurez-vous d'utiliser un driver_id valide.",
     }
 )
+
+incorrect_number_of_driver_message = defaultdict(
+    lambda: "The number of driver in your results doesn't correspond to the number of registered drivers for this session.",
+    {
+        "fr": "Le nombre de pilotes dans votre résultat ne correspond pas au nombre de pilotes enregistrés pour la session.",
+    }
+)

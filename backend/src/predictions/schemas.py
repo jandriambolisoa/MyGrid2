@@ -13,26 +13,29 @@ class PredictionPost(BaseModel):
 class PredictionSessionPost(BaseModel):
     predictions: List[PredictionPost]
 
+class SessionWithPotential(Session):
+    potential: int
+    score: Optional[int] = 0
+
 class Prediction(BaseModel):
     driver: Driver
+    team: Team
     mygrid: int
     potential: int
 
 class PredictionSession(BaseModel):
-    session_name: str
+    session: SessionWithPotential
     user: User
     predictions: List[Prediction]
-    session_potential: int
 
 class PredictionScore(BaseModel):
     driver: Driver
+    team: Team
     mygrid: int
     result: int
     score: int
 
 class PredictionScoreSession(BaseModel):
-    session_name: str
+    session: SessionWithPotential
     user: User
     predictions: List[PredictionScore]
-    session_potential: int
-    session_score: int
