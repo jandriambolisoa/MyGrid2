@@ -27,7 +27,7 @@ def test_get_user_prediction(
     res = user_obj.client.get(f"/events/sessions/predictions/{passed_session.id}")
     res_json = res.json()
     assert res.status_code == status.HTTP_200_OK
-    assert res_json.get("session_score", None) is not None
+    assert res_json.get("session", {}).get("score", None) is not None
     predictions = res_json.get("predictions", None)
     if predictions:
         assert predictions[0].get("score", None) is not None
