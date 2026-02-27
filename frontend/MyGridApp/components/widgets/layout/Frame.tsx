@@ -30,12 +30,9 @@ export function Frame({
   return (
     <BlurView
       tint="light"
-      intensity={30}
+      intensity={20}
       style={[GlobalStyles.frame, orientedStyle, otherProps.style]}
       {...otherProps}
-    >
-
-
-    </BlurView>
+    />
   )
 }

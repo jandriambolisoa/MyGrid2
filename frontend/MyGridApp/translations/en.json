@@ -58,7 +58,7 @@
     },
     "resultsFooter": {
       "totalScore": "Total score: ",
-      "potentialScore": "Potential score: ",
+      "performance": "Performance: ",
       "pts": "Pts"
     }
   }

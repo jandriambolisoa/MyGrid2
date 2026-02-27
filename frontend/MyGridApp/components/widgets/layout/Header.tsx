@@ -1,12 +1,13 @@
-import { BackButton, Frame, FrameProps, MainText } from '@/components/widgets'
+import { BackButton, Frame, FrameProps, MainText, SpotLight } from '@/components/widgets'
 import { Constants, GlobalStyles } from '@/theme'
-import { View } from "react-native"
+import { StyleSheet, View } from "react-native"
 
 export type HeaderProps = FrameProps & {
   title?: string,
   subtitle?: string,
   backButton?: boolean,
-  burgerMenu?: boolean
+  burgerMenu?: boolean,
+  spotColor?: string | null
 }
 
 export function Header({
@@ -14,11 +15,15 @@ export function Header({
   subtitle,
   backButton=true,
   burgerMenu=false,
+  spotColor=null,
   ...otherProps
 }: HeaderProps) {
 
   return (
     <Frame {...otherProps}>
+      {spotColor && <View style={[StyleSheet.absoluteFill]}>
+        <SpotLight color={spotColor} cx="40%" cy="40%" fx="10%" fy="10%" radius="70%" opacityStart='0.5'/>
+      </View>}
       <View style={GlobalStyles.header}>
         {title && <MainText style={{ fontSize: Constants.fontSizes.header }} bold={true}>{title}</MainText>}
         {subtitle && <MainText style={{ margin: 2 }}>{subtitle}</MainText>}

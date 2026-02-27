@@ -17,7 +17,9 @@ export function ResultsList ({
     value: i + 1,
   }))
 
-  const leftDatas = datas
+  const leftDatas = [...datas].sort((a: any, b: any) => {
+    return a.result - b.result
+  })
 
   function leftRenderItem (item: any) {
     return (

@@ -2,7 +2,9 @@ import { DateTime } from "luxon"
 import * as Localization from "expo-localization"
 import { scopedI18n } from "@/translations/i18n"
 
-export function niceDatetime (date: string): string {
+// Le 
+
+export function niceDatetime (date: string, weekDay: boolean = true): string {
 
   const t = scopedI18n('utils.niceDatetime')
 
@@ -10,10 +12,15 @@ export function niceDatetime (date: string): string {
 
   const datetime = DateTime.fromISO(date).setLocale(locale) 
 
-  if (locale === 'fr') {
-    return datetime.toFormat(`'${t('on')}' cccc '${t('at')}' HH'h'mm`)
+  if (weekDay) {
+    if (locale === 'fr') {
+      return datetime.toFormat(`'${t('on')}' cccc '${t('at')}' HH'h'mm`)
+    }
+    return datetime.toFormat(`'${t('on')}' cccc '${t('at')}' hh':'mm`)
   }
 
-  return datetime.toFormat(`'${t('on')}' cccc '${t('at')}' hh':'mm`)
-
+  if (locale === 'fr') {
+    return datetime.toFormat(`'${t('on')}' d MMM '${t('at')}' HH'h'mm`)
+  }
+  return datetime.toFormat(`'${t('on')}' MMMM d '${t('at')}' hh':'mm a`)
 }
