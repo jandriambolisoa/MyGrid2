@@ -10,11 +10,11 @@ export type FrameProps = ViewProps & {
 export function Frame({
   orientation='top',
   ...otherProps
-}) {
+}: FrameProps) {
 
   const insets = useSafeAreaInsets()
 
-  const styles = orientation === 'top'
+  const orientedStyle = orientation === 'top'
     ? {
       borderBottomWidth: Constants.spacing.borderWidth,
       paddingTop: insets.top,
@@ -30,7 +30,7 @@ export function Frame({
     <BlurView
       tint="light"
       intensity={10}
-      style={[GlobalStyles.frame, orientation === 'top' ? styles : styles.bottom, otherProps.style]}
+      style={[GlobalStyles.frame, orientedStyle, otherProps.style]}
       {...otherProps}
     >
 

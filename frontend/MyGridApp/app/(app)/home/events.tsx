@@ -3,8 +3,8 @@ import { Constants } from "@/theme";
 import { Dimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useApi } from "@/hooks";
-import { AuthContext } from "@/contexts/AuthContext";
-import { useContext, useEffect } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useEffect } from "react";
 
 // Temporary example datas
 /*
@@ -21,7 +21,7 @@ export default function Events ({
 }: EventsProps) {
 
   const insets = useSafeAreaInsets();
-  const auth = useContext(AuthContext)
+  const auth = useAuth()
 
   const { datas: mainDatas, error: mainError, loading: mainLoading, api: getMain } = useApi();
   const { datas: champDatas, error: champError, loading: champLoading, api: getChamp } = useApi();

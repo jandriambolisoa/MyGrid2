@@ -55,6 +55,11 @@
     },
     "eventCalendar": {
       "calendar": "Calendar"
+    },
+    "resultsFooter": {
+      "totalScore": "Total score: ",
+      "potentialScore": "Potential score: ",
+      "pts": "Pts"
     }
   }
 }
