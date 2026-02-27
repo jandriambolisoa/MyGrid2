@@ -64,7 +64,12 @@ async def get_user_prediction(session_id: int = Depends(valid_session_id), user_
             drivers.codename AS driver_codename,
             sessionspredictions.mygrid AS mygrid,
             sessionspredictions.potential AS potential,
-            COALESCE(events_translations.name||' '||sessions_translations.name, events.name||' '||sessions.name) AS session_name
+            sessions.id AS session_id,
+            COALESCE(events_translations.name||' '||sessions_translations.name, events.name||' '||sessions.name) AS session_name,
+            sessions.datetime AS session_datetime,
+            sessions.event_id AS session_event_id,
+            sessions.competitive AS session_competitive,
+            events.colors AS session_event_colors
             FROM sessionspredictions
             LEFT JOIN drivers ON drivers.id = sessionspredictions.driver_id
             LEFT JOIN sessions_translations ON sessions_translations.session_id = sessionspredictions.session_id
@@ -93,6 +98,12 @@ async def get_user_prediction(session_id: int = Depends(valid_session_id), user_
             drivers.codename AS driver_codename,
             sessionspredictions.mygrid AS mygrid,
             sessionspredictions.potential AS potential,
+            sessions.id AS session_id,
+            COALESCE(events_translations.name||' '||sessions_translations.name, events.name||' '||sessions.name) AS session_name,
+            sessions.datetime AS session_datetime,
+            sessions.event_id AS session_event_id,
+            sessions.competitive AS session_competitive,
+            events.colors AS session_event_colors,
             sessionsresults.result AS result,
             scores.score AS score,
             COALESCE(events_translations.name||' '||sessions_translations.name, events.name||' '||sessions.name) AS session_name
@@ -111,7 +122,6 @@ async def get_user_prediction(session_id: int = Depends(valid_session_id), user_
             AND scores.user_id = %s
             ORDER BY sessionspredictions.mygrid ASC;""", (language, language, session_id, session_id, user_id, session_id, user_id))
         results = db.cursor.fetchall()
-
 
     if not results:
         return Response(status_code=status.HTTP_204_NO_CONTENT)
@@ -141,20 +151,23 @@ async def get_user_prediction(session_id: int = Depends(valid_session_id), user_
 
         session_potential += result["potential"]
 
+    session = {key.removeprefix("session_"): results[0][key] for key in results[0].keys() if
+               key.startswith("session_")}
+    session["potential"] = session_potential
+
     if not session_results:
         return {
-            "session_name": results[0]["session_name"],
+            "session": session,
             "user": user,
             "predictions": predictions,
             "session_potential": session_potential
         }
     else:
+        session["score"] = session_score
         return {
-            "session_name": results[0]["session_name"],
+            "session": session,
             "user": user,
-            "predictions": predictions,
-            "session_potential": session_potential,
-            "session_score": session_score
+            "predictions": predictions
         }
 
 

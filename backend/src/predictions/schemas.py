@@ -18,11 +18,15 @@ class Prediction(BaseModel):
     mygrid: int
     potential: int
 
+class SessionWithPotential(Session):
+    potential: int
+    score: Optional[int] = 0
+    event_colors: List[str]
+
 class PredictionSession(BaseModel):
-    session_name: str
+    session: SessionWithPotential
     user: User
     predictions: List[Prediction]
-    session_potential: int
 
 class PredictionScore(BaseModel):
     driver: Driver
@@ -31,8 +35,6 @@ class PredictionScore(BaseModel):
     score: int
 
 class PredictionScoreSession(BaseModel):
-    session_name: str
+    session: SessionWithPotential
     user: User
     predictions: List[PredictionScore]
-    session_potential: int
-    session_score: int
