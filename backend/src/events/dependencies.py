@@ -265,3 +265,12 @@ async def get_session_colors_from_id(session_id: int) -> List[str]:
         raise EventNotFoundError(language=language)
 
     return result["colors"]
+
+async def get_number_of_driver_for_a_session(session_id: int, language: str = "en") -> int:
+    db = get_db()
+    db.cursor.execute("""\
+        SELECT * FROM sessionsregistrations
+        WHERE session_id = %s""", (session_id,))
+    result = db.cursor.fetchall()
+
+    return len(result)
