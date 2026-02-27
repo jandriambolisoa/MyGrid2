@@ -8,6 +8,8 @@ export function ResultsDriverWidget ({
   item: any
 }) {
 
+  console.log(item)
+
   return (
     <View style={[GlobalStyles.button, GlobalStyles.driverWidget]}>
       <SpotLight color="#ff2200" cx="60%" cy="65%" fx="85%" fy="85%" radius="70%"/>

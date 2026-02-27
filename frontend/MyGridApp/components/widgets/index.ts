@@ -18,3 +18,5 @@ export * from './buttons/BackButton';
 export * from './lists/ResultsList';
 export * from './lists/ShortDriverWidget';
 export * from './layout/ResultsLabels';
+export * from './lists/ResultsDriverWidget';
+export * from './lists/ResultsAloneList';

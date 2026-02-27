@@ -28,12 +28,7 @@ export default function Results () {
       <ScrollContainer headerHeight={headerHeight} footerHeight={footerHeight}>
         {datas && <ResultsList datas={datas.predictions}/>}
       </ScrollContainer>
-      <View style={{ position: 'absolute', height: 150, width: '100%' }}>
-      <SpotLight color="#ce1126" cx="35%" cy="35%" fx="5%" fy="5%" radius="60%"/>
-      </View>
-      <View style={{ position: 'absolute', height: 120, width: '100%', bottom: 0 }}>
-      <SpotLight color="#ce1126" cx="65%" cy="65%" fx="90%" fy="90%" radius="60%"/>
-      </View>
+
       <Header
         onLayout={(e: any) => setHeaderHeight(e.nativeEvent.layout.height)}
         title={datas?.session_name}

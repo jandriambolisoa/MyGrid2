@@ -1,14 +1,8 @@
-import { FlatList, View } from "react-native"
-import { ShortDriverWidget } from "./ShortDriverWidget"
-import { MainText } from "../MainText"
+import { View, FlatList } from "react-native"
+import { MainText, ResultsListProps, ResultsDriverWidget } from "@/components/widgets";
 import { Constants } from "@/theme"
-import { ResultsDriverWidget } from "./ResultsDriverWidget"
 
-export type ResultsListProps = {
-  datas?: any[]
-}
-
-export function ResultsList ({
+export function ResultsAlonelist ({
   datas=[]
 }: ResultsListProps) {
 
@@ -16,14 +10,6 @@ export function ResultsList ({
     id: (i + 1).toString(),
     value: i + 1,
   }))
-
-  const leftDatas = datas
-
-  function leftRenderItem (item: any) {
-    return (
-      <ShortDriverWidget item={item}/>
-    )
-  }
 
   function numberRenderItem (item: any) {
     return (
@@ -39,9 +25,10 @@ export function ResultsList ({
     )
   }
 
-  function rightRenderItem (item: any) {
+  function renderItem (item: any) {
+
     return (
-      <ResultsDriverWidget item={item}/>
+      <ResultsDriverWidget item={item} />
     )
   }
 
@@ -50,21 +37,15 @@ export function ResultsList ({
   return (
     <View style={{ flexDirection: 'row', padding: Constants.spacing.listMargin }}>
       <FlatList
-        data={leftDatas}
-        renderItem={({item}) => leftRenderItem(item)}
-        scrollEnabled={false}
-        ItemSeparatorComponent={() => separator}
-      />
-      <FlatList
         data={numberDatas}
         renderItem={({item}) => numberRenderItem(item)}
         scrollEnabled={false}
         ItemSeparatorComponent={() => separator}
       />
-      <View style={{ width: Constants.spacing.driverWidgetWidth as any }}>
+      <View style={{ width: Constants.spacing.driverWidgetWidthWide as any }}>
         <FlatList
           data={datas}
-          renderItem={({item}) => rightRenderItem(item)}
+          renderItem={({item}) => renderItem(item)}
           scrollEnabled={false}
           ItemSeparatorComponent={() => separator}
         />
