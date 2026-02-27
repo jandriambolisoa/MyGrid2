@@ -29,14 +29,12 @@ export function ChampionshipWidget ({
               <MainText >+ {item.score} Pts</MainText>
             </View>
           ))}
-          <MainText bold={true} style={{ fontSize: 20 }}>{datas.wdc.leaderboard.ranks[0].driver.codename}</MainText>
-          <MainText style={{ fontSize: 20, marginBottom: 10 }}>+ {datas.wdc.leaderboard.ranks[0].score} Pts</MainText>
-          <MainText style={{ fontSize: 14, color: Colors.light.warning }}>{t('noPrediction')}</MainText>
         </LiteButton>
         <LiteButton style={style.button}>
           <SpotLight cx='55%' cy='55%' fx='80%' fy='80%' radius='60%' color={datas.wcc.leaderboard.ranks[0].team.color}/>
-          <MainText style={{ fontSize: 20, marginBottom: 10 }}>+ {datas.wcc.leaderboard.ranks[0].score} Pts</MainText>
-          <MainText style={{ fontSize: 14, color: Colors.light.warning }}>{t('noPrediction')}</MainText>
+          <MainText style={{ marginBottom: 10 }}>{t('constructors')}</MainText>
+          <MainText bold={true} style={{ fontSize: Constants.fontSizes.header }}>{datas.wcc.leaderboard.ranks[0].team.name}</MainText>
+          <MainText style={{ fontSize: Constants.fontSizes.header, marginBottom: 10 }}>+ {datas.wcc.leaderboard.ranks[0].score} Pts</MainText>
         </LiteButton>
       </View>
     </View>

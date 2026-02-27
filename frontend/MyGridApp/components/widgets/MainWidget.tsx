@@ -29,13 +29,26 @@ export function MainWidget({
 
     function handlePress () {
       if (item.is_over) {
-        router.push(`/results/${item.id}`);
-      } else {
-        router.push(`/predictions/${item.id}`)
+        if (item.has_prono) {
+          router.push(`/sessions/results/${item.id}`);
+          return;
+        }
+        
+        router.push(`/sessions/resultsAlone/${item.id}`)
+        return;
       }
+
+      if (hasStarted) {
+        // Link to live
+        return;
+      }
+      
+      // Link to make prediction
+      return;
     }
 
     const disabledColor = item.is_over ? { color: Colors.light.disabled, borderColor: Colors.light.disabled } : { }
+    const hasStarted = DateTime.fromISO(item.datetime) < DateTime.fromISO(dateTemp)
 
     function rightItem () {
       if (item.is_over) {
@@ -44,7 +57,7 @@ export function MainWidget({
         )
       }
 
-      if (DateTime.fromISO(item.datetime) < DateTime.fromISO(dateTemp)) {
+      if (hasStarted) {
         return (
           <MainText style={{ color: Colors.light.live }}>{t('live')}</MainText>
         )
@@ -56,7 +69,7 @@ export function MainWidget({
     }
 
     return(
-      <LiteButton style={[disabledColor, GlobalStyles.mainWidgetButton]} onPress={handlePress}>
+      <LiteButton style={[disabledColor, GlobalStyles.mainWidgetButton]} onPress={handlePress} disabled={item.competitive? false : true}>
         <MainText style={[disabledColor]}>{item.name}</MainText>
         {rightItem()}
       </LiteButton>

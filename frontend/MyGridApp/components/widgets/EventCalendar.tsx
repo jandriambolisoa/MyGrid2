@@ -56,7 +56,7 @@ export function EventCalendarWidget ({
     <TouchableOpacity style={[GlobalStyles.button, { height: size, width: size, alignSelf: 'center', transform: [{ scale: scale }]  }]}>
       {showShadow && 
         <>
-          <SpotLight color={datas?.color || Colors.light.background} cx="35%" cy="35%" fx="5%" fy="5%" radius="50%"/>
+          <SpotLight color={datas?.colors[0] || Colors.light.background} cx="35%" cy="35%" fx="5%" fy="5%" radius="50%"/>
           <ShadowSetup />
         </>
       }
