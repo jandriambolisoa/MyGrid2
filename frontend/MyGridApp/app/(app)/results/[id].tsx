@@ -1,4 +1,4 @@
-import { Header, ResultsFooter, ScrollContainer } from "@/components/widgets";
+import { Header, ResultsFooter, ResultsLabels, ResultsList, ScrollContainer } from "@/components/widgets";
 import { useLocalSearchParams } from "expo-router";
 import { View } from "react-native"
 import { useEffect, useState } from "react"
@@ -25,17 +25,16 @@ export default function Results () {
 
   return (
     <View style={{ flex: 1 }}>
-      <ScrollContainer headerHeight={headerHeight}>
-        <View style={{ backgroundColor: 'red', height: 100, width: 100 }}>
-
-        </View>
+      <ScrollContainer headerHeight={headerHeight} footerHeight={footerHeight}>
+        {datas && <ResultsList datas={datas.predictions}/>}
       </ScrollContainer>
       <Header
         onLayout={(e: any) => setHeaderHeight(e.nativeEvent.layout.height)}
-        title="Bahrain"
-        subtitle="Le 25 février"
-      />
-
+        title={datas?.session_name}
+        subtitle="Le 25 février" // To be changed with backend update
+      >
+        <ResultsLabels/>
+      </Header>
       <ResultsFooter
         onLayout={(e: any) => setFooterHeight(e.nativeEvent.layout.height)}
         score={datas?.session_score}

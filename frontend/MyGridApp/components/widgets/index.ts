@@ -15,3 +15,6 @@ export * from './layout/Frame';
 export * from './layout/Header';
 export * from './layout/ResultsFooter';
 export * from './buttons/BackButton';
+export * from './lists/ResultsList';
+export * from './lists/ShortDriverWidget';
+export * from './layout/ResultsLabels';

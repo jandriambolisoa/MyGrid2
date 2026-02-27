@@ -3,7 +3,14 @@ import { Colors } from "./Colors";
 import { Constants } from "./Constants";
 
 export const GlobalStyles = StyleSheet.create({
-  
+
+  // Lists
+  driverWidget: {
+    height: Constants.spacing.driverWidgetHeight,
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
+
   // Buttons
   loginButton: {
     padding: Constants.spacing.buttonPadding,

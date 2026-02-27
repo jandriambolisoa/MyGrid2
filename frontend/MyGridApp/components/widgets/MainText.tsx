@@ -15,6 +15,9 @@ export function MainText({
   return (
     <Text
       style={[
+        {
+          textAlign: 'center'
+        },
         type === 'light' ? styles.light : undefined,
         type === 'dark' ? styles.dark : undefined,
         bold ? { fontFamily: 'AlteHaasGrotesk-Bold' } : { fontFamily: 'AlteHaasGrotesk' },

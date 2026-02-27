@@ -24,6 +24,7 @@ export function Header({
         {subtitle && <MainText style={{ margin: 2 }}>{subtitle}</MainText>}
         <BackButton />
       </View>
+      {otherProps.children}
     </Frame>
   )
 }

@@ -5,7 +5,10 @@ export const Constants = {
     mainWidgetMargin: 14,
     buttonHeight: 38,
     buttonMargin: 14,
-    borderWidth: 1
+    borderWidth: 1,
+    driverWidgetHeight: 40,
+    driverWidgetWidth: '65%',
+    listMargin: 6
   },
   shadow: {
     topThickness: 18,
