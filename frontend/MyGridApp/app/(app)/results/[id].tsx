@@ -1,4 +1,4 @@
-import { Header, ResultsFooter, ResultsLabels, ResultsList, ScrollContainer } from "@/components/widgets";
+import { Header, ResultsFooter, ResultsLabels, ResultsList, ScrollContainer, SpotLight } from "@/components/widgets";
 import { useLocalSearchParams } from "expo-router";
 import { View } from "react-native"
 import { useEffect, useState } from "react"
@@ -28,6 +28,12 @@ export default function Results () {
       <ScrollContainer headerHeight={headerHeight} footerHeight={footerHeight}>
         {datas && <ResultsList datas={datas.predictions}/>}
       </ScrollContainer>
+      <View style={{ position: 'absolute', height: 150, width: '100%' }}>
+      <SpotLight color="#ce1126" cx="35%" cy="35%" fx="5%" fy="5%" radius="60%"/>
+      </View>
+      <View style={{ position: 'absolute', height: 120, width: '100%', bottom: 0 }}>
+      <SpotLight color="#ce1126" cx="65%" cy="65%" fx="90%" fy="90%" radius="60%"/>
+      </View>
       <Header
         onLayout={(e: any) => setHeaderHeight(e.nativeEvent.layout.height)}
         title={datas?.session_name}
@@ -40,6 +46,7 @@ export default function Results () {
         score={datas?.session_score}
         potentialScore={datas?.session_potential}
       />
+      
     </View>
   )
 }

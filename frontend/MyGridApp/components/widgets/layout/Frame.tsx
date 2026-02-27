@@ -1,7 +1,8 @@
 import { BlurView } from "expo-blur";
-import { ViewProps } from "react-native";
+import { StyleSheet, ViewProps, View } from "react-native";
 import { Constants, GlobalStyles } from "@/theme";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { SpotLight } from "@/components/widgets"
 
 export type FrameProps = ViewProps & {
   orientation?: 'top' | 'bottom';
@@ -29,10 +30,11 @@ export function Frame({
   return (
     <BlurView
       tint="light"
-      intensity={10}
+      intensity={30}
       style={[GlobalStyles.frame, orientedStyle, otherProps.style]}
       {...otherProps}
     >
+
 
     </BlurView>
   )
