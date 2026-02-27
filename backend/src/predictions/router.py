@@ -80,8 +80,7 @@ async def get_user_prediction(session_id: int = Depends(valid_session_id), user_
             COALESCE(events_translations.name||' '||sessions_translations.name, events.name||' '||sessions.name) AS session_name,
             sessions.datetime AS session_datetime,
             sessions.event_id AS session_event_id,
-            sessions.competitive AS session_competitive,
-            events.colors AS session_event_colors
+            sessions.competitive AS session_competitive
             FROM sessionspredictions
             LEFT JOIN drivers ON drivers.id = sessionspredictions.driver_id
             LEFT JOIN sessions_translations ON sessions_translations.session_id = sessionspredictions.session_id
@@ -128,7 +127,6 @@ async def get_user_prediction(session_id: int = Depends(valid_session_id), user_
             sessions.datetime AS session_datetime,
             sessions.event_id AS session_event_id,
             sessions.competitive AS session_competitive,
-            events.colors AS session_event_colors,
             sessionsresults.result AS result,
             scores.score AS score,
             COALESCE(events_translations.name||' '||sessions_translations.name, events.name||' '||sessions.name) AS session_name

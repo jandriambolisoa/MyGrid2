@@ -16,7 +16,6 @@ class PredictionSessionPost(BaseModel):
 class SessionWithPotential(Session):
     potential: int
     score: Optional[int] = 0
-    event_colors: List[str]
 
 class Prediction(BaseModel):
     driver: Driver
