@@ -82,7 +82,14 @@ async def get_upcoming_event(language: str = "en"):
         FROM sessions
         LEFT JOIN events ON events.id = event_id
         LEFT JOIN events_translations ON events.id = events_translations.event_id
-        WHERE competitive = true
+        WHERE competitive = true 
+        AND sessions.id NOT IN (
+            SELECT DISTINCT ON (sessionsresults.session_id) sessionsresults.session_id AS id
+            FROM sessionsresults
+            LEFT JOIN sessions ON sessionsresults.session_id = sessions.id
+            ORDER BY sessionsresults.session_id
+        )
+        AND sessions.datetime > NOW() + INTERVAL '12 hours'
         ORDER BY datetime ASC""", (language,))
     event = db.cursor.fetchone()
 
