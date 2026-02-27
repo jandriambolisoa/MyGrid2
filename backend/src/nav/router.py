@@ -215,7 +215,7 @@ async def home_get_events(championship_id: int = Depends(valid_championship_id),
         )
         SELECT DISTINCT ON (events.id) events.id AS event_id,
         COALESCE(events_translations.name, events.name) AS event_name,
-        events.color AS event_color,
+        events.colors AS event_colors,
         events.championship_id AS event_championship_id,
         events.flag AS event_flag,
         sessions.datetime AS event_datetime

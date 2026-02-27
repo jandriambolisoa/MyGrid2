@@ -122,7 +122,7 @@ async def get_events_ranks(
         events.id AS event_id,
         COALESCE(events_translations.name, events.name) AS event_name,
         events.championship_id AS event_championship_id,
-        events.color AS event_color,
+        events.colors AS event_colors,
         events.flag AS event_flag
         FROM ranks_events_mv
         LEFT JOIN users ON users.id = ranks_events_mv.user_id
@@ -210,7 +210,7 @@ async def get_records_sessions_ranks(
         events.id AS event_id,
         COALESCE(events_translations.name, events.name) AS event_name,
         events.championship_id AS event_championship_id,
-        events.color AS event_color,
+        events.colors AS event_colors,
         events.flag AS event_flag,
         sessions.id AS session_id,
         COALESCE(sessions_translations.name, sessions.name) AS session_name,

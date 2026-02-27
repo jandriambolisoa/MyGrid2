@@ -35,13 +35,8 @@ class Event(BaseModel):
     id: int
     name: str
     championship_id: int
-    color: str
+    colors: List[str]
     flag: str
-
-    @computed_field
-    @property
-    def colors(self) -> List[str]:
-        return self.color.strip("{}").split(",")
 
     @computed_field
     @property
