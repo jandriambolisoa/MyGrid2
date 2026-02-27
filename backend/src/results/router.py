@@ -4,8 +4,9 @@ from psycopg.errors import UniqueViolation, ForeignKeyViolation
 from backend.db.database import Database, get_db
 from backend import exceptions as app_exceptions
 from backend.oauth2 import get_current_user
-from backend.src.events.dependencies import valid_session_id
-from backend.src.results.exceptions import NoResultsFoundError, InvalidSessionResultsAttemptError
+from backend.src.events.dependencies import valid_session_id, get_number_of_driver_for_a_session
+from backend.src.results.exceptions import NoResultsFoundError, InvalidSessionResultsAttemptError, \
+    IncorrectNumberOfDriverError
 from backend.src.results.schemas import ResultSession, ResultPost
 from backend.src.users.privileges import is_user_moderator_or_admin
 from backend.src.users.schemas import UserSelf
@@ -75,6 +76,10 @@ async def get_session_results(session_id: int = Depends(valid_session_id), langu
 async def override_session_results(results: list[ResultPost], session_id: int = Depends(valid_session_id), language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     if not await is_user_moderator_or_admin(current_user.id):
         raise app_exceptions.ForbiddenAccessException(language=language)
+
+    # Refuse to override session results if the number of driver doesn't correspond
+    if not len(results) == await get_number_of_driver_for_a_session(session_id):
+        raise IncorrectNumberOfDriverError(language)
 
     # Remove old session results
     db.cursor.execute("""

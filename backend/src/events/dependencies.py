@@ -1,4 +1,5 @@
 from datetime import datetime, UTC
+from typing import List
 
 from fastapi.params import Depends
 
@@ -8,7 +9,8 @@ from backend.src.drivers.exceptions import NotAValidCodenameLengthError, NotAVal
     DriverDoesNotExistsError
 from backend.src.events.exceptions import ChampionshipDoesNotExistsError, SessionStartedError, \
     SessionDoesNotExistsError, InvalidDatetimeForSessionCreationError, EventDoesNotExistsError, EventNotFoundError
-from backend.src.events.schemas import Event, Championship
+from backend.src.events.schemas import Event, Championship, Session
+
 
 async def valid_championship_id(championship_id: int, language: str = "en") -> int:
     db = get_db()
@@ -76,13 +78,20 @@ async def get_upcoming_event(language: str = "en"):
         )
         SELECT events.id AS id,
         COALESCE(events_translations.name, events.name) AS name,
-        events.color,
+        events.colors,
         events.flag,
         events.championship_id
         FROM sessions
         LEFT JOIN events ON events.id = event_id
         LEFT JOIN events_translations ON events.id = events_translations.event_id
-        WHERE competitive = true
+        WHERE competitive = true 
+        AND sessions.id NOT IN (
+            SELECT DISTINCT ON (sessionsresults.session_id) sessionsresults.session_id AS id
+            FROM sessionsresults
+            LEFT JOIN sessions ON sessionsresults.session_id = sessions.id
+            ORDER BY sessionsresults.session_id
+        )
+        AND sessions.datetime > NOW() + INTERVAL '12 hours'
         ORDER BY datetime ASC""", (language,))
     event = db.cursor.fetchone()
 
@@ -228,3 +237,40 @@ async def get_session_full_name(session_id: int, language: str = "en"):
         raise EventNotFoundError(language=language)
 
     return session["name"]
+
+async def get_session_from_id(session_id: int, language: str = "en") -> Session:
+    db = get_db()
+    db.cursor.execute("""\
+        SELECT * FROM sessions
+        WHERE id = %s""", (session_id,))
+    session = db.cursor.fetchone()
+
+    if not session:
+        raise EventNotFoundError(language=language)
+
+    session["name"] = await get_session_full_name(session_id)
+
+    return Session(**session)
+
+async def get_session_colors_from_id(session_id: int) -> List[str]:
+    db = get_db()
+    db.cursor.execute("""\
+        SELECT events.colors
+        FROM sessions
+        LEFT JOIN events ON events.id = sessions.event_id
+        WHERE sessions.id = %s""", (session_id,))
+    result = db.cursor.fetchone()
+
+    if not result:
+        raise EventNotFoundError(language=language)
+
+    return result["colors"]
+
+async def get_number_of_driver_for_a_session(session_id: int, language: str = "en") -> int:
+    db = get_db()
+    db.cursor.execute("""\
+        SELECT * FROM sessionsregistrations
+        WHERE session_id = %s""", (session_id,))
+    result = db.cursor.fetchall()
+
+    return len(result)

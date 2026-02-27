@@ -53,6 +53,13 @@ async def verify_access_token(token: str, language: str = 'en', verify_exp: bool
     except exceptions.ExpiredSignatureError:
         raise user_exceptions.SessionExpiredError(language=language)
 
+    except exceptions.JWTError:
+        raise user_exceptions.FailedAuthorizationError(language=language)
+
+    except exceptions.JWSError:
+        raise user_exceptions.FailedAuthorizationError(language=language)
+
+
 async def verify_refresh_token(token: str, language: str = 'en'):
     if await is_token_revoked(token):
         raise user_exceptions.FailedAuthorizationError(language=language)
