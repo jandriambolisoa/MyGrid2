@@ -32,7 +32,7 @@ services:
       - OPENF1_API_PASSWORD=${OPENF1_API_PASSWORD}
     ports:
       - "8003:8003"
-    command: poetry run uvicorn backend.openf1.main:app --port 8003
+    command: poetry run uvicorn backend.openf1.main:app --host 0.0.0.0 --port 8003
     networks:
       - app-network
 
@@ -49,7 +49,7 @@ services:
       - MAIL_PASSWORD=${MAIL_PASSWORD}
     ports:
       - "8002:8002"
-    command: poetry run uvicorn backend.mailings.main:app --port 8002
+    command: poetry run uvicorn backend.mailings.main:app --host 0.0.0.0 --port 8002
     networks:
       - app-network
 
@@ -57,7 +57,7 @@ services:
     image: jandriambolisoa/mygrid2
     ports:
       - "8001:8001"
-    command: poetry run uvicorn backend.assets.main:app --port 8001
+    command: poetry run uvicorn backend.assets.main:app --host 0.0.0.0 --port 8001
     networks:
       - app-network
 
