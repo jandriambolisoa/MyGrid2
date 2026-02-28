@@ -6,12 +6,6 @@ import { useApi } from "@/hooks";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect } from "react";
 
-// Temporary example datas
-/*
-import { mainEventDatas } from "./_tmp_main-event"
-import { championshipsDatas } from "./_tmp_championships"
-import { calendarDatas } from "./_tmp_calendar" */
-
 export type EventsProps = {
   tabBarHeight?: number;
 }

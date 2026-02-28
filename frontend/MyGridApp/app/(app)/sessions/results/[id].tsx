@@ -1,6 +1,6 @@
-import { Header, ResultsFooter, ResultsLabels, ResultsList, ScrollContainer, SpotLight } from "@/components/widgets";
+import { Header, ResultsFooter, ResultsLabels, ResultsList, ScrollContainer } from "@/components/widgets";
 import { useLocalSearchParams } from "expo-router";
-import { StyleSheet, View } from "react-native"
+import { View } from "react-native"
 import { useEffect, useState } from "react"
 import { useApi } from "@/hooks";
 import { useAuth } from "@/contexts/AuthContext";

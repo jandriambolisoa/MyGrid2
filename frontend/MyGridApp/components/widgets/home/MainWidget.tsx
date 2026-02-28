@@ -43,7 +43,10 @@ export function MainWidget({
         return;
       }
       
-      // Link to make prediction
+      router.push({
+        pathname: `/sessions/predictions/${item.id}` as any,
+        params: { hasProno: item.has_prono }
+      })
       return;
     }
 

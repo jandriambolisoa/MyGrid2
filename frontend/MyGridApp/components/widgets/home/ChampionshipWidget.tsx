@@ -1,4 +1,4 @@
-import { GlobalStyles, Constants, Colors } from "@/theme"
+import { GlobalStyles, Constants } from "@/theme"
 import { ViewProps, View, Dimensions, StyleSheet } from "react-native"
 import { LiteButton, MainText, ShadowSetup, SpotLight } from "@/components/widgets"
 import { scopedI18n } from "@/translations/i18n"
