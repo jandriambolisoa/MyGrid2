@@ -12,9 +12,10 @@ class ResultPost(BaseModel):
 
 class Result(BaseModel):
     driver: Driver
+    team: Team
     result: int
     points: int
 
 class ResultSession(BaseModel):
-    session_name: str
+    session: Session
     results: List[Result]
