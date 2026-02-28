@@ -1,6 +1,6 @@
 import { TouchableOpacity, ViewProps, View } from "react-native";
 import { GlobalStyles } from "@/theme";
-import { MainText } from "./MainText";
+import { MainText } from "@/components/widgets";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BlurView } from "expo-blur";
 import { useState, useEffect } from "react";
