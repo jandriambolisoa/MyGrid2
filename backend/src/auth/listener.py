@@ -42,10 +42,11 @@ async def send_welcome_email(user_id: int):
             "TITLE": title_text.render(USERNAME = user["username"])
         }
     }
+    print("# INFO: Sending welcome email")
     try:
         requests.post(f"{app_settings.ms_mailings_url}/sending/simple", data=json.dumps(datas))
-    except requests.exceptions.ConnectionError:
-        pass
+    except requests.exceptions.ConnectionError as err:
+        print("# ERROR: %s"%err)
 
 async def send_verification_email(user_id: int):
     if app_settings.ms == 0:
@@ -82,10 +83,11 @@ async def send_verification_email(user_id: int):
             "CONFIRM_URL": f"{app_settings.confirmed_email_url}?token={token}"
         }
     }
+    print("# INFO: Sending welcome email")
     try:
         requests.post(f"{app_settings.ms_mailings_url}/sending/confirm", data=json.dumps(datas))
-    except requests.exceptions.ConnectionError:
-        pass
+    except requests.exceptions.ConnectionError as err:
+        print("# ERROR: %s" % err)
 
 
 def init_listener():
