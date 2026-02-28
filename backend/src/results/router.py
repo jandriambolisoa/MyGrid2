@@ -33,22 +33,39 @@ async def get_session_results(session_id: int = Depends(valid_session_id), langu
             SELECT session_id, name
             FROM sessionstranslations
             WHERE language = %s
+        ),
+        drivers_team AS (
+            SELECT sessionsregistrations.driver_id,
+            teams.id,
+            teams.name,
+            teams.color
+            FROM sessionsregistrations
+            LEFT JOIN teams ON teams.id = sessionsregistrations.team_id
+            WHERE sessionsregistrations.session_id = %s
         )
         SELECT drivers.id AS driver_id,
         drivers.firstname AS driver_firstname,
         drivers.lastname AS driver_lastname,
         drivers.codename AS driver_codename,
+        drivers_team.id AS team_id,
+        drivers_team.name AS team_name,
+        drivers_team.color AS team_color,
         sessionsresults.result AS result,
         sessionsresults.points AS points,
-        COALESCE(events_translations.name||' '||sessions_translations.name, events.name||' '||sessions.name) AS session_name
+        sessions.id AS session_id,
+        COALESCE(events_translations.name||' '||sessions_translations.name, events.name||' '||sessions.name) AS session_name,
+        sessions.datetime AS session_datetime,
+        sessions.event_id AS session_event_id,
+        sessions.competitive AS session_competitive
         FROM sessionsresults
         LEFT JOIN drivers ON drivers.id = sessionsresults.driver_id
         LEFT JOIN sessions_translations ON sessions_translations.session_id = sessionsresults.session_id
         LEFT JOIN sessions ON sessions.id = sessionsresults.session_id
         LEFT JOIN events ON events.id = sessions.event_id
         LEFT JOIN events_translations ON events_translations.event_id = sessions.event_id
+        INNER JOIN drivers_team ON drivers_team.driver_id = drivers.id
         WHERE sessionsresults.session_id = %s
-        ORDER BY sessionsresults.result ASC;""", (language, language, session_id))
+        ORDER BY sessionsresults.result ASC;""", (language, language, session_id, session_id))
     results = db.cursor.fetchall()
 
     if not results:
@@ -59,15 +76,21 @@ async def get_session_results(session_id: int = Depends(valid_session_id), langu
     for result in results:
         driver = {key.removeprefix("driver_"): result[key] for key in result.keys() if
                   key.startswith("driver_")}
+        team = {key.removeprefix("team_"): result[key] for key in result.keys() if
+                key.startswith("team_")}
 
         driver_results.append({
             "driver": driver,
+            "team": team,
             "result": result["result"],
             "points": result["points"]
         })
 
+    session = {key.removeprefix("session_"): results[0][key] for key in results[0].keys() if
+               key.startswith("session_")}
+
     return {
-        "session_name": results[0]["session_name"],
+        "session": session,
         "results": driver_results
     }
 
