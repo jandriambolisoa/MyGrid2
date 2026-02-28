@@ -4,7 +4,7 @@ from psycopg.errors import UniqueViolation, ForeignKeyViolation
 from backend.db.database import Database, get_db
 from backend import exceptions as app_exceptions
 from backend.oauth2 import get_current_user
-from backend.src.events.dependencies import valid_session_id, valid_session_id_not_started
+from backend.src.events.dependencies import valid_session_id, valid_session_id_not_started, get_upcoming_sessions
 from backend.src.registrations.exceptions import NoRegistrationsFoundError, RegistrationAlreadyExistsError, \
     InvalidSessionRegistrationAttemptError, RegistrationCannotSwapWithAlreadyRegisteredDriverError
 from backend.src.registrations.schemas import RegistrationDriver, RegistrationSession, RegistrationPost, \
@@ -105,6 +105,16 @@ async def override_session_registrations(registrations: list[RegistrationPost], 
     except ForeignKeyViolation:
         db.conn.rollback()
         raise InvalidSessionRegistrationAttemptError(language=language)
+
+@router.post("/", status_code=status.HTTP_201_CREATED)
+async def override_upcoming_sessions_registrations(registrations: list[RegistrationPost], language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+    if not await is_user_moderator_or_admin(current_user.id):
+        raise app_exceptions.ForbiddenAccessException(language=language)
+
+    sessions = await get_upcoming_sessions(language)
+
+    for session in sessions:
+        await override_session_registrations(registrations, session.id, language=language, db=db, current_user=current_user)
 
 
 @router.put("/{session_id}/swap-drivers", status_code=status.HTTP_200_OK)

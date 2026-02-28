@@ -273,4 +273,19 @@ async def get_number_of_driver_for_a_session(session_id: int, language: str = "e
         WHERE session_id = %s""", (session_id,))
     result = db.cursor.fetchall()
 
-    return len(result)
+    if result:
+        return len(result)
+    else:
+        return 0
+
+async def get_upcoming_sessions(language: str = "en") -> List[Session]:
+    db = get_db()
+    db.cursor.execute("""\
+        SELECT * FROM sessions
+        WHERE datetime > NOW()""")
+    sessions = db.cursor.fetchall()
+
+    if not sessions:
+        raise EventNotFoundError(language=language)
+
+    return [Session(**session) for session in sessions]
