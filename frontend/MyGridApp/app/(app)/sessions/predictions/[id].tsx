@@ -3,7 +3,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { useApi } from "@/hooks";
-import { Header, ScrollContainer } from "@/components/widgets";
+import { Header, ScrollContainer, PredictionsList } from "@/components/widgets";
 import { niceDatetime } from "@/utils";
 
 export default function Predictions () {
@@ -29,13 +29,9 @@ export default function Predictions () {
   const color1 = datas?.session.event_colors[0]
   const color2 = datas?.session.event_colors.length > 0 ? datas?.session.event_colors[1] : color1
 
-  console.log(datas)
-
   return (
     <View style={{ flex: 1 }}>
-      <ScrollContainer headerHeight={headerHeight}>
-        {datas && <Predictionslist datas={datas.predictions}/>}
-      </ScrollContainer>
+      {datas && <PredictionsList datas={datas.predictions} headerHeight={headerHeight} footerHeight={footerHeight}/>}
       <Header
         onLayout={(e: any) => setHeaderHeight(e.nativeEvent.layout.height)}
         title={datas?.session.name}
