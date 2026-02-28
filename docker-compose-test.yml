@@ -63,7 +63,7 @@ services:
       dockerfile: Dockerfile-test
     ports:
       - "8001:8001"
-    command: poetry run uvicorn backend.mailings.main:app --port 8001
+    command: poetry run uvicorn backend.assets.main:app --port 8001
     networks:
       - app-network
 
