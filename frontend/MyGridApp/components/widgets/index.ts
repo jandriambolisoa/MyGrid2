@@ -20,5 +20,8 @@ export * from './lists/ResultsDriverWidget';
 export * from './lists/ResultsAloneList';
 export * from './lists/ResultsList';
 export * from './lists/ShortDriverWidget';
+export * from './lists/Separator';
+export * from './lists/NumbersList';
+//export * from './lists/PredictionsList'
 
 
