@@ -114,6 +114,7 @@ services:
 
 volumes:
   postgres-db:
+  assets-storage:
 
 networks:
   app-network:
