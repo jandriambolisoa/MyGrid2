@@ -9,6 +9,7 @@ class Settings (BaseSettings):
     model_config = SettingsConfigDict(env_file=DOTENV, extra='ignore')
 
     debug: int = 0
+    docs: int = 0
 
     # dbmate related settings
     database_url: str
