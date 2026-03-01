@@ -6,9 +6,9 @@ export const Constants = {
     buttonHeight: 38,
     buttonMargin: 14,
     borderWidth: 1,
-    driverWidgetHeight: 40,
+    driverWidgetHeight: 44,
     driverWidgetWidth: '65%',
-    driverWidgetWidthWide: '85%',
+    driverWidgetWidthWide: '80%',
     listMargin: 6
   },
   shadow: {

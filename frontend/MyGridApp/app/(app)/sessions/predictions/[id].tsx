@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { useApi, useTimer } from "@/hooks";
 import { Header, PredictionsList, PredictionsFooter } from "@/components/widgets";
-import { niceDatetime } from "@/utils";
 import { scopedI18n } from "@/translations/i18n";
 import { DateTime } from "luxon";
 import { Colors } from "@/theme";
@@ -17,33 +16,36 @@ export default function Predictions () {
   const { id, hasProno, hasStarted, datetime } = useLocalSearchParams();
   const { datas, error, loading, api: getPredictions } = useApi();
   const { error: makeError, loading: makeLoading, api: makePrediction } = useApi();
+  const { datas: paramsDatas, error: paramsError, loading: paramsLoading, api: getParams } = useApi();
 
   const time = useTimer(String(datetime));
 
   const [headerHeight, setHeaderHeight] = useState(0);
   const [footerHeight, setFooterHeight] = useState(0);
   const [changed, setChanged] = useState(false);
-  const [listDatas, setListDatas] = useState<any[]>([])
+  const [listDatas, setListDatas] = useState<any[]>([]);
 
   useEffect(() => {
     auth && getPredictions({
-      endpoint: hasProno === 'true' ? `/events/sessions/predictions/${id}` : `/events/sessions/${id}/drivers`,
+      endpoint: `/events/sessions/${id}/drivers`,
       method: 'GET',
       auth: auth
-    })
-  }, [auth])
+    });
+  }, [auth]);
 
   useEffect(() => {
-    if (hasProno === 'true') {
-      if (datas?.predictions?.length > 0 && !listDatas.length) {
-        setListDatas(datas.predictions)
-      }
-    } else {
+    auth && !loading && getParams({
+      endpoint: `/scores/parameters/1`,
+      method: 'GET',
+      auth: auth
+    });
+  }, [loading]);
+
+  useEffect(() => {
       if (datas?.drivers?.length > 0 && !listDatas.length) {
-        setListDatas(datas.drivers)
+        setListDatas(datas.drivers);
       }
-    }
-  }, [datas])
+  }, [datas]);
 
   async function handlePredictions () {
     if (datas?.session?.datetime && DateTime.fromISO(datas.session.datetime) > DateTime.now()) {
@@ -64,6 +66,7 @@ export default function Predictions () {
       })
 
       console.log(response)
+      return
     }
     console.log("Predictions can't be done after session has started")
   }
@@ -84,7 +87,7 @@ export default function Predictions () {
         footerHeight={footerHeight}
         setChanged={setChanged}
         disabled={hasStarted === 'true'}
-        showPotential={hasStarted === 'true' && hasProno === 'true'}
+        parameters={paramsDatas}
       />}
       <Header
         onLayout={(e: any) => setHeaderHeight(e.nativeEvent.layout.height)}

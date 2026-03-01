@@ -44,13 +44,12 @@ export function MainWidget({
       return;
     }
 
-    const disabledColor = item.is_over ? { color: Colors.light.disabled, borderColor: Colors.light.disabled } : { }
     const hasStarted = DateTime.fromISO(item.datetime) < DateTime.now()
 
     function rightItem () {
       if (item.is_over) {
         return (
-          <MainText style={{  }}>{t('showResults')}</MainText>
+          <MainText>{t('showResults')}</MainText>
         )
       }
 
@@ -66,8 +65,8 @@ export function MainWidget({
     }
 
     return(
-      <LiteButton style={[disabledColor, GlobalStyles.mainWidgetButton]} onPress={handlePress} disabled={item.competitive? false : true}>
-        <MainText style={[disabledColor]}>{item.name}</MainText>
+      <LiteButton style={GlobalStyles.mainWidgetButton} onPress={handlePress} disabled={item.competitive? false : true}>
+        <MainText>{item.name}</MainText>
         {rightItem()}
       </LiteButton>
     )
@@ -86,7 +85,8 @@ export function MainWidget({
         <FlatList
           data={datas.sessions}
           renderItem={renderItem}
-          scrollEnabled={false}
+          // Should be tested on android: nestedScrollEnabled
+          showsVerticalScrollIndicator={false}
           style={{ alignSelf: "stretch" }}
         />
       </View>

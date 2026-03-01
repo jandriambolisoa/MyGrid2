@@ -3,9 +3,12 @@ import { Constants } from "@/theme"
 import { MainText, Separator } from "@/components/widgets"
 
 export function NumbersList ({
-  numbers=0
+  numbers=0,
+  contentContainerStyle=null,
+  ...otherProps
 } : {
-  numbers?: number
+  numbers?: number,
+  contentContainerStyle?: any,
 }) {
 
   const numberDatas = Array.from({ length: numbers }, (_, i) => ({
@@ -33,6 +36,7 @@ export function NumbersList ({
       renderItem={({item}) => numberRenderItem(item)}
       scrollEnabled={false}
       ItemSeparatorComponent={() => Separator}
+      contentContainerStyle={contentContainerStyle}
     />
   )
 }

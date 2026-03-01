@@ -27,7 +27,7 @@ export type PredictionsListProps = {
   footerHeight?: number;
   setChanged?: (hasChanged: boolean) => void;
   disabled?: boolean;
-  showPotential?: boolean;
+  parameters?: any;
 }
 
 export function PredictionsList ({
@@ -37,7 +37,7 @@ export function PredictionsList ({
   footerHeight=0,
   setChanged,
   disabled=false,
-  showPotential=false
+  parameters=null
 }: PredictionsListProps) {
 
   const CardComponent = ({ item, index }: { item: any; index: number }) => {
@@ -45,7 +45,7 @@ export function PredictionsList ({
     const drag = useReorderableDrag();
 
     return (
-      <PredictionsDriverWidget item={item} onLongPress={drag} delayLongPress={100} disabled={disabled} showPotential={showPotential}/>
+      <PredictionsDriverWidget item={item} onLongPress={drag} delayLongPress={100} disabled={disabled} parameters={parameters}/>
     )
   };
 
@@ -55,10 +55,20 @@ export function PredictionsList ({
     <Card item={item} index={index} />
   )
 
-  const handleReorder = ({from, to}: ReorderableListReorderEvent) => {
-    setDatas?.((value: any) => reorderItems(value, from, to));
-    setChanged?.(true)
-  }
+  const handleReorder = ({ from, to }: ReorderableListReorderEvent) => {
+    setDatas?.((prev: any[]) => {
+      const reordered = reorderItems(prev, from, to);
+
+      const updated = reordered.map((item, index) => ({
+        ...item,
+        mygrid: index + 1,
+      }));
+
+      return updated;
+    });
+
+  setChanged?.(true);
+};
 
   const insets = useSafeAreaInsets();
   const paddingBottom = footerHeight ? footerHeight : insets.bottom
@@ -68,11 +78,10 @@ export function PredictionsList ({
     <GestureHandlerRootView>
       <ScrollViewContainer
         style={{ backgroundColor: Colors.light.background }}
-        contentContainerStyle={{ paddingBottom: paddingBottom, paddingTop: paddingTop }}
         showsVerticalScrollIndicator={false}
       >
         <View style={{ flexDirection: 'row', padding: Constants.spacing.listMargin }}>
-          <NumbersList numbers={datas.length}/>
+          <NumbersList numbers={datas.length} contentContainerStyle={{ paddingBottom: paddingBottom, paddingTop: paddingTop }}/>
             <NestedReorderableList
               data={datas}
               onReorder={handleReorder}
@@ -80,6 +89,7 @@ export function PredictionsList ({
               keyExtractor={item => item.driver.id}
               ItemSeparatorComponent={Separator as any}
               style={{ width: Constants.spacing.driverWidgetWidthWide as any}}
+              contentContainerStyle={{ paddingBottom: paddingBottom, paddingTop: paddingTop }}
             />
         </View>
       </ScrollViewContainer>
