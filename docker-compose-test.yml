@@ -67,7 +67,8 @@ services:
     networks:
       - app-network
     volumes:
-      - assets-storage:/var/lib/mygrid2-assets
+      - ./backend/assets/src/glb/storage:/var/lib/mygrid2-glb
+      - ./backend/assets/src/images/storage:/var/lib/mygrid2-images
 
   api:
     build:
@@ -114,7 +115,6 @@ services:
 
 volumes:
   postgres-db:
-  assets-storage:
 
 networks:
   app-network:
