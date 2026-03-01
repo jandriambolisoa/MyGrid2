@@ -61,8 +61,8 @@ services:
     networks:
       - app-network
     volumes:
-      - ./backend/assets/src/glb/storage:/var/lib/mygrid2-glb
-      - ./backend/assets/src/images/storage:/var/lib/mygrid2-images
+      - /home/jerand/mygrid2-glb:/backend/assets/src/glb/storage
+      - /home/jerand/mygrid2-images:/backend/assets/src/images/storage
 
   api:
     image: jandriambolisoa/mygrid2
