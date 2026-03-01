@@ -5,6 +5,7 @@ import { StyleSheet, View } from "react-native"
 export type HeaderProps = FrameProps & {
   title?: string,
   subtitle?: string,
+  subtitleColor?: string,
   backButton?: boolean,
   burgerMenu?: boolean,
   spotColor?: string | null
@@ -13,6 +14,7 @@ export type HeaderProps = FrameProps & {
 export function Header({
   title,
   subtitle,
+  subtitleColor,
   backButton=true,
   burgerMenu=false,
   spotColor=null,
@@ -26,7 +28,7 @@ export function Header({
       </View>}
       <View style={GlobalStyles.header}>
         {title && <MainText style={{ fontSize: Constants.fontSizes.header }} bold={true}>{title}</MainText>}
-        {subtitle && <MainText style={{ margin: 2 }}>{subtitle}</MainText>}
+        {subtitle && <MainText style={[{ margin: 2 }, subtitleColor && { color: subtitleColor}]}>{subtitle}</MainText>}
         <BackButton />
       </View>
       {otherProps.children}

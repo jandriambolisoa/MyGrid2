@@ -7,6 +7,7 @@ import { Header, PredictionsList, PredictionsFooter } from "@/components/widgets
 import { niceDatetime } from "@/utils";
 import { scopedI18n } from "@/translations/i18n";
 import { DateTime } from "luxon";
+import { Colors } from "@/theme";
 
 export default function Predictions () {
 
@@ -89,6 +90,7 @@ export default function Predictions () {
         onLayout={(e: any) => setHeaderHeight(e.nativeEvent.layout.height)}
         title={datas?.session.name}
         subtitle={hasStarted === 'true' ? t('onGoing') : time}
+        {...(hasStarted === 'true' && { subtitleColor: Colors.light.live })}
         spotColor={color1}
       />
       <PredictionsFooter
