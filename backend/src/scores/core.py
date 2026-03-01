@@ -11,7 +11,7 @@ async def score_parameters_of_a_championship(championship_id: int, db: Database,
     parameters = db.cursor.fetchall()
 
     if not parameters:
-        raise NoParametersFoundError(language=language)
+        raise NoParametersFoundError(championship_id = championship_id, language=language)
 
     # Convert query results into ScoresParameters model
     scores_parameters = dict()

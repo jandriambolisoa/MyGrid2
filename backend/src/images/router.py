@@ -19,7 +19,7 @@ router = APIRouter(
 #
 
 @router.get("/{image_name}", response_class=FileResponse, status_code=status.HTTP_200_OK)
-async def get_user_image(image_name: str, current_user: UserSelf = Depends(get_current_user)):
+async def get_user_image(image_name: str):
     response = requests.get(f"{app_settings.ms_assets_url}/images/{image_name}.jpg",stream=True)
     return StreamingResponse(response.iter_content(chunk_size=CHUNK_SIZE), response.status_code, headers={
         "Content-Type": response.headers.get("Content-Type", "image/jpeg"),
