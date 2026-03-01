@@ -5,7 +5,7 @@ import * as Localization from 'expo-localization'
 const API_URL = process.env.EXPO_PUBLIC_API_URL
 const locale = Localization.getLocales()[0]?.languageCode || 'en';
 
-export  function useEmailLogin () {
+export function useEmailLogin () {
 
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);

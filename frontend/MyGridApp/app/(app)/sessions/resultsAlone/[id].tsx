@@ -23,8 +23,6 @@ export default function ResultsAlone () {
     })
   }, [auth])
 
-  console.log(datas)
-
   return (
     <View style={{ flex: 1 }}>
       <ScrollContainer headerHeight={headerHeight} footerHeight={footerHeight}>

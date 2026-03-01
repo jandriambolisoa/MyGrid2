@@ -27,6 +27,14 @@
       "logout": "Logout"
     }
   },
+  "sessions": {
+    "predictions": {
+      "makePrediction": "Make prediction",
+      "potentialScore": "Potential score: ",
+      "pts": "Pts",
+      "onGoing": "En cours"
+    }
+  },
   "utils": {
     "niceDatetime": {
       "on": "On",
@@ -40,7 +48,8 @@
   "widgets": {
     "mainWidget": {
       "showResults": "Show results",
-      "live": "Live"
+      "live": "Live",
+      "onGoing": "En cours"
     },
     "pagerTabBar": {
       "social": "Social",

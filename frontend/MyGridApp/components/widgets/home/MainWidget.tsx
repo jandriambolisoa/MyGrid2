@@ -16,9 +16,6 @@ export function MainWidget({
   ...otherProps
 }: MainWidgetProps) {
 
-  // Temporary date to test with example datas
-  const dateTemp = "2026-01-25T03:41:44.092651+01:00";
-
   const t = scopedI18n('widgets.mainWidget');
   const router = useRouter()
 
@@ -34,24 +31,21 @@ export function MainWidget({
           return;
         }
         
-        router.push(`/sessions/resultsAlone/${item.id}`)
+        router.push(`/sessions/resultsAlone/${item.id}`);
         return;
       }
 
-      if (hasStarted) {
-        // Link to live
-        return;
-      }
+      // Live session later
       
       router.push({
         pathname: `/sessions/predictions/${item.id}` as any,
-        params: { hasProno: item.has_prono }
+        params: { hasProno: item.has_prono, hasStarted: String(hasStarted), datetime: item.datetime }
       })
       return;
     }
 
     const disabledColor = item.is_over ? { color: Colors.light.disabled, borderColor: Colors.light.disabled } : { }
-    const hasStarted = DateTime.fromISO(item.datetime) < DateTime.fromISO(dateTemp)
+    const hasStarted = DateTime.fromISO(item.datetime) < DateTime.now()
 
     function rightItem () {
       if (item.is_over) {
@@ -62,7 +56,7 @@ export function MainWidget({
 
       if (hasStarted) {
         return (
-          <MainText style={{ color: Colors.light.live }}>{t('live')}</MainText>
+          <MainText style={{ color: Colors.light.live }}>{t('onGoing')}</MainText>
         )
       }
 

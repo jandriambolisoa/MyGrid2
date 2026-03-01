@@ -26,6 +26,8 @@ export type PredictionsListProps = {
   headerHeight?: number;
   footerHeight?: number;
   setChanged?: (hasChanged: boolean) => void;
+  disabled?: boolean;
+  showPotential?: boolean;
 }
 
 export function PredictionsList ({
@@ -33,7 +35,9 @@ export function PredictionsList ({
   setDatas,
   headerHeight=0,
   footerHeight=0,
-  setChanged
+  setChanged,
+  disabled=false,
+  showPotential=false
 }: PredictionsListProps) {
 
   const CardComponent = ({ item, index }: { item: any; index: number }) => {
@@ -41,7 +45,7 @@ export function PredictionsList ({
     const drag = useReorderableDrag();
 
     return (
-      <PredictionsDriverWidget item={item} onLongPress={drag} delayLongPress={100}/>
+      <PredictionsDriverWidget item={item} onLongPress={drag} delayLongPress={100} disabled={disabled} showPotential={showPotential}/>
     )
   };
 
@@ -65,6 +69,7 @@ export function PredictionsList ({
       <ScrollViewContainer
         style={{ backgroundColor: Colors.light.background }}
         contentContainerStyle={{ paddingBottom: paddingBottom, paddingTop: paddingTop }}
+        showsVerticalScrollIndicator={false}
       >
         <View style={{ flexDirection: 'row', padding: Constants.spacing.listMargin }}>
           <NumbersList numbers={datas.length}/>
