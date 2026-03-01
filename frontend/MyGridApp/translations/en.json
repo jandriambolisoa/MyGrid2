@@ -33,6 +33,9 @@
       "potentialScore": "Potential score: ",
       "pts": "Pts",
       "onGoing": "En cours"
+    },
+    "results": {
+      "f1": "F1"
     }
   },
   "utils": {
@@ -49,7 +52,8 @@
     "mainWidget": {
       "showResults": "Show results",
       "live": "Live",
-      "onGoing": "En cours"
+      "onGoing": "En cours",
+      "finished": "Finished"
     },
     "pagerTabBar": {
       "social": "Social",
@@ -69,6 +73,12 @@
       "totalScore": "Total score: ",
       "performance": "Performance: ",
       "pts": "Pts"
+    },
+    "listsLabels": {
+      "myGrid": "My Grid",
+      "points": "Points",
+      "pos": "Pos",
+      "drivers": "Drivers"
     }
   }
 }

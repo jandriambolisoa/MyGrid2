@@ -22,9 +22,9 @@ export function PredictionsDriverWidget ({
     <TouchableOpacity style={[GlobalStyles.button, GlobalStyles.driverWidget]} {...otherProps}>
       <SpotLight color={item.team.color} cx="60%" cy="65%" fx="85%" fy="85%" radius="70%"/>
       <MainText style={{ fontSize: Constants.fontSizes.header, marginLeft: Constants.spacing.buttonPadding }} bold={true}>{item?.driver?.lastname}</MainText>
-      {parameters && <MainText style={{ fontSize: Constants.fontSizes.header, marginRight: Constants.spacing.buttonPadding }}>{computeScore(
+      {parameters && <MainText style={{ fontSize: Constants.fontSizes.header, marginRight: Constants.spacing.buttonPadding }}>+ {computeScore(
         item?.mygrid, item?.prediction, gridSize, parameters
-      )} {t('pts')}</MainText>}
+      )}</MainText>}
     </TouchableOpacity>
   )
 }

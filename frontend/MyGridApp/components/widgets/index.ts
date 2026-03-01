@@ -17,6 +17,7 @@ export * from './layout/Header';
 export * from './layout/ResultsFooter';
 export * from './layout/Container';
 export * from './layout/PredictionsFooter';
+export * from './layout/ListLabels';
 export * from './lists/ResultsDriverWidget';
 export * from './lists/ResultsAloneList';
 export * from './lists/ResultsList';

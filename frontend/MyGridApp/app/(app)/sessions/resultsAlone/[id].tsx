@@ -1,9 +1,10 @@
-import { ScrollContainer, Header, ResultsAlonelist } from "@/components/widgets";
+import { ScrollContainer, Header, ResultsAlonelist, ListsLabels } from "@/components/widgets";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLocalSearchParams } from "expo-router";
 import { useState, useEffect } from "react";
 import { View } from "react-native";
 import { useApi } from "@/hooks"
+import { niceDatetime } from "@/utils";
 
 export default function ResultsAlone () {
 
@@ -23,6 +24,9 @@ export default function ResultsAlone () {
     })
   }, [auth])
 
+  const color1 = datas?.session.event_colors[0]
+  const color2 = datas?.session.event_colors.length > 0 ? datas?.session.event_colors[1] : color1
+
   return (
     <View style={{ flex: 1 }}>
       <ScrollContainer headerHeight={headerHeight} footerHeight={footerHeight}>
@@ -31,10 +35,11 @@ export default function ResultsAlone () {
 
       <Header
         onLayout={(e: any) => setHeaderHeight(e.nativeEvent.layout.height)}
-        title={datas?.session_name}
-        subtitle="Le 25 février" // To be changed with backend update
+        title={datas?.session.name}
+        subtitle={niceDatetime(datas?.session.datetime, false)}
+        spotColor={color1}
       >
-        
+        <ListsLabels/>
       </Header>
     </View>
   )

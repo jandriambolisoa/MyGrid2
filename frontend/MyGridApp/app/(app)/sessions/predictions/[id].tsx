@@ -3,7 +3,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { useApi, useTimer } from "@/hooks";
-import { Header, PredictionsList, PredictionsFooter } from "@/components/widgets";
+import { Header, PredictionsList, PredictionsFooter, ListsLabels } from "@/components/widgets";
 import { scopedI18n } from "@/translations/i18n";
 import { DateTime } from "luxon";
 import { Colors } from "@/theme";
@@ -95,7 +95,9 @@ export default function Predictions () {
         subtitle={hasStarted === 'true' ? t('onGoing') : time}
         {...(hasStarted === 'true' && { subtitleColor: Colors.light.live })}
         spotColor={color1}
-      />
+      >
+        <ListsLabels points={hasProno === 'true' || hasStarted === 'false'}/>
+      </Header>
       <PredictionsFooter
         potentialScore={potentialScore()}
         spotColor={color2}

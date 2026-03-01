@@ -1,14 +1,16 @@
-import { Header, ResultsFooter, ResultsLabels, ResultsList, ScrollContainer } from "@/components/widgets";
+import { Header, ListsLabels, ResultsFooter, ResultsList, ScrollContainer } from "@/components/widgets";
 import { useLocalSearchParams } from "expo-router";
 import { View } from "react-native"
 import { useEffect, useState } from "react"
 import { useApi } from "@/hooks";
 import { useAuth } from "@/contexts/AuthContext";
 import { niceDatetime } from "@/utils";
+import { scopedI18n } from "@/translations/i18n";
 
 export default function Results () {
 
   const auth = useAuth()
+  const t = scopedI18n('sessions.results')
 
   const { id } = useLocalSearchParams();
   const { datas, error, loading, api: getResults } = useApi()
@@ -40,7 +42,7 @@ export default function Results () {
         spotColor={color1}
       >
         
-        <ResultsLabels/>
+        <ListsLabels points={true} leftLabel={t('f1')}/>
       </Header>
       <ResultsFooter
         onLayout={(e: any) => setFooterHeight(e.nativeEvent.layout.height)}

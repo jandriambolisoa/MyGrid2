@@ -54,6 +54,12 @@ export function MainWidget({
       }
 
       if (hasStarted) {
+
+        if (!item.competitive && DateTime.fromISO(item.datetime).plus({ hour: 1 }) < DateTime.now()) {
+          return (
+            <MainText>{t('finished')}</MainText>
+          )
+        }
         return (
           <MainText style={{ color: Colors.light.live }}>{t('onGoing')}</MainText>
         )
