@@ -1,6 +1,6 @@
 import { NumbersList, Separator, PredictionsDriverWidget } from "@/components/widgets";
 import { Colors, Constants } from "@/theme";
-import { memo, useEffect, useState } from "react";
+import { Dispatch, memo, SetStateAction, useEffect, useState } from "react";
 import { View, ScrollView } from "react-native";
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import {
@@ -22,23 +22,19 @@ console.error = (message) => {
 
 export type PredictionsListProps = {
   datas?: any[];
+  setDatas?: Dispatch<SetStateAction<any[]>>;
   headerHeight?: number;
   footerHeight?: number;
+  setChanged?: (hasChanged: boolean) => void;
 }
 
 export function PredictionsList ({
   datas=[],
+  setDatas,
   headerHeight=0,
-  footerHeight=0
+  footerHeight=0,
+  setChanged
 }: PredictionsListProps) {
-
-  const [listDatas, setListDatas] = useState<any[]>([])
-
-  useEffect(() => {
-    if (datas.length > 0) {
-      setListDatas(datas)
-    }
-  }, [datas])
 
   const CardComponent = ({ item, index }: { item: any; index: number }) => {
 
@@ -56,7 +52,8 @@ export function PredictionsList ({
   )
 
   const handleReorder = ({from, to}: ReorderableListReorderEvent) => {
-    setListDatas((value: any) => reorderItems(value, from, to));
+    setDatas?.((value: any) => reorderItems(value, from, to));
+    setChanged?.(true)
   }
 
   const insets = useSafeAreaInsets();
@@ -72,7 +69,7 @@ export function PredictionsList ({
         <View style={{ flexDirection: 'row', padding: Constants.spacing.listMargin }}>
           <NumbersList numbers={datas.length}/>
             <NestedReorderableList
-              data={listDatas}
+              data={datas}
               onReorder={handleReorder}
               renderItem={renderItem}
               keyExtractor={item => item.driver.id}
