@@ -2,7 +2,7 @@ import { GlobalStyles, Constants, Colors } from "@/theme";
 import { View, ViewProps, StyleSheet, Image, FlatList } from "react-native";
 import { ShadowSetup, MainText, SpotLight, LiteButton } from "@/components/widgets";
 import { DateTime } from "luxon"
-import { niceDatetime } from "@/utils"
+import { fromToDatetime, niceDatetime } from "@/utils"
 import { scopedI18n } from "@/translations/i18n";
 import { useRouter } from "expo-router";
 
@@ -78,16 +78,23 @@ export function MainWidget({
     )
   }
 
+  function eventDatetime () {
+    const lastEvent = datas.sessions.reduce((prev: any, current: any) => 
+      DateTime.fromISO(current.datetime) > DateTime.fromISO(prev.datetime) ? current : prev
+    );
+    return fromToDatetime(lastEvent.datetime)
+  }
+
   return (
     <View style={[GlobalStyles.button, GlobalStyles.mainWidget, style]} {...otherProps}>
       <SpotLight color={color1} cx="35%" cy="35%" fx="5%" fy="5%" radius="50%"/>
       <SpotLight color={color2} cx="70%" cy="70%" fx="95%" fy="95%" radius="45%"/>
       <ShadowSetup />
       <View style={[StyleSheet.absoluteFill, { padding: Constants.spacing.buttonPadding , alignItems: 'center' }]}>
-        <MainText style={{ fontSize: Constants.fontSizes.title, marginTop: 20 }}>{datas.event.name}</MainText>
-        <Image resizeMode="stretch" style={{ position: 'absolute', width: 50, height: 50, top: 20, right: "5%" }} source={require('@/assets/images/demo/spa.png')}/>
-        <Image source={{ uri: datas.event.flag }} style={{ width: 200, height: 50, margin: Constants.spacing.buttonPadding }} resizeMode="contain"/>
-        <Image resizeMode="contain" style={{ height: "30%", marginVertical: 30 }} source={require('@/assets/images/demo/trophy_belgium.png')}/>
+        <MainText style={{ fontSize: Constants.fontSizes.title, marginTop: Constants.spacing.mainWidgetMargin }}>{datas.event.name}</MainText>
+        <Image source={{ uri: datas.event.flag }} style={{ width: 200, height: 50 }} resizeMode="contain"/>
+        <MainText style={{ marginBottom: 40, marginTop: Constants.spacing.mainWidgetMargin }}>{eventDatetime()}</MainText>
+        <MainText style={{ alignSelf: 'flex-start', marginBottom: Constants.spacing.buttonPadding }}>{t('sessions')}</MainText>
         <FlatList
           data={datas.sessions}
           renderItem={renderItem}
@@ -99,3 +106,8 @@ export function MainWidget({
     </View>
   )
 }
+
+/* Components removed (need tracks and trophies png files from backend)
+<Image resizeMode="stretch" style={{ position: 'absolute', width: 50, height: 50, top: 20, right: "5%" }} source={require('@/assets/images/demo/spa.png')}/>
+<Image resizeMode="contain" style={{ height: "30%", marginVertical: 30 }} source={require('@/assets/images/demo/trophy_belgium.png')}/>
+*/

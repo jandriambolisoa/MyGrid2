@@ -35,6 +35,9 @@ export function EventCalendarWidget ({
     extrapolate: 'clamp'
   })
 
+  // Temporary disable -> should be removed after event page creation
+  const disabled = true;
+
   const [showShadow, setShowShadow] = useState(true);
 
   useEffect(() => {
@@ -53,7 +56,7 @@ export function EventCalendarWidget ({
   }, [scroll, index, size]);
 
   return(
-    <TouchableOpacity style={[GlobalStyles.button, { height: size, width: size, alignSelf: 'center', transform: [{ scale: scale }]  }]}>
+    <TouchableOpacity style={[GlobalStyles.button, { height: size, width: size, alignSelf: 'center', transform: [{ scale: scale }]  }]} disabled={disabled}>
       {showShadow && 
         <>
           <SpotLight color={datas?.colors[0] || Colors.light.background} cx="35%" cy="35%" fx="5%" fy="5%" radius="50%"/>

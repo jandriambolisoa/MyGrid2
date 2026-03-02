@@ -53,7 +53,8 @@
       "showResults": "Show results",
       "live": "Live",
       "onGoing": "En cours",
-      "finished": "Finished"
+      "finished": "Finished",
+      "sessions": "Sessions:"
     },
     "pagerTabBar": {
       "social": "Social",
@@ -64,7 +65,8 @@
       "championship": "Championship",
       "drivers": "Drivers",
       "constructors": "Constructors",
-      "noPrediction": "No prediction yet"
+      "noPrediction": "No prediction yet",
+      "pts": "Pts"
     },
     "eventCalendar": {
       "calendar": "Calendar"
