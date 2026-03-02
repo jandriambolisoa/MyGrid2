@@ -39,7 +39,7 @@ export default function ResultsAlone () {
         subtitle={niceDatetime(datas?.session.datetime, false)}
         spotColor={color1}
       >
-        <ListsLabels/>
+        <ListsLabels noGrid={true}/>
       </Header>
     </View>
   )

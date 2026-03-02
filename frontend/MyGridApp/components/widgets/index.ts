@@ -11,7 +11,6 @@ export * from './buttons/ShadowButton';
 export * from './buttons/LiteButton';
 export * from './buttons/BackButton';
 export * from './layout/ScrollContainer';
-export * from './layout/ResultsLabels';
 export * from './layout/Frame';
 export * from './layout/Header';
 export * from './layout/ResultsFooter';

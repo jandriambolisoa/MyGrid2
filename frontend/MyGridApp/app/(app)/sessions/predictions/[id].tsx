@@ -34,16 +34,26 @@ export default function Predictions () {
   }, [auth]);
 
   useEffect(() => {
-    auth && !loading && getParams({
-      endpoint: `/scores/parameters/1`,
-      method: 'GET',
-      auth: auth
-    });
+    if (hasProno === 'true' || hasStarted === 'false') {
+      auth && !loading && getParams({
+        endpoint: `/scores/parameters/1`,
+        method: 'GET',
+        auth: auth
+      });
+    }
   }, [loading]);
 
   useEffect(() => {
       if (datas?.drivers?.length > 0 && !listDatas.length) {
-        setListDatas(datas.drivers);
+        if (hasProno === 'false' && hasStarted === 'false') {
+          const newDatas = datas.drivers.map((item: any, index: number) => ({
+            ...item,
+            mygrid: index + 1
+          }))
+          setListDatas(newDatas);
+        } else {
+          setListDatas(datas.drivers);
+        }
       }
   }, [datas]);
 
@@ -65,9 +75,10 @@ export default function Predictions () {
         auth: auth
       })
 
-      console.log(response)
+      // Go back if response is true
       return
     }
+    // Should be removed
     console.log("Predictions can't be done after session has started")
   }
 
@@ -96,18 +107,13 @@ export default function Predictions () {
         {...(hasStarted === 'true' && { subtitleColor: Colors.light.live })}
         spotColor={color1}
       >
-        <ListsLabels points={hasProno === 'true' || hasStarted === 'false'}/>
+        <ListsLabels points={hasProno === 'true' || hasStarted === 'false'} noGrid={hasStarted === 'true' && hasProno === 'false'}/>
       </Header>
-      <PredictionsFooter
-        potentialScore={potentialScore()}
+      {changed && <PredictionsFooter
         spotColor={color2}
-        hasProno={hasProno === 'true'}
-        hasStarted={hasStarted === 'true'}
-        changed={changed}
         handlePredictions={handlePredictions}
-        key={String(changed)}
         onLayout={(e: any) => setFooterHeight(e.nativeEvent.layout.height)}
-      />
+      />}
     </View>
   )
 }

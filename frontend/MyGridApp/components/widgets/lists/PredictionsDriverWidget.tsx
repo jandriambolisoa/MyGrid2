@@ -19,7 +19,7 @@ export function PredictionsDriverWidget ({
   const gridSize = 22;
 
   return (
-    <TouchableOpacity style={[GlobalStyles.button, GlobalStyles.driverWidget]} {...otherProps}>
+    <TouchableOpacity style={[GlobalStyles.button, GlobalStyles.driverWidget]} hitSlop={Constants.spacing.listMargin / 2} {...otherProps}>
       <SpotLight color={item.team.color} cx="60%" cy="65%" fx="85%" fy="85%" radius="70%"/>
       <MainText style={{ fontSize: Constants.fontSizes.header, marginLeft: Constants.spacing.buttonPadding }} bold={true}>{item?.driver?.lastname}</MainText>
       {parameters && <MainText style={{ fontSize: Constants.fontSizes.header, marginRight: Constants.spacing.buttonPadding }}>+ {computeScore(

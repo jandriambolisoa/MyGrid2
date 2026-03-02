@@ -79,6 +79,7 @@ export function PredictionsList ({
       <ScrollViewContainer
         style={{ backgroundColor: Colors.light.background }}
         showsVerticalScrollIndicator={false}
+        decelerationRate={0.4}
       >
         <View style={{ flexDirection: 'row', padding: Constants.spacing.listMargin }}>
           <NumbersList numbers={datas.length} contentContainerStyle={{ paddingBottom: paddingBottom, paddingTop: paddingTop }}/>
