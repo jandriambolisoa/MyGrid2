@@ -73,6 +73,7 @@ export const GlobalStyles = StyleSheet.create({
     width: Constants.spacing.sliderWidth,
     transform: [{ translateX: -Constants.spacing.sliderWidth / 2 }]
   },
+
   mainWidget: {
     alignSelf: 'stretch',
     marginHorizontal: Constants.spacing.mainWidgetMargin,
@@ -84,14 +85,12 @@ export const GlobalStyles = StyleSheet.create({
     justifyContent: 'space-evenly',
     alignSelf: 'stretch'
   },
+
   profilePicture: {
-    width: 200,
-    height: 200,
-    borderRadius: 500,
-    borderWidth: 1,
-    borderColor: Colors.light.borders,
-    marginVertical: 36
+    borderRadius: 1000,
+    borderColor: Colors.light.borders
   },
+
   eye: {
     position: 'absolute',
     justifyContent: 'center',
@@ -113,6 +112,7 @@ export const GlobalStyles = StyleSheet.create({
     right: '10%',
     textAlign: 'center'
   },
+
   mainWidgetButton: {
     alignSelf: "stretch",
     flexDirection: "row",

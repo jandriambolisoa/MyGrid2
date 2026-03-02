@@ -7,6 +7,7 @@ export * from './ui/MyGridBackground';
 export * from './ui/SpotLight';
 export * from './ui/Shadow';
 export * from './ui/ShadowSetup';
+export * from './ui/ProfilePicture';
 export * from './buttons/ShadowButton';
 export * from './buttons/LiteButton';
 export * from './buttons/BackButton';

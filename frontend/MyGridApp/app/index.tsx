@@ -19,8 +19,6 @@ export default function MainScreen () {
       const oldAccessToken = await SecureStore.getItemAsync('accessToken');
       const oldRefreshToken = await SecureStore.getItemAsync('refreshToken');
 
-      console.log(oldAccessToken, oldRefreshToken)
-
       if (!oldRefreshToken) {
         logout();
         router.replace('/login')

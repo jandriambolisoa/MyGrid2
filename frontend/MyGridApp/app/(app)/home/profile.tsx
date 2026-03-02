@@ -1,4 +1,4 @@
-import { Container, MainText, ShadowButton } from "@/components/widgets";
+import { Container, MainText, ShadowButton, ProfilePicture } from "@/components/widgets";
 import { DateTime } from "luxon";
 import { scopedI18n } from "@/translations/i18n";
 import * as Localization from "expo-localization";
@@ -32,18 +32,18 @@ export default function Profile ({
   }
 
   return (
-    <Container style={{ justifyContent: 'space-between', paddingBottom: tabBarHeight }}>
-      <View style={{ alignItems: 'center', marginTop: 50 }}>
-        <MainText style={{ fontSize: 20 }}>{user?.username}</MainText>
-        <Image style={GlobalStyles.profilePicture} source={{ uri: image }}/>
-        <ShadowButton >
+    <Container style={{ justifyContent: 'space-between', paddingBottom: tabBarHeight, backgroundColor: 'transparent' }}>
+      <View style={{ alignItems: 'center', marginTop: 50, alignSelf: 'stretch' }}>
+        <MainText style={{ fontSize: Constants.fontSizes.title }}>{user?.username}</MainText>
+        <ProfilePicture link={user?.image_url} borders={true} size={150} style={{ marginVertical: 36 }}/>
+        <ShadowButton style={{ minWidth: Constants.spacing.profileButtonWidth as any }}>
           <MainText>{t('editProfile')}</MainText>
         </ShadowButton>
-        <ShadowButton style={{ marginTop: Constants.spacing.mainWidgetMargin}} onPress={handleLogout}>
+        <ShadowButton style={{ marginTop: Constants.spacing.mainWidgetMargin, minWidth: Constants.spacing.profileButtonWidth as any }} onPress={handleLogout}>
           {loading ? <ActivityIndicator color={Colors.light.warning}/> : <MainText style={{ color: Colors.light.warning }}>{t('logout')}</MainText>}
         </ShadowButton>
       </ View>
-      <MainText style={{ marginBottom: 20 }}>{DateTime.fromISO(user?.created || '').setLocale(locale).toFormat(`'${t('memberSince')}' d MMMM yyyy`)}</MainText>
+      <MainText style={{ marginBottom: Constants.spacing.mainWidgetMargin }}>{DateTime.fromISO(user?.created || '').setLocale(locale).toFormat(`'${t('memberSince')}' d MMMM yyyy`)}</MainText>
     </Container>
   )
 }

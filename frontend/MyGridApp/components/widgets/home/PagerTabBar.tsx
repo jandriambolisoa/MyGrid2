@@ -17,8 +17,8 @@ export function PagerTabBar ({
   ...otherProps
 }: PagerTabBarProps) {
 
+  const hitSlop = 20; // For buttons to be easily clickable.
   const insets = useSafeAreaInsets();
-
   const t = scopedI18n('widgets.pagerTabBar')
 
   const [ firstTabDim, setFirstTabDim ] = useState<any>(null);
@@ -34,14 +34,14 @@ export function PagerTabBar ({
   }, [firstTabDim, lastTabDim]);
 
   return (
-    <BlurView tint="light" intensity={10} style={[GlobalStyles.frame, GlobalStyles.tabBar, { paddingBottom: insets.bottom }]} {...otherProps}>
-      <TouchableOpacity onPress={() => setPage?.(0)} onLayout={(e) => setFirstTabDim(e.nativeEvent.layout)}>
+    <BlurView tint="light" intensity={20} style={[GlobalStyles.frame, GlobalStyles.tabBar, { paddingBottom: insets.bottom }]} {...otherProps}>
+      <TouchableOpacity onPress={() => setPage?.(0)} onLayout={(e) => setFirstTabDim(e.nativeEvent.layout)} hitSlop={hitSlop}>
         <MainText>{t('social')}</MainText>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => setPage?.(1)}>
+      <TouchableOpacity onPress={() => setPage?.(1)} hitSlop={hitSlop}>
         <MainText>{t('home')}</MainText>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => setPage?.(2)} onLayout={(e) => setLastTabDim(e.nativeEvent.layout)}>
+      <TouchableOpacity onPress={() => setPage?.(2)} onLayout={(e) => setLastTabDim(e.nativeEvent.layout)} hitSlop={hitSlop}>
         <MainText>{t('profile')}</MainText>
       </TouchableOpacity>
       <View style={[GlobalStyles.tabBarSlider, { bottom: insets.bottom - 6, left: (scroll?.offset + scroll?.position + .5) * (lastX - firstX) / 2 }]} />

@@ -9,13 +9,14 @@ export const Constants = {
     driverWidgetHeight: 44,
     driverWidgetWidth: '65%',
     driverWidgetWidthWide: '80%',
-    listMargin: 6
+    listMargin: 6,
+    profileButtonWidth: '60%'
   },
   shadow: {
-    topThickness: 18,
-    leftThickness: 14,
-    bottomThickness: 8,
-    rightThickness: 5,
+    topThickness: 11,
+    leftThickness: 7,
+    bottomThickness: 5,
+    rightThickness: 3,
     darkOpacity: "0.2",
     lightOpacity: "0.8"
   },
@@ -29,4 +30,4 @@ export const Constants = {
     big: 40,
     giant: 64,
   }
-} as const
+}
