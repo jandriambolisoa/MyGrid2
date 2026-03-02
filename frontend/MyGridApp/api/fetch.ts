@@ -42,8 +42,8 @@ export async function apiFetch<T>({
   if (response.status === 401) {
     try {
       const refreshDatas = await refreshLogin(accessToken, auth.refreshToken);
-      await auth.login(refreshDatas)
-      response = await request(refreshDatas.access_token.access.token)
+      await auth.login(refreshDatas);
+      response = await request(refreshDatas.access_token.access.token);
     } catch (e) {
       await auth.logout()
       throw e

@@ -26,7 +26,8 @@ export const GlobalStyles = StyleSheet.create({
     borderRadius: 4,
     overflow: 'hidden',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    minHeight: 44
   },
   backButton: {
     position: 'absolute',

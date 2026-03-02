@@ -20,6 +20,17 @@
       "login": "Already have an account? Login"
     }
   },
+  "error": {
+    "maintenance": {
+      "back": "We'll be back soon!",
+      "maintenance": "We are updating the app, please come back later"
+    },
+    "update": {
+      "version": "A new version is alvailable!",
+      "please": "Please update the app to keep using it.",
+      "update": "Update the app"
+    }
+  },
   "home": {
     "profile": {
       "memberSince": "Member since",

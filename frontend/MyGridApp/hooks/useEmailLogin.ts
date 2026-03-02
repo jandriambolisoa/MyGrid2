@@ -35,11 +35,7 @@ export function useEmailLogin () {
         return false;
       }
 
-      return {
-        user: data.user,
-        accessToken: data.access_token.access_token,
-        refreshToken: data.refresh_token.refresh_token
-      };
+      return data
 
     } catch (e: any) {
       setError(e.message);

@@ -24,9 +24,9 @@ export const Constants = {
   },
   fontSizes: {
     mainText: 16,
-    giant: 64,
-    big: 40,
     header: 20,
-    title: 28
+    title: 28,
+    big: 40,
+    giant: 64,
   }
-}
+} as const

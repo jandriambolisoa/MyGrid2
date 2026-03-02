@@ -6,6 +6,7 @@ import { useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import * as SecureStore from 'expo-secure-store';
 import { refreshLogin } from '@/api/refresh';
+import { checkVersion } from '@/utils';
 
 export default function MainScreen () {
 
@@ -17,6 +18,8 @@ export default function MainScreen () {
 
       const oldAccessToken = await SecureStore.getItemAsync('accessToken');
       const oldRefreshToken = await SecureStore.getItemAsync('refreshToken');
+
+      console.log(oldAccessToken, oldRefreshToken)
 
       if (!oldRefreshToken) {
         logout();
@@ -34,6 +37,17 @@ export default function MainScreen () {
         }
 
         await login(loginDatas)
+
+        if (data.app_status.maintenance) {
+          router.replace('/error/maintenance')
+          return;
+        }
+
+        if (!checkVersion(data.app_status.version)) {
+          router.replace('/error/update')
+          return;
+        }
+
         router.replace('/home')
 
       } catch (e) {
@@ -51,9 +65,6 @@ export default function MainScreen () {
         <MainText>Welcome to</MainText>
         <MainText style={{fontSize: Constants.fontSizes.giant, marginBottom: 40}}>Mygrid</MainText>
       </View>
-      <LiteButton onPress={() => router.push('/login')} style={[{position: 'absolute', bottom: "30%"}]}>
-        <MainText>Sign in</MainText>
-      </LiteButton>
     </Container>
   )
 }
