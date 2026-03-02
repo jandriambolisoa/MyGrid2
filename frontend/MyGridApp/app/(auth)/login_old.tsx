@@ -1,6 +1,5 @@
-import { Container, SpotLight } from "@/components/widgets";
-import { MainText } from "@/components/widgets/MainText";
-import { TouchableOpacity, StyleSheet, View } from "react-native";
+import { Container, SpotLight, MainText } from "@/components/widgets";
+import { TouchableOpacity, View } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { scopedI18n } from "@/translations/i18n";
 import * as AppleAuthentication from 'expo-apple-authentication';

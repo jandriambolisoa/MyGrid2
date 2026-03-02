@@ -38,6 +38,14 @@
       "logout": "Logout"
     }
   },
+  "profile": {
+    "modify": {
+      "modifyProfile": "Modify Profile",
+      "modifyPP": "Modify profile picture",
+      "permission": "Permission required",
+      "permissionTo": "Permission to access your photos is required"
+    }
+  },
   "sessions": {
     "predictions": {
       "makePrediction": "Make prediction",

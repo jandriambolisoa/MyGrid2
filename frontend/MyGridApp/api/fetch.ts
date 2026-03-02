@@ -6,7 +6,8 @@ const API_URL = process.env.EXPO_PUBLIC_API_URL
 export type FetchProps = {
   endpoint: string;
   body?: unknown;
-  method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+  method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
+  contentType?: string;
   auth: AuthContextType;
 }
 
@@ -14,6 +15,7 @@ export async function apiFetch<T>({
   endpoint,
   body,
   method='GET',
+  contentType='application/json',
   auth
 }: FetchProps): Promise<T> {
   
@@ -24,14 +26,18 @@ export async function apiFetch<T>({
   const options: RequestInit = {
     method: method,
     headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
+      "Accept": "application/json",
+      "Content-Type": contentType,
       ...(token && { Authorization: `Bearer ${token}` }),
     }
   };
   
   if (body !== undefined) {
-    options.body = JSON.stringify(body)
+    if (body instanceof FormData) {
+      options.body = body
+    } else {
+      options.body = JSON.stringify(body)
+    }
   }
     
     return fetch(`${API_URL}${endpoint}`, options)
@@ -54,5 +60,5 @@ export async function apiFetch<T>({
     throw new Error("API request failed")
   }
 
-  return response.json()
+  return await response.json()
 }

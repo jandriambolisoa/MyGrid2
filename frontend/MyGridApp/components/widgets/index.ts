@@ -1,4 +1,3 @@
-export * from './MainText';
 export * from './home/MainWidget';
 export * from './home/ChampionshipWidget';
 export * from './home/EventCalendar';
@@ -8,6 +7,7 @@ export * from './ui/SpotLight';
 export * from './ui/Shadow';
 export * from './ui/ShadowSetup';
 export * from './ui/ProfilePicture';
+export * from './ui/MainText';
 export * from './buttons/ShadowButton';
 export * from './buttons/LiteButton';
 export * from './buttons/BackButton';
@@ -24,7 +24,7 @@ export * from './lists/ResultsList';
 export * from './lists/ShortDriverWidget';
 export * from './lists/Separator';
 export * from './lists/NumbersList';
-export * from './lists/PredictionsList'
+export * from './lists/PredictionsList';
 export * from './lists/PredictionsDriverWidget';
 
 

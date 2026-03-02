@@ -19,7 +19,7 @@ export default function HomePagerView () {
     <View style= {{ flex: 1 }}>
       <PagerView
         ref={pagerRef}
-        style={{ flex: 1, backgroundColor: Colors.light.background }}
+        style={{ flex: 1, backgroundColor: 'transparent' }}
         initialPage={1}
         overdrag={true}
         onPageScroll={(e) => {

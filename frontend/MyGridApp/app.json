@@ -49,6 +49,20 @@
           ]
         }
       ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "The app needs access to your photos.",
+          "colors": {
+            "cropToolbarColor": "#000000"
+          },
+          "dark": {
+            "colors": {
+              "cropToolbarColor": "#000000"
+            }
+          }
+        }
+      ],
       "expo-localization",
       "expo-apple-authentication",
       "expo-secure-store"

@@ -15,6 +15,7 @@ export type AuthContextType = {
   refreshToken: string | null;
   login: (authData: AuthData) => Promise<void>;
   logout: () => Promise<void>;
+  storeUser: (user: any) => void;
   isAuthenticated: boolean;
 }
 
@@ -44,6 +45,10 @@ export function AuthProvider ({ children }: any) {
     await SecureStore.deleteItemAsync('refreshToken')
   }
 
+  async function storeUser (user: any) {
+    setUser(user)
+  }
+
   return (
     <AuthContext.Provider value={{
       user,
@@ -51,6 +56,7 @@ export function AuthProvider ({ children }: any) {
       refreshToken,
       login,
       logout,
+      storeUser,
       isAuthenticated: !!accessToken
       }}>
       {children}
