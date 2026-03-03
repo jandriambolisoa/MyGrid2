@@ -17,6 +17,7 @@ const config: ExpoConfig = {
     config: {
       usesNonExemptEncryption: false,
     },
+    buildNumber: "33"
   },
 
   android: {
@@ -30,7 +31,8 @@ const config: ExpoConfig = {
     permissions: [
       "android.permission.RECORD_AUDIO"
     ],
-    googleServicesFile: process.env.GOOGLE_SERVICES_JSON ?? './google-services.json',
+    googleServicesFile: process.env.GOOGLE_SERVICES_JSON,
+    versionCode: 27
   },
 
   web: {
