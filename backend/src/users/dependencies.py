@@ -1,6 +1,6 @@
 from fastapi import Depends
 
-from backend.db.database import get_db
+from backend.db.database import get_db, Database
 from backend.oauth2 import get_current_user
 from backend.src.users.exceptions import NotAUserError
 from backend.src.users.privileges import is_user_banned
@@ -41,3 +41,16 @@ async def valid_user_username(username: str = None, current_user: UserSelf = Dep
         raise NotAUserError(current_user.language)
 
     return user["username"]
+
+async def get_current_user_language(language: str = None, current_user: UserSelf = Depends(get_current_user)) -> str:
+    if not language:
+        return current_user.language
+    else:
+        db = get_db()
+        db.cursor.execute("""
+            UPDATE users
+            SET language = %s
+            WHERE id = %s""", (language, current_user.id))
+        db.conn.commit()
+
+        return language

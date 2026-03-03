@@ -8,6 +8,7 @@ from backend.src.events.dependencies import valid_session_id, get_number_of_driv
 from backend.src.results.exceptions import NoResultsFoundError, InvalidSessionResultsAttemptError, \
     IncorrectNumberOfDriverError
 from backend.src.results.schemas import ResultSession, ResultPost
+from backend.src.users.dependencies import get_current_user_language
 from backend.src.users.privileges import is_user_moderator_or_admin
 from backend.src.users.schemas import UserSelf
 from backend.src.results import signals as results_signals
@@ -22,7 +23,7 @@ router = APIRouter(
 #
 
 @router.get("/{session_id}", response_model=ResultSession)
-async def get_session_results(session_id: int = Depends(valid_session_id), language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+async def get_session_results(session_id: int = Depends(valid_session_id), language: str = Depends(get_current_user_language), db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     db.cursor.execute("""
         WITH events_translations AS (
             SELECT event_id, name
@@ -96,7 +97,7 @@ async def get_session_results(session_id: int = Depends(valid_session_id), langu
 
 
 @router.post("/{session_id}", status_code=status.HTTP_201_CREATED)
-async def override_session_results(results: list[ResultPost], session_id: int = Depends(valid_session_id), language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+async def override_session_results(results: list[ResultPost], session_id: int = Depends(valid_session_id), language: str = Depends(get_current_user_language), db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     if not await is_user_moderator_or_admin(current_user.id):
         raise app_exceptions.ForbiddenAccessException(language=language)
 
@@ -126,7 +127,7 @@ async def override_session_results(results: list[ResultPost], session_id: int = 
 
 
 @router.delete("/{session_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def remove_session_results(session_id: int = Depends(valid_session_id), language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+async def remove_session_results(session_id: int = Depends(valid_session_id), language: str = Depends(get_current_user_language), db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     if not await is_user_moderator_or_admin(current_user.id):
         raise app_exceptions.ForbiddenAccessException(language=language)
 

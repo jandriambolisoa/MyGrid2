@@ -20,7 +20,7 @@ from backend.src.auth.syntax import valid_username, valid_password
 from backend.src.collectibles.constants import CHUNK_SIZE
 from backend.src.collectibles.dependencies import get_user_collectibles
 from backend.src.images.dependencies import generate_user_image_name
-from backend.src.users.dependencies import valid_user_username
+from backend.src.users.dependencies import valid_user_username, get_current_user_language
 from backend.src.users.exceptions import NoUserFoundError, CannotUpdateUsernameError
 from backend.src.users.schemas import User, UserSelf, UserProfile
 from backend.src.users.texts import successful_password_update_message, email_verification_sent_message
@@ -167,7 +167,7 @@ async def update_user_profile_password(datas: ChangePassword, db:Database = Depe
     }
 
 @router.get("/send-verification-email", status_code=status.HTTP_200_OK)
-async def resend_verification_email(language: str = "en", db:Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+async def resend_verification_email(language: str = Depends(get_current_user_language), db:Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     await send_verification_email(current_user.id)
 
     return JSONResponse({

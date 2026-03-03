@@ -15,6 +15,7 @@ from backend.src.manager.constants import MAX_POOL_SIZE, MAX_PUSH_NOTIFICATIONS_
     PUSH_NOTIFICATION_BACKOFF_BASE, PUSH_NOTIFICATION_BACKOFF_CAP
 from backend.src.notifications.dependencies import get_all_push_tokens, get_all_verified_emails
 from backend.src.notifications.schemas import PushNotification, SimpleEmail
+from backend.src.users.dependencies import get_current_user_language
 from backend.src.users.exceptions import NoUserFoundError
 from backend.src.users.privileges import is_user_moderator_or_admin
 from backend.src.users.schemas import UserSelf
@@ -31,7 +32,7 @@ router = APIRouter(
 #
 
 @router.post("/notification/push/send", status_code=status.HTTP_200_OK)
-async def send_global_push_notification(to_send: PushNotification, language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+async def send_global_push_notification(to_send: PushNotification, language: str = Depends(get_current_user_language), db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     if not await is_user_moderator_or_admin(current_user.id):
         raise ForbiddenAccessException(language= language)
 

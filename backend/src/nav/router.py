@@ -10,6 +10,7 @@ from backend.src.nav.schemas import NavMainEvent, NavMainEventSession, NavChampi
     DriverChampionshipLeaderboardWithPrediction, TeamChampionshipLeaderboardWithPrediction
 from backend.src.predictions.dependencies import is_user_has_prono, get_user_wdc_prediction, get_user_wcc_prediction
 from backend.src.ranks.schemas import ChampionshipRanks
+from backend.src.users.dependencies import get_current_user_language
 from backend.src.users.schemas import UserSelf
 from backend.utils import get_nice_datetime
 
@@ -23,7 +24,7 @@ router = APIRouter(
 #
 
 @router.get("/home/main-event", response_model=NavMainEvent, status_code=status.HTTP_200_OK)
-async def home_get_main_event(championship_id: int = Depends(valid_championship_id), language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+async def home_get_main_event(championship_id: int = Depends(valid_championship_id), language: str = Depends(get_current_user_language), db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     event = await get_upcoming_event(language)
     championship = await get_event_championship(event.id, language)
 
@@ -79,7 +80,7 @@ async def home_get_main_event(championship_id: int = Depends(valid_championship_
     }
 
 @router.get("/home/championships", response_model=NavChampionship, status_code=status.HTTP_200_OK)
-async def home_get_championships(championship_id: int = Depends(valid_championship_id), language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+async def home_get_championships(championship_id: int = Depends(valid_championship_id), language: str = Depends(get_current_user_language), db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     db.cursor.execute("""\
         SELECT * FROM championships
         WHERE id = %s""",(championship_id,))
@@ -201,7 +202,7 @@ async def home_get_championships(championship_id: int = Depends(valid_championsh
     }
 
 @router.get("/home/events", response_model=NavChampionshipEvents, status_code=status.HTTP_200_OK)
-async def home_get_events(championship_id: int = Depends(valid_championship_id), language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+async def home_get_events(championship_id: int = Depends(valid_championship_id), language: str = Depends(get_current_user_language), db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     db.cursor.execute("""\
         SELECT * FROM championships
         WHERE id = %s""",(championship_id,))
@@ -236,7 +237,7 @@ async def home_get_events(championship_id: int = Depends(valid_championship_id),
 
 
 @router.get("/standings/drivers", response_model=DriverChampionshipLeaderboardWithPrediction, status_code=status.HTTP_200_OK)
-async def get_championship_drivers_standings(championship_id: int = Depends(valid_championship_id), language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+async def get_championship_drivers_standings(championship_id: int = Depends(valid_championship_id), language: str = Depends(get_current_user_language), db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     db.cursor.execute("""\
         SELECT * FROM championships
         WHERE id = %s""", (championship_id,))
@@ -290,7 +291,7 @@ async def get_championship_drivers_standings(championship_id: int = Depends(vali
 
 
 @router.get("/standings/teams", response_model=TeamChampionshipLeaderboardWithPrediction, status_code=status.HTTP_200_OK)
-async def get_championship_teams_standings(championship_id: int = Depends(valid_championship_id), language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+async def get_championship_teams_standings(championship_id: int = Depends(valid_championship_id), language: str = Depends(get_current_user_language), db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     db.cursor.execute("""\
         SELECT * FROM championships
         WHERE id = %s""", (championship_id,))

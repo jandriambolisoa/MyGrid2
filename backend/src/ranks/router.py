@@ -11,6 +11,7 @@ from backend.src.ranks.exceptions import NoRanksError
 from backend.src.ranks.schemas import ChampionshipRanks, EventRanks, SessionRanks
 from backend.src.results.exceptions import NoResultsFoundError, InvalidSessionResultsAttemptError
 from backend.src.results.schemas import ResultSession, ResultPost
+from backend.src.users.dependencies import get_current_user_language
 from backend.src.users.privileges import is_user_moderator_or_admin
 from backend.src.users.schemas import UserSelf
 from backend.src.results import signals as results_signals
@@ -27,7 +28,7 @@ router = APIRouter(
 @router.get("/championships/{championship_id}", response_model=ChampionshipRanks)
 async def get_championships_ranks(
         championship_id: int = Depends(valid_championship_id),
-        language: str = "en",
+        language: str = Depends(get_current_user_language),
         db: Database = Depends(get_db),
         current_user: UserSelf = Depends(get_current_user),
         limit: int = RANK_QUERY_LIMIT,
@@ -97,7 +98,7 @@ async def get_championships_ranks(
 @router.get("/events", response_model=EventRanks)
 async def get_events_ranks(
         event_id: int = Depends(get_last_event_id),
-        language: str = "en",
+        language: str = Depends(get_current_user_language),
         db: Database = Depends(get_db),
         current_user: UserSelf = Depends(get_current_user),
         limit: int = RANK_QUERY_LIMIT,
@@ -180,7 +181,7 @@ async def get_events_ranks(
 @router.get("/records/sessions/{championship_id}", response_model=SessionRanks)
 async def get_records_sessions_ranks(
         championship_id: int = Depends(valid_championship_id),
-        language: str = "en",
+        language: str = Depends(get_current_user_language),
         db: Database = Depends(get_db),
         current_user: UserSelf = Depends(get_current_user),
         limit: int = RANK_QUERY_LIMIT,

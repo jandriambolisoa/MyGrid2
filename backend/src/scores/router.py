@@ -10,6 +10,7 @@ from backend.src.results.schemas import ResultSession, ResultPost
 from backend.src.scores.core import score_parameters_of_a_championship
 from backend.src.scores.exceptions import NoParametersFoundError
 from backend.src.scores.schemas import ScoresParameters
+from backend.src.users.dependencies import get_current_user_language
 from backend.src.users.privileges import is_user_moderator_or_admin
 from backend.src.users.schemas import UserSelf
 from backend.src.results import signals as results_signals
@@ -24,12 +25,12 @@ router = APIRouter(
 #
 
 @router.get("/parameters/{championship_id}", response_model=ScoresParameters)
-async def get_score_parameters_of_a_championship(championship_id: int = Depends(valid_championship_id), language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+async def get_score_parameters_of_a_championship(championship_id: int = Depends(valid_championship_id), language: str = Depends(get_current_user_language), db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     return await score_parameters_of_a_championship(championship_id, db, language)
 
 
 @router.post("/parameters/{championship_id}", status_code=status.HTTP_201_CREATED)
-async def override_score_parameters_of_a_championship(parameters: ScoresParameters, championship_id: int = Depends(valid_championship_id), language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+async def override_score_parameters_of_a_championship(parameters: ScoresParameters, championship_id: int = Depends(valid_championship_id), language: str = Depends(get_current_user_language), db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     if not await is_user_moderator_or_admin(current_user.id):
         raise app_exceptions.ForbiddenAccessException(language=language)
 

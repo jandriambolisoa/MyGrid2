@@ -10,6 +10,7 @@ from backend import exceptions as app_exceptions
 from backend.constants import QUERY_LIMIT
 from backend.src.drivers.exceptions import DriverNotFoundError, TeamNotFoundError, DriverAlreadyExistsError, \
     TeamAlreadyExistsError
+from backend.src.users.dependencies import get_current_user_language
 from backend.src.users.privileges import is_user_moderator_or_admin
 from backend.src.drivers.dependencies import valid_codename, valid_color
 from backend.src.drivers.schemas import (
@@ -28,7 +29,7 @@ router = APIRouter(
 #
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=Driver)
-async def create_driver(driver: DriverCreate, language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+async def create_driver(driver: DriverCreate, language: str = Depends(get_current_user_language), db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     if not await is_user_moderator_or_admin(current_user.id):
         raise ForbiddenAccessException(language=language)
 
@@ -51,7 +52,7 @@ async def create_driver(driver: DriverCreate, language: str = "en", db: Database
 
 
 @router.post("/teams", status_code=status.HTTP_201_CREATED, response_model=Team)
-async def create_team(team: TeamCreate, language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+async def create_team(team: TeamCreate, language: str = Depends(get_current_user_language), db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     if not await is_user_moderator_or_admin(current_user.id):
         raise ForbiddenAccessException(language=language)
 
@@ -159,7 +160,7 @@ async def search_team(db:Database = Depends(get_db),
     return list(search_results.values())
 
 @router.put("/{id}", response_model=Driver)
-async def update_driver(id: int, datas: DriverUpdate, language: str = "en", db:Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+async def update_driver(id: int, datas: DriverUpdate, language: str = Depends(get_current_user_language), db:Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     if not await is_user_moderator_or_admin(current_user.id):
         raise ForbiddenAccessException(language=language)
 
@@ -198,7 +199,7 @@ async def update_driver(id: int, datas: DriverUpdate, language: str = "en", db:D
 
 
 @router.put("/teams/{id}", response_model=Team)
-async def update_team(id: int, datas: TeamUpdate, language: str = "en", db:Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+async def update_team(id: int, datas: TeamUpdate, language: str = Depends(get_current_user_language), db:Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     if not await is_user_moderator_or_admin(current_user.id):
         raise ForbiddenAccessException(language=language)
 
@@ -235,7 +236,7 @@ async def update_team(id: int, datas: TeamUpdate, language: str = "en", db:Datab
 
 
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_driver(id: int, language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+async def delete_driver(id: int, language: str = Depends(get_current_user_language), db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     if not await is_user_moderator_or_admin(current_user.id):
         raise ForbiddenAccessException(language=language)
 
@@ -254,7 +255,7 @@ async def delete_driver(id: int, language: str = "en", db: Database = Depends(ge
 
 
 @router.delete("/teams/{id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_team(id: int, language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+async def delete_team(id: int, language: str = Depends(get_current_user_language), db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     if not await is_user_moderator_or_admin(current_user.id):
         raise ForbiddenAccessException(language=language)
 
