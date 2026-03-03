@@ -17,6 +17,7 @@ from backend.src.events.schemas import Championship, ChampionshipCreate, Event, 
     EventSearch, ChampionshipUpdate, EventUpdate, SessionUpdate, WDCPrediction, \
     WCCPrediction, PredictionWCCPotentialResponse, PredictionWDCPotentialResponse, SessionDrivers
 from backend.src.predictions.dependencies import is_user_has_prono
+from backend.src.users.dependencies import get_current_user_language
 from backend.src.users.privileges import is_user_moderator_or_admin
 from backend.src.events import signals as events_signal
 from backend.src.users.schemas import UserSelf
@@ -32,7 +33,7 @@ router = APIRouter(
 #
 
 @router.post("/championships", status_code=status.HTTP_201_CREATED, response_model=Championship)
-async def create_championship(championship: ChampionshipCreate, language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+async def create_championship(championship: ChampionshipCreate, language: str = Depends(get_current_user_language), db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     if not await is_user_moderator_or_admin(current_user.id):
         raise ForbiddenAccessException(language=language)
 
@@ -54,7 +55,7 @@ async def create_championship(championship: ChampionshipCreate, language: str = 
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED, response_model=Event)
-async def create_event(to_create: EventCreate, language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+async def create_event(to_create: EventCreate, language: str = Depends(get_current_user_language), db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     if not await is_user_moderator_or_admin(current_user.id):
         raise ForbiddenAccessException(language=language)
 
@@ -81,7 +82,7 @@ async def create_event(to_create: EventCreate, language: str = "en", db: Databas
     return created
 
 @router.post("/sessions", status_code=status.HTTP_201_CREATED, response_model=Session)
-async def create_session(to_create: SessionCreate, language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+async def create_session(to_create: SessionCreate, language: str = Depends(get_current_user_language), db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     if not await is_user_moderator_or_admin(current_user.id):
         raise ForbiddenAccessException(language=language)
 
@@ -171,7 +172,7 @@ async def search_event(db:Database = Depends(get_db),
 
 
 @router.put("/championships/{championship_id}", response_model=Championship)
-async def update_championship(datas: ChampionshipUpdate, championship_id: int = Depends(valid_championship_id), language: str = "en", db:Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+async def update_championship(datas: ChampionshipUpdate, championship_id: int = Depends(valid_championship_id), language: str = Depends(get_current_user_language), db:Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     if not await is_user_moderator_or_admin(current_user.id):
         raise ForbiddenAccessException(language=language)
 
@@ -203,7 +204,7 @@ async def update_championship(datas: ChampionshipUpdate, championship_id: int = 
 
 
 @router.put("/sessions/{session_id}", response_model=Session)
-async def update_session(datas: SessionUpdate, session_id: int = Depends(valid_session_id), language: str = "en", db:Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+async def update_session(datas: SessionUpdate, session_id: int = Depends(valid_session_id), language: str = Depends(get_current_user_language), db:Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     if not await is_user_moderator_or_admin(current_user.id):
         raise ForbiddenAccessException(language=language)
 
@@ -248,7 +249,7 @@ async def update_session(datas: SessionUpdate, session_id: int = Depends(valid_s
 
 
 @router.put("/{event_id}", response_model=Event)
-async def update_event(datas: EventUpdate, event_id: int = Depends(valid_event_id), language: str = "en", db:Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+async def update_event(datas: EventUpdate, event_id: int = Depends(valid_event_id), language: str = Depends(get_current_user_language), db:Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     if not await is_user_moderator_or_admin(current_user.id):
         raise ForbiddenAccessException(language=language)
 
@@ -295,7 +296,7 @@ async def update_event(datas: EventUpdate, event_id: int = Depends(valid_event_i
 
 
 @router.delete("/championships/{championship_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_championship(championship_id: int = Depends(valid_championship_id), language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+async def delete_championship(championship_id: int = Depends(valid_championship_id), language: str = Depends(get_current_user_language), db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     if not await is_user_moderator_or_admin(current_user.id):
         raise ForbiddenAccessException(language=language)
 
@@ -311,7 +312,7 @@ async def delete_championship(championship_id: int = Depends(valid_championship_
 
 
 @router.delete("/sessions/{session_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_session(session_id: int = Depends(valid_session_id), language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+async def delete_session(session_id: int = Depends(valid_session_id), language: str = Depends(get_current_user_language), db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     if not await is_user_moderator_or_admin(current_user.id):
         raise ForbiddenAccessException(language=language)
 
@@ -327,7 +328,7 @@ async def delete_session(session_id: int = Depends(valid_session_id), language: 
 
 
 @router.delete("/{event_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_event(event_id: int = Depends(valid_event_id), language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+async def delete_event(event_id: int = Depends(valid_event_id), language: str = Depends(get_current_user_language), db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     if not await is_user_moderator_or_admin(current_user.id):
         raise ForbiddenAccessException(language=language)
 
@@ -342,7 +343,7 @@ async def delete_event(event_id: int = Depends(valid_event_id), language: str = 
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 @router.post("/championships/{championship_id}/wdc-prediction", response_model=PredictionWDCPotentialResponse)
-async def override_wdc_prediction(prediction: WDCPrediction, championship_id: int = Depends(valid_championship_id), language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+async def override_wdc_prediction(prediction: WDCPrediction, championship_id: int = Depends(valid_championship_id), language: str = Depends(get_current_user_language), db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     races_total = await get_number_of_races(championship_id)
     races_left = await get_number_of_races_left(championship_id)
 
@@ -416,7 +417,7 @@ async def override_wdc_prediction(prediction: WDCPrediction, championship_id: in
         }
 
 @router.post("/championships/{championship_id}/wcc-prediction", response_model=PredictionWCCPotentialResponse)
-async def override_wcc_prediction(prediction: WCCPrediction, championship_id: int = Depends(valid_championship_id), language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+async def override_wcc_prediction(prediction: WCCPrediction, championship_id: int = Depends(valid_championship_id), language: str = Depends(get_current_user_language), db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     races_total = await get_number_of_races(championship_id)
     races_left = await get_number_of_races_left(championship_id)
 
@@ -488,7 +489,7 @@ async def override_wcc_prediction(prediction: WCCPrediction, championship_id: in
         }
 
 @router.get("/sessions/{session_id}/drivers", response_model=SessionDrivers, status_code=status.HTTP_200_OK)
-async def get_session_drivers(session_id: int = Depends(valid_session_id), championship_order: bool = False, language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+async def get_session_drivers(session_id: int = Depends(valid_session_id), championship_order: bool = False, language: str = Depends(get_current_user_language), db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     """
     Will try to return drivers in the order of the user prediction for a session,
     otherwise will return drivers in the global prediction order.

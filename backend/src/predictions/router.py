@@ -13,7 +13,7 @@ from backend.src.events.dependencies import valid_session_id, valid_session_id_n
 from backend.src.predictions.exceptions import DriverNotRegisteredForSessionError
 from backend.src.scores.algorithms import compute_score
 from backend.src.scores.router import get_score_parameters_of_a_championship
-from backend.src.users.dependencies import valid_user_id
+from backend.src.users.dependencies import valid_user_id, get_current_user_language
 from backend.src.users.privileges import is_user_moderator_or_admin, is_user_verified
 from backend.src.users.schemas import UserSelf
 from backend.src.scores import algorithms
@@ -29,7 +29,7 @@ router = APIRouter(
 #
 
 @router.get("/{session_id}", response_model=Union[PredictionSession, PredictionScoreSession], status_code=status.HTTP_200_OK)
-async def get_user_prediction(session_id: int = Depends(valid_session_id), user_id: int = Depends(valid_user_id), language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+async def get_user_prediction(session_id: int = Depends(valid_session_id), user_id: int = Depends(valid_user_id), language: str = Depends(get_current_user_language), db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     if not user_id:
         user_id = current_user.id
 
@@ -200,7 +200,7 @@ async def get_user_prediction(session_id: int = Depends(valid_session_id), user_
 
 
 @router.post("/{session_id}", status_code=status.HTTP_201_CREATED)
-async def create_my_grid(session_id: int, session_predictions: PredictionSessionPost, language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+async def create_my_grid(session_id: int, session_predictions: PredictionSessionPost, language: str = Depends(get_current_user_language), db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     if not await is_user_verified(current_user.id):
         raise UnverifiedUserError(language=language)
 
@@ -252,7 +252,7 @@ async def create_my_grid(session_id: int, session_predictions: PredictionSession
 
 
 @router.delete("/{session_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def delete_my_grid(session_id: int, language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+async def delete_my_grid(session_id: int, language: str = Depends(get_current_user_language), db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     if not await is_user_verified(current_user.id):
         raise UnverifiedUserError(language=language)
 

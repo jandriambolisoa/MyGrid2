@@ -9,6 +9,7 @@ from backend.src.registrations.exceptions import NoRegistrationsFoundError, Regi
     InvalidSessionRegistrationAttemptError, RegistrationCannotSwapWithAlreadyRegisteredDriverError
 from backend.src.registrations.schemas import RegistrationDriver, RegistrationSession, RegistrationPost, \
     RegistrationSwapDrivers, RegistrationSwapTeams
+from backend.src.users.dependencies import get_current_user_language
 from backend.src.users.privileges import is_user_moderator_or_admin
 from backend.src.users.schemas import UserSelf
 from backend.src.registrations import signals as registrations_signals
@@ -23,7 +24,7 @@ router = APIRouter(
 #
 
 @router.get("/{session_id}", response_model=RegistrationSession)
-async def get_session_registrations(session_id: int = Depends(valid_session_id), language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+async def get_session_registrations(session_id: int = Depends(valid_session_id), language: str = Depends(get_current_user_language), db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     db.cursor.execute("""
         WITH events_translations AS (
             SELECT event_id, name
@@ -82,7 +83,7 @@ async def get_session_registrations(session_id: int = Depends(valid_session_id),
 
 
 @router.post("/{session_id}", status_code=status.HTTP_201_CREATED)
-async def override_session_registrations(registrations: list[RegistrationPost], session_id: int = Depends(valid_session_id_not_started), language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+async def override_session_registrations(registrations: list[RegistrationPost], session_id: int = Depends(valid_session_id_not_started), language: str = Depends(get_current_user_language), db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     if not await is_user_moderator_or_admin(current_user.id):
         raise app_exceptions.ForbiddenAccessException(language=language)
 
@@ -107,7 +108,7 @@ async def override_session_registrations(registrations: list[RegistrationPost], 
         raise InvalidSessionRegistrationAttemptError(language=language)
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
-async def override_upcoming_sessions_registrations(registrations: list[RegistrationPost], language: str = "en", db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
+async def override_upcoming_sessions_registrations(registrations: list[RegistrationPost], language: str = Depends(get_current_user_language), db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     if not await is_user_moderator_or_admin(current_user.id):
         raise app_exceptions.ForbiddenAccessException(language=language)
 
@@ -122,7 +123,7 @@ async def swap_a_driver_with_an_unregistered_driver(
         drivers: RegistrationSwapDrivers,
         session_id: int = Depends(valid_session_id_not_started),
         db: Database = Depends(get_db),
-        language: str = "en",
+        language: str = Depends(get_current_user_language),
         current_user: UserSelf = Depends(get_current_user)):
     if not await is_user_moderator_or_admin(current_user.id):
         raise app_exceptions.ForbiddenAccessException(language=language)
@@ -195,7 +196,7 @@ async def swap_teams_between_two_drivers(
         drivers: RegistrationSwapTeams,
         session_id: int = Depends(valid_session_id_not_started),
         db: Database = Depends(get_db),
-        language: str = "en",
+        language: str = Depends(get_current_user_language),
         current_user: UserSelf = Depends(get_current_user)):
     if not await is_user_moderator_or_admin(current_user.id):
         raise app_exceptions.ForbiddenAccessException(language=language)
