@@ -6,6 +6,7 @@ import { View, Alert, Platform, ActivityIndicator } from 'react-native'
 import * as ImagePicker from "expo-image-picker"
 import { ImageManipulator, SaveFormat } from "expo-image-manipulator"
 import { useApi } from '@/hooks'
+import { Colors } from '@/theme'
 
 export default function Modify () {
 
@@ -73,7 +74,7 @@ export default function Modify () {
 
   function ppButton () {
     if (imageLoading) {
-      return <ActivityIndicator />
+      return <ActivityIndicator color={Colors.light.lightText}/>
     }
     return <MainText>{t('modifyPP')}</MainText>
   }

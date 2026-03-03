@@ -1,7 +1,7 @@
-import { useLocalSearchParams } from "expo-router"
+import { useLocalSearchParams, useRouter } from "expo-router"
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
-import { View } from "react-native";
+import { ActivityIndicator, View } from "react-native";
 import { useApi, useTimer } from "@/hooks";
 import { Header, PredictionsList, PredictionsFooter, ListsLabels } from "@/components/widgets";
 import { scopedI18n } from "@/translations/i18n";
@@ -12,11 +12,12 @@ export default function Predictions () {
 
   const auth = useAuth();
   const t = scopedI18n('sessions.predictions')
+  const router = useRouter()
 
   const { id, hasProno, hasStarted, datetime } = useLocalSearchParams();
-  const { datas, error, loading, api: getPredictions } = useApi();
+  const { datas, error, loading, api: getPredictions } = useApi(true);
   const { error: makeError, loading: makeLoading, api: makePrediction } = useApi();
-  const { datas: paramsDatas, error: paramsError, loading: paramsLoading, api: getParams } = useApi();
+  const { datas: paramsDatas, api: getParams } = useApi();
 
   const time = useTimer(String(datetime));
 
@@ -68,14 +69,16 @@ export default function Predictions () {
         })
       }
 
-      const response = await makePrediction({
+      const success = await makePrediction({
         endpoint: `/events/sessions/predictions/${id}`,
         body: makeList,
         method: 'POST',
         auth: auth
       })
 
-      // Go back if response is true
+      if (success) {
+        router.back()
+      }
       return
     }
     // Should be removed
@@ -85,12 +88,9 @@ export default function Predictions () {
   const color1 = datas?.session?.event_colors?.[0]
   const color2 = datas?.session?.event_colors?.length > 1 ? datas.session.event_colors[1] : color1
 
-  function potentialScore () {
-    return listDatas.reduce((acc, item) => acc + (item.potential ?? 0), 0);
-  }
-
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: Colors.light.background, justifyContent: 'center' }}>
+      {loading && <ActivityIndicator color={Colors.light.orangeLogo}/>}
       {listDatas?.length > 0 && <PredictionsList
         datas={listDatas}
         setDatas={setListDatas}
@@ -113,6 +113,7 @@ export default function Predictions () {
         spotColor={color2}
         handlePredictions={handlePredictions}
         onLayout={(e: any) => setFooterHeight(e.nativeEvent.layout.height)}
+        loading={makeLoading}
       />}
     </View>
   )

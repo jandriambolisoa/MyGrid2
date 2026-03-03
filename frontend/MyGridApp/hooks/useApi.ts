@@ -28,9 +28,10 @@ export function useApi<T = any> (initLoading = false) {
     try {
       const data = await apiFetch<T>(props);
       setDatas(data);
-      return data;
+      return true;
     } catch (e) {
       setError(e)
+      return false
     } finally {
       setLoading(false)
     }

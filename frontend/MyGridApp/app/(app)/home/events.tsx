@@ -1,6 +1,6 @@
 import { ScrollContainer, MainWidget, ChampionshipWidget, EventCalendar } from "@/components/widgets";
-import { Constants } from "@/theme";
-import { Dimensions } from "react-native";
+import { Colors, Constants } from "@/theme";
+import { ActivityIndicator, Dimensions, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useApi } from "@/hooks";
 import { useAuth } from "@/contexts/AuthContext";
@@ -50,6 +50,9 @@ export default function Events ({
       {mainDatas && !mainLoading && !mainError && <MainWidget datas={mainDatas} style={{ height: Dimensions.get('window').height - insets.top - tabBarHeight - Constants.spacing.mainWidgetMargin}}/>}
       {champDatas && !champLoading && !champError && <ChampionshipWidget datas={champDatas}/>}
       {calendarDatas && !calendarLoading && !calendarError && <EventCalendar datas={calendarDatas}/>}
+      {calendarLoading && <View style={{ marginVertical: Constants.spacing.mainWidgetMargin }}>
+        <ActivityIndicator color={Colors.light.orangeLogo}/>
+      </View>}
     </ScrollContainer>
   )
 }
