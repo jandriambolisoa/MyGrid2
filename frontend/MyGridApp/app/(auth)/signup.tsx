@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Container, LiteButton, MainText } from "@/components/widgets";
-import { Dimensions, Keyboard, TextInput, TouchableWithoutFeedback, TouchableOpacity, View, ActivityIndicator, KeyboardAvoidingView } from "react-native";
+import { Container, ShadowButton, MainText } from "@/components/widgets";
+import { Dimensions, Keyboard, TextInput, TouchableWithoutFeedback, TouchableOpacity, View, ActivityIndicator, KeyboardAvoidingView, Linking } from "react-native";
 import { scopedI18n } from "@/translations/i18n";
 import { GlobalStyles, Colors, Constants } from "@/theme";
 import { Octicons } from '@expo/vector-icons';
@@ -16,6 +16,7 @@ export default function Signup () {
   const locale = Localization.getLocales()[0]?.languageCode || 'en';
   const router = useRouter();
 
+  const [isChecked, setIsChecked] = useState(false)
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -23,9 +24,20 @@ export default function Signup () {
   const [showPass, setShowPass] = useState(false);
   const [showConfirmPass, setShowConfirmPass] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
 
   const { emailSignup, error, loading } = useEmailSignup();
   const { login } = useAuth();
+
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener('keyboardDidShow', () => setKeyboardVisible(true));
+    const hideSubscription = Keyboard.addListener('keyboardDidHide', () => setKeyboardVisible(false));
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
 
   useEffect(() => {
     if (error) {
@@ -44,6 +56,11 @@ export default function Signup () {
 
     if (password !== confirmPassword) {
       setErrorMsg(t('passwordsDontMatch'));
+      return;
+    }
+
+    if (!isChecked) {
+      setErrorMsg(t('youMust'));
       return;
     }
 
@@ -73,7 +90,7 @@ export default function Signup () {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
         <Container style={{ backgroundColor: 'transparent' }}>
-          <MainText style={{fontSize: Constants.fontSizes.big, marginBottom: 40}}>{t('signup')}</MainText>
+          {!keyboardVisible && <MainText style={{fontSize: Constants.fontSizes.big, marginBottom: 40}}>{t('signup')}</MainText>}
           <TextInput
             value={username}
             placeholder={t('username')}
@@ -127,12 +144,30 @@ export default function Signup () {
               <Octicons name={showConfirmPass ? 'eye-closed' : 'eye'} size={20} color={Colors.light.lightText}/>
             </TouchableOpacity>}
           </View>
-          <LiteButton style={[GlobalStyles.loginButton, { width: width * 0.5 }]} onPress={handleSignup}>
+          <View style={{ flexDirection: 'row', maxWidth: '90%', marginBottom: 20, alignItems: 'center' }}>
+            <TouchableOpacity
+              style={{
+                width: 12,
+                height: 12,
+                borderColor: Colors.light.borders,
+                borderWidth: 1,
+                backgroundColor: isChecked ? Colors.light.borders : 'transparent',
+                borderRadius: 4
+              }}
+              hitSlop={20}
+              onPress={() => {if (isChecked) {setIsChecked(false)}else{setIsChecked(true)}}}
+            />
+            <MainText style={{ marginHorizontal: 6 }}>{t('iAccept')}</MainText>
+            <TouchableOpacity onPress={() => Linking.openURL('https://mygrid-app.com/privacy-policy')}>
+              <MainText style={{ color: Colors.light.link }}>{t('privacyPolicy')}</MainText>
+            </TouchableOpacity>
+          </View>
+          <ShadowButton style={[GlobalStyles.loginButton, { width: width * 0.5, padding: 0 }]} onPress={handleSignup}>
             {loading ? <ActivityIndicator color={Colors.light.lightText}/> : <MainText>{t('signup')}</MainText>}
-          </LiteButton>
-          <TouchableOpacity style={GlobalStyles.authLink} onPress={() => router.replace('/login')}>
+          </ShadowButton>
+          {!keyboardVisible && <TouchableOpacity style={GlobalStyles.authLink} onPress={() => router.replace('/login')}>
             <MainText>{t('login')}</MainText>
-          </TouchableOpacity>
+          </TouchableOpacity>}
           <MainText style={GlobalStyles.warning}>{errorMsg}</MainText>
         </Container>
       </KeyboardAvoidingView>

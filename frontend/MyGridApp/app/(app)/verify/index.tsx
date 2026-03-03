@@ -4,8 +4,10 @@ import { checkVersion, getPushTokenAsync } from "@/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { registerPushToken } from "@/api/registerPushToken";
 import { scopedI18n } from "@/translations/i18n";
-import { Constants } from "@/theme";
-
+import { Colors, Constants } from "@/theme";
+import { ActivityIndicator, View } from 'react-native';
+import { useState } from "react";
+ 
 export default function Verify () {
 
   const router = useRouter()
@@ -14,9 +16,12 @@ export default function Verify () {
   const { accessToken, user } = useAuth()
   const { maintenance, version } = useLocalSearchParams()
 
-  console.log(maintenance, ' ', version)
+  const [loading, setLoading] = useState(false)
 
   async function handlePress () {
+
+    setLoading(true)
+
     if (maintenance === 'true') {
       router.replace('/error/maintenance');
       return;
@@ -38,12 +43,23 @@ export default function Verify () {
     router.replace('/home')
   }
 
+  function buttonContent () {
+    if (loading) {
+      return <ActivityIndicator color={Colors.light.lightText}/>
+    }
+    return <MainText>{t('letsGo')}</MainText>
+  }
+
   return (
     <Container style={{ backgroundColor: 'transparent' }}>
-      <MainText style={{ fontSize: Constants.fontSizes.big }}>{t('welcome')} {user.username}{t('!')}</MainText>
-      <MainText>{t('weSent')}</MainText>
-      <MainText>{t('verify')}</MainText>
-      <ShadowButton onPress={handlePress}>{t('letsGo')}</ShadowButton>
+      <View style={{ width: '80%' }}>
+        <MainText style={{ fontSize: Constants.fontSizes.title, marginBottom: 44 }}>{t('welcome')} {user.username}{t('!')}</MainText>
+        <MainText style={{ marginBottom: 10 }}>{t('weSent')}</MainText>
+        <MainText>{t('verify')}</MainText>
+        <ShadowButton onPress={handlePress} style={{ marginTop: 44, width: '80%', alignSelf: 'center' }}>
+          {buttonContent()}
+        </ShadowButton>
+      </View>
     </Container>
   )
 }

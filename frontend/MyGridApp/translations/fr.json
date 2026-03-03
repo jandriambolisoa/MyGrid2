@@ -17,7 +17,10 @@
       "missingInfo": "Informations manquantes",
       "signup": "S'inscrire",
       "passwordsDontMatch": "Les mots de passe ne correspondent pas",
-      "login": "Déjà un compte? Se connecter"
+      "login": "Déjà un compte? Se connecter",
+      "iAccept": "J'accepte la",
+      "privacyPolicy": "politique de confidentialité",
+      "youMust": "Vous devez accepter la politique de confidentialité"
     }
   },
   "error": {
@@ -66,7 +69,7 @@
       "loading": "Chargement..."
     }
   },
-  "verifyAccount": {
+  "verify": {
     "!": "!",
     "welcome": "Bienvenue",
     "weSent": "Nous vous avons envoyé un email",

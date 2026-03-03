@@ -106,7 +106,7 @@ export const GlobalStyles = StyleSheet.create({
   },
   warning: {
     position: 'absolute',
-    bottom: '15%',
+    bottom: '10%',
     color: Colors.light.warning,
     left: '10%',
     right: '10%',
