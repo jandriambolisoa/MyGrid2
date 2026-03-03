@@ -60,6 +60,9 @@ services:
     command: poetry run uvicorn backend.assets.main:app --host 0.0.0.0 --port 8001
     networks:
       - app-network
+    volumes:
+      - /home/jerand/mygrid2-glb:/usr/src/app/backend/assets/src/glb/storage
+      - /home/jerand/mygrid2-images:/usr/src/app/backend/assets/src/images/storage
 
   api:
     image: jandriambolisoa/mygrid2
