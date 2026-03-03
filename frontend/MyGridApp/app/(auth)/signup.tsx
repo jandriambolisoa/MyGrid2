@@ -9,9 +9,6 @@ import * as Localization from 'expo-localization';
 import { useRouter } from "expo-router";
 import { useAuth } from "@/contexts/AuthContext";
 
-// Should be removed later after backend udpate to log from signup request.
-import { useEmailLogin } from "@/hooks";
-
 export default function Signup () {
 
   const t = scopedI18n('auth.signup');
@@ -28,7 +25,6 @@ export default function Signup () {
   const [errorMsg, setErrorMsg] = useState('');
 
   const { emailSignup, error, loading } = useEmailSignup();
-  const { emailLogin } = useEmailLogin();
   const { login } = useAuth();
 
   useEffect(() => {
@@ -54,14 +50,22 @@ export default function Signup () {
     const data = await emailSignup(username, email, password, locale);
 
     if (data) {
-      // Should be removed later after backend udpate to log from signup request.
-      const loginData = await emailLogin(username, password, locale);
 
-      if (loginData) {
-        await login(loginData);
-
-        router.replace('/home')
+      const loginDatas = {
+        user: data.user,
+        accessToken: data.access_token.access_token,
+        refreshToken: data.refresh_token.refresh_token
       }
+
+      await login(loginDatas);
+
+      router.replace({
+        pathname: '/verify',
+        params: {
+          maintenance: data.app_status.maintenance,
+          version: data.app_status.version
+        }
+      })
     }
   }
 
@@ -82,6 +86,7 @@ export default function Signup () {
           />
           <TextInput
             value={email}
+            keyboardType="email-address"
             placeholder={t('email')}
             cursorColor={Colors.light.lightText}
             selectionColor={Colors.light.lightText}

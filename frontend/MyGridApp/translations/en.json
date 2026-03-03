@@ -59,12 +59,19 @@
       "makePrediction": "Make prediction",
       "potentialScore": "Potential score: ",
       "pts": "Pts",
-      "onGoing": "En cours"
+      "onGoing": "Ongoing"
     },
     "results": {
       "f1": "F1",
       "loading": "Loading..."
     }
+  },
+  "verifyAccount": {
+    "!": "!",
+    "welcome": "Welcome",
+    "weSent": "We sent you an email",
+    "verify": "Verify your account to make your predictions",
+    "letsGo": "Let's go!"
   },
   "utils": {
     "niceDatetime": {
@@ -80,7 +87,7 @@
     "mainWidget": {
       "showResults": "Show results",
       "live": "Live",
-      "onGoing": "En cours",
+      "onGoing": "Ongoing",
       "finished": "Finished",
       "sessions": "Sessions:"
     },
