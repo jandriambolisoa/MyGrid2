@@ -22,7 +22,11 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.theoduh.mygridapp"
+      "package": "com.theoduh.mygridapp",
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ],
+      "googleServicesFile": "./google-services.json"
     },
     "web": {
       "bundler": "metro",
@@ -65,7 +69,8 @@
       ],
       "expo-localization",
       "expo-apple-authentication",
-      "expo-secure-store"
+      "expo-secure-store",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true
@@ -75,6 +80,7 @@
       "eas": {
         "projectId": "72487323-920f-438f-852a-aee635a98f43"
       }
-    }
+    },
+    "owner": "theoduh"
   }
 }

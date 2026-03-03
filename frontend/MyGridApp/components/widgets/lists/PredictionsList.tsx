@@ -1,7 +1,7 @@
 import { NumbersList, Separator, PredictionsDriverWidget } from "@/components/widgets";
 import { Colors, Constants } from "@/theme";
-import { Dispatch, memo, SetStateAction, useEffect, useState } from "react";
-import { View, ScrollView } from "react-native";
+import { Dispatch, memo, SetStateAction } from "react";
+import { View } from "react-native";
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import {
   ReorderableListReorderEvent,

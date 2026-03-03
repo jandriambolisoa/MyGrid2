@@ -43,6 +43,7 @@ export function AuthProvider ({ children }: any) {
 
     await SecureStore.deleteItemAsync('accessToken')
     await SecureStore.deleteItemAsync('refreshToken')
+    await SecureStore.deleteItemAsync('pushToken')
   }
 
   async function storeUser (user: any) {

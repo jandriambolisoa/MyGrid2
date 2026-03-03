@@ -7,7 +7,9 @@ import { Octicons } from '@expo/vector-icons';
 import { useEmailLogin } from "@/hooks";
 import { useRouter } from "expo-router";
 import { useAuth } from "@/contexts/AuthContext";
-import { checkVersion } from "@/utils";
+import { checkVersion, getPushTokenAsync } from "@/utils";
+import * as SecureStore from "expo-secure-store";
+import { registerPushToken } from "@/api/registerPushToken";
 
 export default function Login () {
 
@@ -21,7 +23,7 @@ export default function Login () {
   const [errorMsg, setErrorMsg] = useState('');
 
   const { emailLogin, error, loading } = useEmailLogin();
-  const { login } = useAuth();
+  const auth = useAuth();
 
   useEffect(() => {
     if (error) {
@@ -48,7 +50,7 @@ export default function Login () {
         refreshToken: data.refresh_token.refresh_token
       };
 
-      await login(loginDatas);
+      await auth.login(loginDatas);
 
       if (data.app_status.maintenance) {
         router.replace('/error/maintenance');
@@ -60,6 +62,16 @@ export default function Login () {
         return;
       }
 
+      const pushToken = await getPushTokenAsync();
+      const oldPushToken = await SecureStore.getItemAsync('pushToken');
+
+      try {
+        if (pushToken && pushToken !== oldPushToken) {
+          await registerPushToken(data.access_token.access_token, pushToken)
+        }
+      } catch (e) {
+        console.log(e)
+      }
       router.replace('/home')
     }
   }

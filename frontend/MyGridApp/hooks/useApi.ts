@@ -1,11 +1,11 @@
 import { apiFetch, FetchProps } from "@/api/fetch";
 import { useState } from "react";
 
-export function useApi<T = any> () {
+export function useApi<T = any> (initLoading = false) {
 
   const [datas, setDatas] = useState<T | null>(null);
   const [error, setError] = useState<unknown>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(initLoading);
 
   /**
    * Makes an API call using `apiFetch` and updates state.

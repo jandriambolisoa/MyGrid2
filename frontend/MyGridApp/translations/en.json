@@ -38,6 +38,10 @@
       "logout": "Logout"
     }
   },
+  "index": {
+    "welcome": "Welcome to",
+    "mygrid": "MyGrid"
+  },
   "profile": {
     "modify": {
       "modifyProfile": "Modify Profile",

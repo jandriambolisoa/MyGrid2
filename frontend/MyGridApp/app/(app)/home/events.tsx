@@ -17,9 +17,9 @@ export default function Events ({
   const insets = useSafeAreaInsets();
   const auth = useAuth()
 
-  const { datas: mainDatas, error: mainError, loading: mainLoading, api: getMain } = useApi();
-  const { datas: champDatas, error: champError, loading: champLoading, api: getChamp } = useApi();
-  const { datas: calendarDatas, error: calendarError, loading: calendarLoading, api: getCalendar } = useApi();
+  const { datas: mainDatas, error: mainError, loading: mainLoading, api: getMain } = useApi(true);
+  const { datas: champDatas, error: champError, loading: champLoading, api: getChamp } = useApi(true);
+  const { datas: calendarDatas, error: calendarError, loading: calendarLoading, api: getCalendar } = useApi(true);
 
   useEffect(() => {
     auth && getMain({

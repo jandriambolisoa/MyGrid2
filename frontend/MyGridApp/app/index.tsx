@@ -1,16 +1,20 @@
 import { View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Container, MainText, LiteButton } from '@/components/widgets';
+import { Container, MainText } from '@/components/widgets';
 import { Constants } from '@/theme';
 import { useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import * as SecureStore from 'expo-secure-store';
 import { refreshLogin } from '@/api/refresh';
-import { checkVersion } from '@/utils';
+import { checkVersion, getPushTokenAsync } from '@/utils';
+import { scopedI18n } from '@/translations/i18n';
+import { registerPushToken } from '@/api/registerPushToken';
 
 export default function MainScreen () {
 
   const router = useRouter();
+  const t = scopedI18n('index')
+
   const { login, logout } = useAuth();
 
   useEffect(() => {
@@ -46,9 +50,20 @@ export default function MainScreen () {
           return;
         }
 
+        const pushToken = await getPushTokenAsync();
+        const oldPushToken = await SecureStore.getItemAsync('pushToken');
+
+        try {
+          if (pushToken && pushToken !== oldPushToken) {
+            await registerPushToken(data.access_token.access_token, pushToken)
+          }
+        } catch (e) {
+          console.log(e)
+        }
+
         router.replace('/home')
 
-      } catch (e) {
+      } catch {
         logout();
         router.replace('/login')
       }
@@ -60,8 +75,8 @@ export default function MainScreen () {
   return (
     <Container style={{ backgroundColor: 'transparent'}}>
       <View style={{alignItems: 'center', justifyContent: 'center', position: 'absolute', top: "45%"}}>
-        <MainText>Welcome to</MainText>
-        <MainText style={{fontSize: Constants.fontSizes.giant, marginBottom: 40}}>Mygrid</MainText>
+        <MainText>{t('welcome')}</MainText>
+        <MainText style={{fontSize: Constants.fontSizes.giant, marginBottom: 40}}>{t('mygrid')}</MainText>
       </View>
     </Container>
   )
