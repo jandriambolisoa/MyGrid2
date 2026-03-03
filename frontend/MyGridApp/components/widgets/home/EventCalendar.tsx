@@ -63,9 +63,9 @@ export function EventCalendarWidget ({
           <ShadowSetup />
         </>
       }
-      <MainText>{datas?.name}</MainText>
+      <MainText bold={true}>{datas?.name}</MainText>
       <Image source={{ uri: datas?.flag }} style={{ height: 50, width: 80, margin: Constants.spacing.buttonPadding }} resizeMode="cover"/>
-      <MainText>{fromToDatetime(datas?.datetime)}</MainText>
+      <MainText style={{ maxWidth: '80%' }}>{fromToDatetime(datas?.datetime)}</MainText>
     </TouchableOpacity>
   )
 }

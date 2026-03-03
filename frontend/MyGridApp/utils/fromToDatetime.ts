@@ -11,6 +11,14 @@ export function fromToDatetime (date: string): string {
   const end = DateTime.fromISO(date).setLocale(locale)
   const start = end.minus({ days: 2 })
 
+  if (end.month === start.month) {
+    if (locale === 'fr') {
+    return `${t('from')} ${start.toFormat('dd')} ${t('to')} ${end.toFormat('dd MMMM')}`
+    }
+
+    return `${t('from')} ${start.toFormat('MMMM dd')} ${t('to')} ${end.toFormat('dd')}`
+  }
+
   if (locale === 'fr') {
     return `${t('from')} ${start.toFormat('dd MMMM')} ${t('to')} ${end.toFormat('dd MMMM')}`
   }
