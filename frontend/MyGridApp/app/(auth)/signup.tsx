@@ -13,8 +13,10 @@ export default function Signup () {
 
   const t = scopedI18n('auth.signup');
   const width = Dimensions.get('window').width;
-  const locale = Localization.getLocales()[0]?.languageCode || 'en';
   const router = useRouter();
+  const locale = Localization.getLocales()[0]?.languageCode || 'en';
+  const link = locale === 'en' ? 'https://mygrid-app.com/app-privacy-policy' : 'https://mygrid-app.com/fr/app-privacy-policy'
+
 
   const [isChecked, setIsChecked] = useState(false)
   const [username, setUsername] = useState('');
@@ -87,7 +89,7 @@ export default function Signup () {
   }
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    <TouchableWithoutFeedback onPress={() => {Keyboard.dismiss(); setKeyboardVisible(false)}}>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
         <Container style={{ backgroundColor: 'transparent' }}>
           {!keyboardVisible && <MainText style={{fontSize: Constants.fontSizes.big, marginBottom: 40}}>{t('signup')}</MainText>}
@@ -158,7 +160,7 @@ export default function Signup () {
               onPress={() => {if (isChecked) {setIsChecked(false)}else{setIsChecked(true)}}}
             />
             <MainText style={{ marginHorizontal: 6 }}>{t('iAccept')}</MainText>
-            <TouchableOpacity onPress={() => Linking.openURL('https://mygrid-app.com/privacy-policy')}>
+            <TouchableOpacity onPress={() => Linking.openURL(link)}>
               <MainText style={{ color: Colors.light.link }}>{t('privacyPolicy')}</MainText>
             </TouchableOpacity>
           </View>
