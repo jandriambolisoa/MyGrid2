@@ -36,6 +36,10 @@
       "memberSince": "Member since",
       "editProfile": "Edit profile",
       "logout": "Logout"
+    },
+    "social": {
+      "wip": "Work in progress...",
+      "stayTuned": "Leaderboards will be alvailable after the first session of the season, stay tuned!"
     }
   },
   "index": {

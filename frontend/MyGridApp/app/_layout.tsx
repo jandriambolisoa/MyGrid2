@@ -8,6 +8,7 @@ import { MyGridBackground } from '@/components/widgets';
 import { Colors } from '@/theme';
 import { AuthProvider } from '@/contexts/AuthContext';
 import * as Notifications from 'expo-notifications';
+import { StatusBar } from 'expo-status-bar';
 
 console.error = (message) => {
   if (message.includes('Require cycle')) {
@@ -53,6 +54,7 @@ export default function Layout() {
           </Stack>
         </View>
       </AuthProvider>
+      <StatusBar style='light'/>
     </SafeAreaProvider>
   );
 }

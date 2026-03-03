@@ -1,17 +1,19 @@
-import { Container, MainText, SpotLight } from "@/components/widgets";
+import { Container, MainText } from "@/components/widgets";
 import { Colors, Constants } from "@/theme";
+import { scopedI18n } from "@/translations/i18n";
 import { FontAwesome6 } from "@expo/vector-icons";
 import { View } from "react-native";
 
 export default function Social () {
+
+  const t = scopedI18n('home.social')
+
   return (
-    <Container >
+    <Container style={{ backgroundColor: 'transparent' }}>
       <View style={{ height: '80%', alignSelf: 'stretch', justifyContent: 'center', alignItems: 'center' }}>
-        <SpotLight color={Colors.light.orangeLogo} cx="65%" cy="40%" fx="65%" fy="40%" radius="35%"/>
-        <SpotLight color={Colors.light.cyanLogo} cx="35%" cy="60%" fx="35%" fy="60%" radius="35%"/>
         <FontAwesome6 name='gears' color={Colors.light.lightText} size={30}/>
-        <MainText style={{ fontSize: Constants.fontSizes.header, marginVertical: 16 }} bold={true}>Work in progress...</MainText>
-        <MainText style={{ maxWidth: '80%' }}>Leaderboards will be alvailable after the first session of the season, stay tuned!</MainText>
+        <MainText style={{ fontSize: Constants.fontSizes.header, marginVertical: 16 }} bold={true}>{t('wip')}</MainText>
+        <MainText style={{ maxWidth: '80%' }}>{t('stayTuned')}</MainText>
       </View>
     </Container>
   )
