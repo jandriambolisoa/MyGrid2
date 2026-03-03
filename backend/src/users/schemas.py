@@ -37,6 +37,14 @@ class UserSelf(BaseModel):
     language: Optional[str] = "en"
     image: Optional[str] = None
 
+    @computed_field
+    @property
+    def image_url(self) -> str:
+        if self.image:
+            return f"{app_settings.api_url}/images/{self.image}"
+        else:
+            return str()
+
 class UserProfile(BaseModel):
     user: User
     collectibles: Optional[List[Collectible]] = []
