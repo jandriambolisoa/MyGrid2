@@ -27,8 +27,8 @@ const config: ExpoConfig = {
     },
     edgeToEdgeEnabled: true,
     package: "com.theoduh.mygridapp",
-    permissions: [
-      "android.permission.RECORD_AUDIO"
+    blockedPermissions: [
+      "android.permission.ACTIVITY_RECOGNITION"
     ],
     googleServicesFile: process.env.GOOGLE_SERVICES_JSON,
   },
