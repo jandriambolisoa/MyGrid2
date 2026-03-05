@@ -1,6 +1,6 @@
 import { GlobalStyles, Constants, Colors } from "@/theme";
 import { View, ViewProps, StyleSheet, Image, FlatList } from "react-native";
-import { ShadowSetup, MainText, SpotLight, LiteButton } from "@/components/widgets";
+import { ShadowSetup, MainText, SpotLight, LiteButton, Sticker } from "@/components/widgets";
 import { DateTime } from "luxon"
 import { fromToDatetime, niceDatetime } from "@/utils"
 import { scopedI18n } from "@/translations/i18n";
@@ -71,10 +71,13 @@ export function MainWidget({
     }
 
     return(
-      <LiteButton style={GlobalStyles.mainWidgetButton} onPress={handlePress} disabled={item.competitive? false : true}>
-        <MainText>{item.name}</MainText>
-        {rightItem()}
-      </LiteButton>
+      <View style={{ overflow: 'hidden', marginBottom: Constants.spacing.buttonPadding }}>
+        <LiteButton style={[GlobalStyles.mainWidgetButton, { overflow: 'visible' }]} onPress={handlePress} disabled={item.competitive? false : true}>
+          <MainText>{item.name}</MainText>
+          {item.has_prono && <Sticker style={{ left: '45%' }}/>}
+          {rightItem()}
+        </LiteButton>
+      </View>
     )
   }
 
