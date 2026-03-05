@@ -71,11 +71,13 @@ export function MainWidget({
     }
 
     return(
-      <LiteButton style={[GlobalStyles.mainWidgetButton, { overflow: 'visible' }]} onPress={handlePress} disabled={item.competitive? false : true}>
-        <MainText>{item.name}</MainText>
-        {item.has_prono && <Sticker style={{ left: '45%' }}/>}
-        {rightItem()}
-      </LiteButton>
+      <View style={{ overflow: 'hidden', marginBottom: Constants.spacing.buttonPadding }}>
+        <LiteButton style={[GlobalStyles.mainWidgetButton, { overflow: 'visible' }]} onPress={handlePress} disabled={item.competitive? false : true}>
+          <MainText>{item.name}</MainText>
+          {item.has_prono && <Sticker style={{ left: '45%' }}/>}
+          {rightItem()}
+        </LiteButton>
+      </View>
     )
   }
 
