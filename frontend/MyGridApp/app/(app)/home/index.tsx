@@ -2,7 +2,6 @@ import { useRef, useState } from "react";
 import PagerView from "react-native-pager-view";
 import { View, Animated } from "react-native";
 import { PagerTabBar } from "@/components/widgets";
-import { Colors } from "@/theme"
 
 import Events from "./events";
 import Profile from "./profile";

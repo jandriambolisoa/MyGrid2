@@ -1,4 +1,4 @@
-import { TouchableOpacity, ViewProps, View, Animated } from "react-native";
+import { TouchableOpacity, ViewProps, Animated } from "react-native";
 import { GlobalStyles } from "@/theme";
 import { MainText } from "@/components/widgets";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
