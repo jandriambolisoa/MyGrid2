@@ -1,8 +1,7 @@
 import { useRef, useState } from "react";
 import PagerView from "react-native-pager-view";
-import { View } from "react-native";
+import { View, Animated } from "react-native";
 import { PagerTabBar } from "@/components/widgets";
-import { Colors } from "@/theme"
 
 import Events from "./events";
 import Profile from "./profile";
@@ -12,7 +11,10 @@ export default function HomePagerView () {
 
   const pagerRef = useRef<PagerView>(null);
   
-  const [scroll, setScroll] = useState<any>({ position: 1, offset: 0});
+  //const [scroll, setScroll] = useState<any>({ position: 1, offset: 0});
+  const position = useRef(new Animated.Value(1)).current;
+  const offset = useRef(new Animated.Value(0)).current;
+
   const [tabBarHeight, setTabBarHeight] = useState(0);
 
   return (
@@ -22,15 +24,16 @@ export default function HomePagerView () {
         style={{ flex: 1, backgroundColor: 'transparent' }}
         initialPage={1}
         overdrag={true}
-        onPageScroll={(e) => {
-          setScroll(e.nativeEvent);
-        }}
+        onPageScroll={Animated.event(
+          [{ nativeEvent: { position, offset } }],
+          { useNativeDriver: false }
+        )}
       >
         <Social />
         <Events tabBarHeight={tabBarHeight}/>
         <Profile tabBarHeight={tabBarHeight}/>
       </PagerView>
-      <PagerTabBar setPage={(page) => pagerRef.current?.setPage(page)} scroll={scroll} onLayout={(e) => setTabBarHeight(e.nativeEvent.layout.height)}/>
+      <PagerTabBar setPage={(page) => pagerRef.current?.setPage(page)} scroll={offset} position={position} onLayout={(e) => setTabBarHeight(e.nativeEvent.layout.height)}/>
     </View>
   )
 }

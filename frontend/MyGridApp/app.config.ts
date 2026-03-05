@@ -24,6 +24,7 @@ const config: ExpoConfig = {
     adaptiveIcon: {
       foregroundImage: "./assets/images/app/mygrid2_adaptive-icon-foreground.png",
       backgroundImage: "./assets/images/app/mygrid2_adaptive-icon-background.png",
+      backgroundColor: "#ffffff"
     },
     edgeToEdgeEnabled: true,
     package: "com.theoduh.mygridapp",
@@ -72,6 +73,14 @@ const config: ExpoConfig = {
           },
         },
       },
+    ],
+    [
+      "expo-navigation-bar",
+      {
+        enforceContrast: true,
+        barStyle: "light",
+        visibility: "hidden",
+      }
     ],
     "expo-localization",
     "expo-apple-authentication",

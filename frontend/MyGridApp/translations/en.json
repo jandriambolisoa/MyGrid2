@@ -74,7 +74,12 @@
     "welcome": "Welcome",
     "weSent": "We sent you an email",
     "verify": "Verify your account to make your predictions",
-    "letsGo": "Let's go!"
+    "letsGo": "Let's go!",
+    "resend": {
+      "yourAccount": "Your account is not verified",
+      "youNeed": "You need to verify your account in order to make your predictions",
+      "resend": "Resend verification mail"
+    }
   },
   "utils": {
     "niceDatetime": {
@@ -119,6 +124,11 @@
       "points": "Points",
       "pos": "Pos",
       "drivers": "Drivers"
+    }
+  },
+  "hooks": {
+    "useApi": {
+      "anError": "An error occured"
     }
   }
 }

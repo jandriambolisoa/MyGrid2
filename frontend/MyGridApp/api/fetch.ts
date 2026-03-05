@@ -3,6 +3,10 @@ import { refreshLogin } from "./refresh";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL
 
+export type ApiError = {
+  detail: string;
+}
+
 export type FetchProps = {
   endpoint: string;
   body?: unknown;
@@ -11,13 +15,13 @@ export type FetchProps = {
   auth: AuthContextType;
 }
 
-export async function apiFetch<T>({
+export async function apiFetch ({
   endpoint,
   body,
   method='GET',
   contentType='application/json',
   auth
-}: FetchProps): Promise<T> {
+}: FetchProps): Promise<any> {
   
   const accessToken = auth.accessToken;
 
@@ -56,9 +60,5 @@ export async function apiFetch<T>({
     }
   }
 
-  if (!response.ok) {
-    throw new Error("API request failed")
-  }
-
-  return await response.json()
+  return response
 }

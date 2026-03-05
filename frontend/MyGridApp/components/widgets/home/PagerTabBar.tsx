@@ -1,4 +1,4 @@
-import { TouchableOpacity, ViewProps, View } from "react-native";
+import { TouchableOpacity, ViewProps, Animated } from "react-native";
 import { GlobalStyles } from "@/theme";
 import { MainText } from "@/components/widgets";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -8,14 +8,18 @@ import { scopedI18n } from "@/translations/i18n";
 
 export type PagerTabBarProps = ViewProps & {
   setPage?: (page: number) => void;
-  scroll?: any;
+  scroll: Animated.Value;
+  position: Animated.Value;
 }
 
 export function PagerTabBar ({
   setPage,
   scroll,
+  position,
   ...otherProps
 }: PagerTabBarProps) {
+
+  const progress = Animated.add(position, scroll)
 
   const hitSlop = 20; // For buttons to be easily clickable.
   const insets = useSafeAreaInsets();
@@ -26,6 +30,11 @@ export function PagerTabBar ({
   const [ firstX, setFirstX ] = useState<number>(0);
   const [ lastX, setLastX ] = useState<number>(0);
 
+  const left = progress?.interpolate({
+    inputRange: [0, 1, 2],
+    outputRange: [firstX, (firstX + lastX) / 2, lastX]
+  });
+
   useEffect(() => {
     if (firstTabDim && lastTabDim) {
       setFirstX(firstTabDim.x + firstTabDim.width / 2);
@@ -34,7 +43,7 @@ export function PagerTabBar ({
   }, [firstTabDim, lastTabDim]);
 
   return (
-    <BlurView tint="light" intensity={20} style={[GlobalStyles.frame, GlobalStyles.tabBar, { paddingBottom: insets.bottom }]} {...otherProps}>
+    <BlurView tint="light" intensity={20} style={[GlobalStyles.frame, GlobalStyles.tabBar, { paddingBottom: insets.bottom + 6 }]} {...otherProps}>
       <TouchableOpacity onPress={() => setPage?.(0)} onLayout={(e) => setFirstTabDim(e.nativeEvent.layout)} hitSlop={hitSlop}>
         <MainText>{t('social')}</MainText>
       </TouchableOpacity>
@@ -44,7 +53,7 @@ export function PagerTabBar ({
       <TouchableOpacity onPress={() => setPage?.(2)} onLayout={(e) => setLastTabDim(e.nativeEvent.layout)} hitSlop={hitSlop}>
         <MainText>{t('profile')}</MainText>
       </TouchableOpacity>
-      <View style={[GlobalStyles.tabBarSlider, { bottom: insets.bottom - 6, left: (scroll?.offset + scroll?.position + .5) * (lastX - firstX) / 2 }]} />
+      <Animated.View style={[GlobalStyles.tabBarSlider, { bottom: insets.bottom, left }]} />
     </BlurView>
   )
 }

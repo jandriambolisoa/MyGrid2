@@ -2,7 +2,7 @@ import { Colors, Constants, GlobalStyles } from "@/theme"
 import { TouchableOpacityProps, TouchableOpacity, Dimensions, FlatList, View, Animated, Image, StyleSheet } from "react-native"
 import { MainText, Shadow, ShadowSetup, SpotLight } from "@/components/widgets"
 import { DateTime } from "luxon"
-import { useRef, useEffect, useState } from "react"
+import { useRef, useEffect, useState, useMemo } from "react"
 import { fromToDatetime } from "@/utils"
 import { scopedI18n } from "@/translations/i18n"
 
@@ -83,7 +83,10 @@ export function EventCalendar ({
     return DateTime.fromISO(a.datetime).toMillis() - DateTime.fromISO(b.datetime).toMillis()
   }
   
-  const sortedDatas = datas ? datas.events.sort(compareDates) : [];
+  const sortedDatas = useMemo(() => {
+    if (!datas) return []
+    return [...datas.events].sort(compareDates)
+  }, [datas])
 
   const windowWidth = Dimensions.get('window').width;
   const size = windowWidth * 0.65;

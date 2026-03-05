@@ -10,12 +10,6 @@ import { AuthProvider } from '@/contexts/AuthContext';
 import * as Notifications from 'expo-notifications';
 import { StatusBar } from 'expo-status-bar';
 
-console.error = (message) => {
-  if (message.includes('Require cycle')) {
-    return;
-  }
-};
-
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldPlaySound: false,

@@ -22,8 +22,8 @@ export function Sticker ({
   randomizeRotation=true,
   minTranslation=-10,
   maxTranslation=10,
-  minRotation=-60,
-  maxRotation=60,
+  minRotation=-50,
+  maxRotation=-20,
   style
 }: StickerProps) {
 

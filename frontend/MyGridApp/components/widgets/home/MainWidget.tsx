@@ -1,6 +1,6 @@
 import { GlobalStyles, Constants, Colors } from "@/theme";
 import { View, ViewProps, StyleSheet, Image, FlatList } from "react-native";
-import { ShadowSetup, MainText, SpotLight, LiteButton, Sticker } from "@/components/widgets";
+import { ShadowSetup, MainText, SpotLight, ShadowButton, Sticker } from "@/components/widgets";
 import { DateTime } from "luxon"
 import { fromToDatetime, niceDatetime } from "@/utils"
 import { scopedI18n } from "@/translations/i18n";
@@ -25,6 +25,11 @@ export function MainWidget({
   function renderItem({item} : any) {
 
     function handlePress () {
+
+      if (!item.competitive) {
+        return;
+      }
+
       if (item.is_over) {
         if (item.has_prono) {
           router.push(`/sessions/results/${item.id}`);
@@ -72,11 +77,15 @@ export function MainWidget({
 
     return(
       <View style={{ overflow: 'hidden', marginBottom: Constants.spacing.buttonPadding }}>
-        <LiteButton style={[GlobalStyles.mainWidgetButton, { overflow: 'visible' }]} onPress={handlePress} disabled={item.competitive? false : true}>
+        <ShadowButton
+          innerStyle={[GlobalStyles.mainWidgetButton]}
+          style={{ overflow: "visible" }}
+          onPress={handlePress}
+          absoluteChild={item.has_prono && <Sticker style={{ left: '30%' }}/>}
+        >
           <MainText>{item.name}</MainText>
-          {item.has_prono && <Sticker style={{ left: '45%' }}/>}
           {rightItem()}
-        </LiteButton>
+        </ShadowButton>
       </View>
     )
   }
