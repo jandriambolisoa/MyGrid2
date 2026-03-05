@@ -1,5 +1,5 @@
 import { GlobalStyles, Constants } from "@/theme";
-import { TouchableOpacity, View, type TouchableOpacityProps } from "react-native";
+import { StyleSheet, TouchableOpacity, View, type TouchableOpacityProps } from "react-native";
 import { ShadowSetup } from "@/components/widgets";
 
 /**
@@ -7,13 +7,16 @@ import { ShadowSetup } from "@/components/widgets";
  * 
  */
 
-export function ShadowButton({ style, ...otherProps }: TouchableOpacityProps) {
+export function ShadowButton({ innerStyle, absoluteChild, style, ...otherProps }: TouchableOpacityProps & { innerStyle?: any; absoluteChild?: any;}) {
   return (
     <TouchableOpacity style={[GlobalStyles.button, style]} {...otherProps}>
-      <ShadowSetup />
-      <View style={{padding: Constants.spacing.buttonPadding, zIndex: 1}}>
+      <View style={[StyleSheet.absoluteFill, { borderRadius: 3, overflow: 'hidden' }]}>
+        <ShadowSetup />
+      </View>
+      <View style={[{ padding: Constants.spacing.buttonPadding }, innerStyle]}>
         {otherProps.children}
       </View>
+      {absoluteChild}
     </TouchableOpacity>
   )
 }

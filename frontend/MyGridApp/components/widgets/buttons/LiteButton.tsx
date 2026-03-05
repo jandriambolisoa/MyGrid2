@@ -8,7 +8,7 @@ import { TouchableOpacity, type TouchableOpacityProps } from "react-native";
 
 export function LiteButton({ style, ...otherProps }: TouchableOpacityProps) {
   return (
-    <TouchableOpacity style={[GlobalStyles.button, { padding: Constants.spacing.buttonPadding}, style]} {...otherProps}>
+    <TouchableOpacity style={[GlobalStyles.button, { padding: Constants.spacing.buttonPadding }, style]} {...otherProps}>
       {otherProps.children}
     </TouchableOpacity>
   )
