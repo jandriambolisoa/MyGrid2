@@ -1,11 +1,15 @@
 import { apiFetch, FetchProps } from "@/api/fetch";
+import { scopedI18n } from "@/translations/i18n";
 import { useState } from "react";
 
 export function useApi<T = any> (initLoading = false) {
 
+  const t = scopedI18n('hooks.useApi');
+
   const [datas, setDatas] = useState<T | null>(null);
   const [error, setError] = useState<unknown>(null);
   const [loading, setLoading] = useState(initLoading);
+  const [status, setStatus] = useState<number | null>(null);
 
   /**
    * Makes an API call using `apiFetch` and updates state.
@@ -26,16 +30,27 @@ export function useApi<T = any> (initLoading = false) {
     setError(null)
 
     try {
-      const data = await apiFetch<T>(props);
+      const response = await apiFetch(props);
+
+      setStatus(response.status);
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data?.detail ?? t('anError'))
+        return false;
+      }
+
       setDatas(data);
       return true;
+
     } catch (e) {
-      setError(e)
+      setError(e instanceof Error ? e.message : t('anError'));
       return false
     } finally {
       setLoading(false)
     }
   }
 
-  return { datas, error, loading, api }
+  return { datas, error, status, loading, api }
 }

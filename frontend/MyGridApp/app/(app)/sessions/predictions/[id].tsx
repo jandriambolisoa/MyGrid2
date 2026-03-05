@@ -11,12 +11,12 @@ import { Colors } from "@/theme";
 export default function Predictions () {
 
   const auth = useAuth();
-  const t = scopedI18n('sessions.predictions')
-  const router = useRouter()
+  const t = scopedI18n('sessions.predictions');
+  const router = useRouter();
 
   const { id, hasProno, hasStarted, datetime } = useLocalSearchParams();
   const { datas, error, loading, api: getPredictions } = useApi(true);
-  const { error: makeError, loading: makeLoading, api: makePrediction } = useApi();
+  const { error: makeError, status: makeStatus, loading: makeLoading, api: makePrediction } = useApi();
   const { datas: paramsDatas, api: getParams } = useApi();
 
   const time = useTimer(String(datetime));
@@ -57,6 +57,12 @@ export default function Predictions () {
         }
       }
   }, [datas]);
+
+  useEffect(() => {
+      if (makeStatus === 403) {
+        router.push('/verify/resend')
+      }
+  }, [makeStatus])
 
   async function handlePredictions () {
     if (datas?.session?.datetime && DateTime.fromISO(datas.session.datetime) > DateTime.now()) {
