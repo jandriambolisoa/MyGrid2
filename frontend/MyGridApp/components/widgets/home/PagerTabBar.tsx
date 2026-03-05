@@ -1,4 +1,4 @@
-import { TouchableOpacity, ViewProps, View } from "react-native";
+import { TouchableOpacity, ViewProps, View, Animated } from "react-native";
 import { GlobalStyles } from "@/theme";
 import { MainText } from "@/components/widgets";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -8,14 +8,18 @@ import { scopedI18n } from "@/translations/i18n";
 
 export type PagerTabBarProps = ViewProps & {
   setPage?: (page: number) => void;
-  scroll?: any;
+  scroll: Animated.Value;
+  position: Animated.Value;
 }
 
 export function PagerTabBar ({
   setPage,
   scroll,
+  position,
   ...otherProps
 }: PagerTabBarProps) {
+
+  const progress = Animated.add(position, scroll)
 
   const hitSlop = 20; // For buttons to be easily clickable.
   const insets = useSafeAreaInsets();
@@ -25,6 +29,11 @@ export function PagerTabBar ({
   const [ lastTabDim, setLastTabDim ] = useState<any>(null);
   const [ firstX, setFirstX ] = useState<number>(0);
   const [ lastX, setLastX ] = useState<number>(0);
+
+  const left = progress?.interpolate({
+    inputRange: [0, 1, 2],
+    outputRange: [firstX, (firstX + lastX) / 2, lastX]
+  });
 
   useEffect(() => {
     if (firstTabDim && lastTabDim) {
@@ -44,7 +53,7 @@ export function PagerTabBar ({
       <TouchableOpacity onPress={() => setPage?.(2)} onLayout={(e) => setLastTabDim(e.nativeEvent.layout)} hitSlop={hitSlop}>
         <MainText>{t('profile')}</MainText>
       </TouchableOpacity>
-      <View style={[GlobalStyles.tabBarSlider, { bottom: insets.bottom, left: (scroll?.offset + scroll?.position + .5) * (lastX - firstX) / 2 }]} />
+      <Animated.View style={[GlobalStyles.tabBarSlider, { bottom: insets.bottom, left }]} />
     </BlurView>
   )
 }
