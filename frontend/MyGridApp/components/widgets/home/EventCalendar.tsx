@@ -35,6 +35,9 @@ export function EventCalendarWidget ({
     extrapolate: 'clamp'
   })
 
+  // Temporary disable -> should be removed after event page creation
+  const disabled = true;
+
   const [showShadow, setShowShadow] = useState(true);
 
   useEffect(() => {
@@ -53,16 +56,16 @@ export function EventCalendarWidget ({
   }, [scroll, index, size]);
 
   return(
-    <TouchableOpacity style={[GlobalStyles.button, { height: size, width: size, alignSelf: 'center', transform: [{ scale: scale }]  }]}>
+    <TouchableOpacity style={[GlobalStyles.button, { height: size, width: size, alignSelf: 'center', transform: [{ scale: scale }]  }]} disabled={disabled}>
       {showShadow && 
         <>
-          <SpotLight color={datas?.color || Colors.light.background} cx="35%" cy="35%" fx="5%" fy="5%" radius="50%"/>
+          <SpotLight color={datas?.colors[0] || Colors.light.background} cx="35%" cy="35%" fx="5%" fy="5%" radius="50%"/>
           <ShadowSetup />
         </>
       }
-      <MainText>{datas?.name}</MainText>
+      <MainText bold={true}>{datas?.name}</MainText>
       <Image source={{ uri: datas?.flag }} style={{ height: 50, width: 80, margin: Constants.spacing.buttonPadding }} resizeMode="cover"/>
-      <MainText>{fromToDatetime(datas?.datetime)}</MainText>
+      <MainText style={{ maxWidth: '80%' }}>{fromToDatetime(datas?.datetime)}</MainText>
     </TouchableOpacity>
   )
 }
@@ -85,7 +88,7 @@ export function EventCalendar ({
   const windowWidth = Dimensions.get('window').width;
   const size = windowWidth * 0.65;
   const blankSpace = (windowWidth - size) / 2;
-  const index = sortedDatas.findIndex((item: any) => DateTime.fromISO(item.datetime) > DateTime.now()) || sortedDatas.length - 1;
+  const index = sortedDatas.findIndex((item: any) => DateTime.fromISO(item.datetime) > DateTime.now());
   const firstPage = index === -1 ? sortedDatas.length - 1 : index;
   const initialScrollX = firstPage * (size + Constants.spacing.buttonPadding);
   const scrollX = useRef(new Animated.Value(initialScrollX)).current;

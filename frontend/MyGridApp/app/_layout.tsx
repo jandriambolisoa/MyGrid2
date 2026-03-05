@@ -7,6 +7,23 @@ import { StyleSheet, View } from 'react-native';
 import { MyGridBackground } from '@/components/widgets';
 import { Colors } from '@/theme';
 import { AuthProvider } from '@/contexts/AuthContext';
+import * as Notifications from 'expo-notifications';
+import { StatusBar } from 'expo-status-bar';
+
+console.error = (message) => {
+  if (message.includes('Require cycle')) {
+    return;
+  }
+};
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+    shouldShowBanner: true,
+    shouldShowList: true
+  }),
+});
 
 SplashScreen.preventAutoHideAsync();
 
@@ -26,9 +43,9 @@ export default function Layout() {
   if (!fontsLoaded) return null;
 
   return (
-    <SafeAreaProvider onLayout={onLayoutRootView}>
+    <SafeAreaProvider>
       <AuthProvider>
-        <View style={{ flex: 1, alignSelf: 'stretch', backgroundColor: Colors.light.background}}>
+        <View style={{ flex: 1, alignSelf: 'stretch', backgroundColor: Colors.light.background}} onLayout={onLayoutRootView}>
           <View style={StyleSheet.absoluteFill}>
             <MyGridBackground />
           </View>
@@ -37,6 +54,7 @@ export default function Layout() {
           </Stack>
         </View>
       </AuthProvider>
+      <StatusBar style='light'/>
     </SafeAreaProvider>
   );
 }

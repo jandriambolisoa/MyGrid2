@@ -2,14 +2,79 @@
   "auth": {
     "login": {
       "signInGoogle": "Se connecter avec Google",
-      "signInApple": "Se connecter avec Apple"
+      "signInApple": "Se connecter avec Apple",
+      "usernameEmail": "Nom d'utilisateur ou email",
+      "password": "Mot de passe",
+      "login": "Se connecter",
+      "missingInfo": "Informations manquantes",
+      "signup": "Pas de compte? S'inscrire"
+    },
+    "signup": {
+      "username": "Nom d'utilisateur",
+      "email": "Email",
+      "password": "Mot de passe",
+      "confirmPassword": "Confirmer le mot de passe",
+      "missingInfo": "Informations manquantes",
+      "signup": "S'inscrire",
+      "passwordsDontMatch": "Les mots de passe ne correspondent pas",
+      "login": "Déjà un compte? Se connecter",
+      "iAccept": "J'accepte la",
+      "privacyPolicy": "politique de confidentialité",
+      "youMust": "Vous devez accepter la politique de confidentialité"
+    }
+  },
+  "error": {
+    "maintenance": {
+      "back": "Nous serons bientôt de retour!",
+      "maintenance": "Nous mettons l'app à jour, revenez plus tard"
+    },
+    "update": {
+      "version": "Une nouvelle version est dispo!",
+      "please": "Mettez à jour pour continuer de l'utiliser.",
+      "update": "Mettre à jour"
     }
   },
   "home": {
     "profile": {
       "memberSince": "Membre depuis le",
-      "editProfile": "Modifier le profil"
+      "editProfile": "Modifier le profil",
+      "logout": "Se déconnecter"
+    },
+    "social": {
+      "wip": "Travail en cours...",
+      "stayTuned": "Le classement sera disponible après la première session de l'année, restez connectés!"
     }
+  },
+  "index": {
+    "welcome": "Bienvenue sur",
+    "mygrid": "MyGrid"
+  },
+  "profile": {
+    "modify": {
+      "modifyProfile": "Modifier le profil",
+      "modifyPP": "Modifier la photo",
+      "permission": "Permission requise",
+      "permissionTo": "La permission d'accéder à vos photos est requise"
+    }
+  },
+  "sessions": {
+    "predictions": {
+      "makePrediction": "Faire un prono",
+      "potentialScore": "Score potentiel: ",
+      "pts": "Pts",
+      "onGoing": "En cours"
+    },
+    "results": {
+      "f1": "F1",
+      "loading": "Chargement..."
+    }
+  },
+  "verify": {
+    "!": "!",
+    "welcome": "Bienvenue",
+    "weSent": "Nous vous avons envoyé un email",
+    "verify": "Verifiez votre compte pour pouvoir faire vos pronos",
+    "letsGo": "C'est parti!"
   },
   "utils": {
     "niceDatetime": {
@@ -24,7 +89,10 @@
   "widgets": {
     "mainWidget": {
       "showResults": "Voir les résultats",
-      "live": "En direct"
+      "live": "En direct",
+      "onGoing": "En cours",
+      "finished": "Terminé",
+      "sessions": "Sessions:"
     },
     "pagerTabBar": {
       "social": "Social",
@@ -35,10 +103,22 @@
       "championship": "Championnat",
       "drivers": "Pilotes",
       "constructors": "Constructeurs",
-      "noPrediction": "Pas encore de prono"
+      "noPrediction": "Pas encore de prono",
+      "pts": "Pts"
     },
     "eventCalendar": {
       "calendar": "Calendrier"
+    },
+    "resultsFooter": {
+      "totalScore": "Score total: ",
+      "performance": "Performance: ",
+      "pts": "Pts"
+    },
+    "listsLabels": {
+      "myGrid": "Ma Grille",
+      "points": "Points",
+      "pos": "Pos",
+      "drivers": "Pilotes"
     }
   }
 }

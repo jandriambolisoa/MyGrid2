@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Container, LiteButton, MainText } from "@/components/widgets";
-import { Dimensions, Keyboard, TextInput, TouchableWithoutFeedback, TouchableOpacity, View, ActivityIndicator, KeyboardAvoidingView } from "react-native";
+import { Container, ShadowButton, MainText } from "@/components/widgets";
+import { Dimensions, Keyboard, TextInput, TouchableWithoutFeedback, TouchableOpacity, View, ActivityIndicator, KeyboardAvoidingView, Linking } from "react-native";
 import { scopedI18n } from "@/translations/i18n";
 import { GlobalStyles, Colors, Constants } from "@/theme";
 import { Octicons } from '@expo/vector-icons';
@@ -9,16 +9,16 @@ import * as Localization from 'expo-localization';
 import { useRouter } from "expo-router";
 import { useAuth } from "@/contexts/AuthContext";
 
-// Should be removed later after backend udpate to log from signup request.
-import { useEmailLogin } from "@/hooks";
-
 export default function Signup () {
 
   const t = scopedI18n('auth.signup');
   const width = Dimensions.get('window').width;
-  const locale = Localization.getLocales()[0]?.languageCode || 'en';
   const router = useRouter();
+  const locale = Localization.getLocales()[0]?.languageCode || 'en';
+  const link = locale === 'en' ? 'https://mygrid-app.com/app-privacy-policy' : 'https://mygrid-app.com/fr/app-privacy-policy'
 
+
+  const [isChecked, setIsChecked] = useState(false)
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -26,10 +26,20 @@ export default function Signup () {
   const [showPass, setShowPass] = useState(false);
   const [showConfirmPass, setShowConfirmPass] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [keyboardVisible, setKeyboardVisible] = useState(false);
 
   const { emailSignup, error, loading } = useEmailSignup();
-  const { emailLogin } = useEmailLogin();
   const { login } = useAuth();
+
+  useEffect(() => {
+    const showSubscription = Keyboard.addListener('keyboardDidShow', () => setKeyboardVisible(true));
+    const hideSubscription = Keyboard.addListener('keyboardDidHide', () => setKeyboardVisible(false));
+
+    return () => {
+      showSubscription.remove();
+      hideSubscription.remove();
+    };
+  }, []);
 
   useEffect(() => {
     if (error) {
@@ -51,25 +61,38 @@ export default function Signup () {
       return;
     }
 
+    if (!isChecked) {
+      setErrorMsg(t('youMust'));
+      return;
+    }
+
     const data = await emailSignup(username, email, password, locale);
 
     if (data) {
-      // Should be removed later after backend udpate to log from signup request.
-      const loginData = await emailLogin(username, password, locale);
 
-      if (loginData) {
-        await login(loginData);
-
-        router.replace('/home')
+      const loginDatas = {
+        user: data.user,
+        accessToken: data.access_token.access_token,
+        refreshToken: data.refresh_token.refresh_token
       }
+
+      await login(loginDatas);
+
+      router.replace({
+        pathname: '/verify',
+        params: {
+          maintenance: data.app_status.maintenance,
+          version: data.app_status.version
+        }
+      })
     }
   }
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    <TouchableWithoutFeedback onPress={() => {Keyboard.dismiss(); setKeyboardVisible(false)}}>
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
         <Container style={{ backgroundColor: 'transparent' }}>
-          <MainText style={{fontSize: Constants.fontSizes.big, marginBottom: 40}}>{t('signup')}</MainText>
+          {!keyboardVisible && <MainText style={{fontSize: Constants.fontSizes.big, marginBottom: 40}}>{t('signup')}</MainText>}
           <TextInput
             value={username}
             placeholder={t('username')}
@@ -82,6 +105,7 @@ export default function Signup () {
           />
           <TextInput
             value={email}
+            keyboardType="email-address"
             placeholder={t('email')}
             cursorColor={Colors.light.lightText}
             selectionColor={Colors.light.lightText}
@@ -122,12 +146,30 @@ export default function Signup () {
               <Octicons name={showConfirmPass ? 'eye-closed' : 'eye'} size={20} color={Colors.light.lightText}/>
             </TouchableOpacity>}
           </View>
-          <LiteButton style={[GlobalStyles.loginButton, { width: width * 0.5 }]} onPress={handleSignup}>
+          <View style={{ flexDirection: 'row', maxWidth: '90%', marginBottom: 20, alignItems: 'center' }}>
+            <TouchableOpacity
+              style={{
+                width: 12,
+                height: 12,
+                borderColor: Colors.light.borders,
+                borderWidth: 1,
+                backgroundColor: isChecked ? Colors.light.borders : 'transparent',
+                borderRadius: 4
+              }}
+              hitSlop={20}
+              onPress={() => {if (isChecked) {setIsChecked(false)}else{setIsChecked(true)}}}
+            />
+            <MainText style={{ marginHorizontal: 6 }}>{t('iAccept')}</MainText>
+            <TouchableOpacity onPress={() => Linking.openURL(link)}>
+              <MainText style={{ color: Colors.light.link }}>{t('privacyPolicy')}</MainText>
+            </TouchableOpacity>
+          </View>
+          <ShadowButton style={[GlobalStyles.loginButton, { width: width * 0.5, padding: 0 }]} onPress={handleSignup}>
             {loading ? <ActivityIndicator color={Colors.light.lightText}/> : <MainText>{t('signup')}</MainText>}
-          </LiteButton>
-          <TouchableOpacity style={GlobalStyles.authLink} onPress={() => router.replace('/login')}>
+          </ShadowButton>
+          {!keyboardVisible && <TouchableOpacity style={GlobalStyles.authLink} onPress={() => router.replace('/login')}>
             <MainText>{t('login')}</MainText>
-          </TouchableOpacity>
+          </TouchableOpacity>}
           <MainText style={GlobalStyles.warning}>{errorMsg}</MainText>
         </Container>
       </KeyboardAvoidingView>
