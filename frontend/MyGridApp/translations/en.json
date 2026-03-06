@@ -61,6 +61,10 @@
       "permissionTo": "Permission to access your photos is required"
     }
   },
+  "rankings": {
+    "loading": "Loading...",
+    "weekendRankings": "Weekend rankings"
+  },
   "sessions": {
     "predictions": {
       "makePrediction": "Make prediction",

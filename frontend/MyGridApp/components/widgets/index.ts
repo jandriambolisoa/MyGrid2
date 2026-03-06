@@ -11,6 +11,7 @@ export * from './ui/ShadowSetup';
 export * from './ui/ProfilePicture';
 export * from './ui/MainText';
 export * from './ui/Sticker';
+export * from './ui/MainLoading';
 
 export * from './buttons/ShadowButton';
 export * from './buttons/LiteButton';
