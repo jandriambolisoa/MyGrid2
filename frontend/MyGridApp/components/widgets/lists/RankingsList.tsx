@@ -2,6 +2,7 @@ import { ScrollContainer, Separator, NumbersList, RankingsUserWidget } from "@/c
 import { Constants } from "@/theme";
 import { FlatList, View } from "react-native";
 import { useAuth } from '@/contexts/AuthContext'
+import { useEffect } from "react";
 
 export function RankingsList ({
   datas=[],
@@ -25,6 +26,10 @@ export function RankingsList ({
       <RankingsUserWidget item={item} spotColor={color} you={you}/>
     )
   }
+
+  useEffect(() => {
+    console.log(datas)
+  }, [datas])
 
   return (
     <ScrollContainer footerHeight={footerHeight} headerHeight={headerHeight}>

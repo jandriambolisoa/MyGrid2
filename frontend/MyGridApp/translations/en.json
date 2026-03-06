@@ -64,10 +64,12 @@
   "rankings": {
     "loading": "Loading...",
     "weekendRankings": "Weekend rankings",
+    "globalRankings": "Global rankings",
     "pts": "Pts",
     "yourRank": "Your rank:",
     "yourScore": "Your score:",
-    "you": "You"
+    "you": "You",
+    "8events": "Score of 8 best events"
   },
   "sessions": {
     "predictions": {

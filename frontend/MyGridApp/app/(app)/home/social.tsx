@@ -51,6 +51,7 @@ export default function Social ({
           subtitle={t('tapMygrid')}
           color1={Colors.light.cyanLogo}
           color2={Colors.light.orangeLogo}
+          path="/rankings/championships"
         />
       </View>
       <RankingsWidget
