@@ -37,7 +37,7 @@ export default function Rankings () {
         title={t('globalRankings')}
         subtitle={t('8events')}
       >
-
+        <MainText style={{ marginBottom: 6, color: Colors.light.warning }}>{t('feature')}</MainText>
       </Header>
       <RankingsFooter
         onLayout={(e: any) => setFooterHeight(e.nativeEvent.layout.height)}

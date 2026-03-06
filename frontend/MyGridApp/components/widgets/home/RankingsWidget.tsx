@@ -40,7 +40,7 @@ export function RankingsWidget ({
       {color2 && mode === 'horizontal' && <SpotLight color={color2} cx="70%" cy="70%" fx="95%" fy="95%" radius="60%"/>}
       <ShadowSetup/>
       <View style={{ padding: Constants.spacing.mainWidgetMargin }}>
-        {title && <MainText fontSize='header' style={{ marginBottom: Constants.spacing.mainWidgetMargin}}>{title}</MainText>}
+        {title && <MainText fontSize='title' style={{ marginBottom: Constants.spacing.mainWidgetMargin}}>{title}</MainText>}
         {subtitle && <MainText>{subtitle}</MainText>}
       </View>
     </TouchableOpacity>
