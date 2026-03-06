@@ -2,6 +2,7 @@ export * from './home/MainWidget';
 export * from './home/ChampionshipWidget';
 export * from './home/EventCalendar';
 export * from './home/PagerTabBar';
+export * from './home/RankingsWidget';
 
 export * from './ui/MyGridBackground';
 export * from './ui/SpotLight';

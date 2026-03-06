@@ -18,6 +18,7 @@ export const Colors = {
     live: '#E31B00',
     warning: '#FF2F12',
     disabledText: '#f1f1f1',
-    link: "#1A8BFF"
+    link: "#1A8BFF",
+    records: "#6409DE"
   },
 };

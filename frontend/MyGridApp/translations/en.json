@@ -41,8 +41,12 @@
       "logout": "Logout"
     },
     "social": {
-      "wip": "Work in progress...",
-      "stayTuned": "Leaderboards will be alvailable after the first session of the season, stay tuned!"
+      "weekend": "Weekend",
+      "mygrid": "MyGrid",
+      "records": "Records",
+      "tapWeekend": "Tap to see this weekend's rankings",
+      "tapMygrid": "Tap to see the overall rankings",
+      "tapRecords": "Tap to see the point records"
     }
   },
   "index": {
