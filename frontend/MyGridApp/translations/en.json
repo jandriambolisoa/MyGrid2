@@ -63,7 +63,10 @@
   },
   "rankings": {
     "loading": "Loading...",
-    "weekendRankings": "Weekend rankings"
+    "weekendRankings": "Weekend rankings",
+    "pts": "Pts",
+    "yourRank": "Your rank:",
+    "yourScore": "Your score:"
   },
   "sessions": {
     "predictions": {

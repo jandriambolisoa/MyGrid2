@@ -1,4 +1,4 @@
-import { Header, ScrollContainer, MainLoading } from "@/components/widgets";
+import { Header, ScrollContainer, MainLoading, RankingsFooter } from "@/components/widgets";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { useApi } from "@/hooks";
@@ -39,6 +39,10 @@ export default function Rankings () {
       >
 
       </Header>
+      <RankingsFooter
+        datas={datas?.viewer_rank}
+        spotColor={color2}
+      />
     </View>
   )
 }

@@ -1,4 +1,4 @@
-import { ScrollContainer, MainText, ShadowButton, SpotLight, RankingsWidget } from "@/components/widgets";
+import { ScrollContainer, RankingsWidget } from "@/components/widgets";
 import { scopedI18n } from "@/translations/i18n";
 import { Dimensions, View } from "react-native";
 import { useApi } from "@/hooks";

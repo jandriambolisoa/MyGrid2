@@ -24,6 +24,7 @@ export * from './layout/ResultsFooter';
 export * from './layout/Container';
 export * from './layout/PredictionsFooter';
 export * from './layout/ListLabels';
+export * from './layout/RankingsFooter';
 
 export * from './lists/ResultsDriverWidget';
 export * from './lists/ResultsAloneList';
