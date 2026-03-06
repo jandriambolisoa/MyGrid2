@@ -1,4 +1,4 @@
-import { Header, ScrollContainer, MainLoading, RankingsFooter } from "@/components/widgets";
+import { Header, MainLoading, RankingsFooter, RankingsList } from "@/components/widgets";
 import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { useApi } from "@/hooks";
@@ -28,9 +28,7 @@ export default function Rankings () {
   return (
     <View style={{ flex: 1 }}>
       <MainLoading loading={loading}/>
-      {datas && <ScrollContainer headerHeight={headerHeight} footerHeight={footerHeight}>
-
-      </ScrollContainer>}
+      {datas && <RankingsList footerHeight={footerHeight} headerHeight={headerHeight}/>}
       <Header
         onLayout={(e: any) => setHeaderHeight(e.nativeEvent.layout.height)}
         spotColor={color1}
