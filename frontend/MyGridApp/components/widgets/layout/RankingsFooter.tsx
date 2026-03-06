@@ -1,5 +1,5 @@
 import { StyleSheet, View } from "react-native";
-import { Frame, MainText, SpotLight } from "@/components/widgets";
+import { Frame, FrameProps, MainText, SpotLight } from "@/components/widgets";
 import { GlobalStyles } from "@/theme";
 import { scopedI18n } from "@/translations/i18n";
 import { rankNumber } from "@/utils";
@@ -8,7 +8,7 @@ export function RankingsFooter ({
   datas=null,
   spotColor=null,
   ...otherProps
-} : {
+} : FrameProps & {
   datas?: any;
   spotColor?: string | null;
 }) {

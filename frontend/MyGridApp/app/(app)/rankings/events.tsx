@@ -4,6 +4,7 @@ import { View } from "react-native";
 import { useApi } from "@/hooks";
 import { useAuth } from "@/contexts/AuthContext";
 import { scopedI18n } from "@/translations/i18n";
+import { Colors } from "@/theme";
 
 export default function Rankings () {
 
@@ -17,7 +18,8 @@ export default function Rankings () {
 
   useEffect(() => {
     auth && getRankings({
-      endpoint: `/ranks/events`,
+      // Limit should be replaced by paging as soon as possible
+      endpoint: `/ranks/even/ts?limit=300`,
       auth: auth
     })
   }, [auth])
@@ -26,9 +28,9 @@ export default function Rankings () {
   const color2 = datas?.event.colors.length > 1 ? datas?.session.event.colors[1] : color1;
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: Colors.light.background }}>
       <MainLoading loading={loading}/>
-      {datas && <RankingsList footerHeight={footerHeight} headerHeight={headerHeight}/>}
+      {datas?.ranks && <RankingsList datas={datas.ranks} footerHeight={footerHeight} headerHeight={headerHeight} color={color1}/>}
       <Header
         onLayout={(e: any) => setHeaderHeight(e.nativeEvent.layout.height)}
         spotColor={color1}
@@ -38,6 +40,7 @@ export default function Rankings () {
 
       </Header>
       <RankingsFooter
+        onLayout={(e: any) => setFooterHeight(e.nativeEvent.layout.height)}
         datas={datas?.viewer_rank}
         spotColor={color2}
       />

@@ -35,5 +35,6 @@ export * from './lists/NumbersList';
 export * from './lists/PredictionsList';
 export * from './lists/PredictionsDriverWidget';
 export * from './lists/RankingsList';
+export * from './lists/RankingsUserWidget';
 
 
