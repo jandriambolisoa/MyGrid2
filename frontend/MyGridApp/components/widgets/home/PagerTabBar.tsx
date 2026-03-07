@@ -1,6 +1,6 @@
-import { TouchableOpacity, ViewProps, View } from "react-native";
+import { TouchableOpacity, ViewProps, Animated } from "react-native";
 import { GlobalStyles } from "@/theme";
-import { MainText } from "./MainText";
+import { MainText } from "@/components/widgets";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { BlurView } from "expo-blur";
 import { useState, useEffect } from "react";
@@ -8,23 +8,32 @@ import { scopedI18n } from "@/translations/i18n";
 
 export type PagerTabBarProps = ViewProps & {
   setPage?: (page: number) => void;
-  scroll?: any;
+  scroll: Animated.Value;
+  position: Animated.Value;
 }
 
 export function PagerTabBar ({
   setPage,
   scroll,
+  position,
   ...otherProps
 }: PagerTabBarProps) {
 
-  const insets = useSafeAreaInsets();
+  const progress = Animated.add(position, scroll)
 
+  const hitSlop = 20; // For buttons to be easily clickable.
+  const insets = useSafeAreaInsets();
   const t = scopedI18n('widgets.pagerTabBar')
 
   const [ firstTabDim, setFirstTabDim ] = useState<any>(null);
   const [ lastTabDim, setLastTabDim ] = useState<any>(null);
   const [ firstX, setFirstX ] = useState<number>(0);
   const [ lastX, setLastX ] = useState<number>(0);
+
+  const left = progress?.interpolate({
+    inputRange: [0, 1, 2],
+    outputRange: [firstX, (firstX + lastX) / 2, lastX]
+  });
 
   useEffect(() => {
     if (firstTabDim && lastTabDim) {
@@ -34,17 +43,17 @@ export function PagerTabBar ({
   }, [firstTabDim, lastTabDim]);
 
   return (
-    <BlurView tint="light" intensity={10} style={[GlobalStyles.tabBar, { paddingBottom: insets.bottom }]} {...otherProps}>
-      <TouchableOpacity onPress={() => setPage?.(0)} onLayout={(e) => setFirstTabDim(e.nativeEvent.layout)}>
+    <BlurView tint="light" intensity={20} style={[GlobalStyles.frame, GlobalStyles.tabBar, { paddingBottom: insets.bottom + 6 }]} {...otherProps}>
+      <TouchableOpacity onPress={() => setPage?.(0)} onLayout={(e) => setFirstTabDim(e.nativeEvent.layout)} hitSlop={hitSlop}>
         <MainText>{t('social')}</MainText>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => setPage?.(1)}>
+      <TouchableOpacity onPress={() => setPage?.(1)} hitSlop={hitSlop}>
         <MainText>{t('home')}</MainText>
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => setPage?.(2)} onLayout={(e) => setLastTabDim(e.nativeEvent.layout)}>
+      <TouchableOpacity onPress={() => setPage?.(2)} onLayout={(e) => setLastTabDim(e.nativeEvent.layout)} hitSlop={hitSlop}>
         <MainText>{t('profile')}</MainText>
       </TouchableOpacity>
-      <View style={[GlobalStyles.tabBarSlider, { bottom: insets.bottom - 6, left: (scroll?.offset + scroll?.position + .5) * (lastX - firstX) / 2 }]} />
+      <Animated.View style={[GlobalStyles.tabBarSlider, { bottom: insets.bottom, left }]} />
     </BlurView>
   )
 }

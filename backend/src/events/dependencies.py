@@ -107,7 +107,7 @@ async def get_last_event_id(language: str = "en"):
         FROM sessions
         LEFT JOIN events ON events.id = event_id
         WHERE competitive = true AND datetime < NOW()
-        ORDER BY datetime ASC""")
+        ORDER BY datetime DESC""")
     event = db.cursor.fetchone()
 
     if not event:

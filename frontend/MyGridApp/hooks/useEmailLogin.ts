@@ -5,7 +5,7 @@ import * as Localization from 'expo-localization'
 const API_URL = process.env.EXPO_PUBLIC_API_URL
 const locale = Localization.getLocales()[0]?.languageCode || 'en';
 
-export  function useEmailLogin () {
+export function useEmailLogin () {
 
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -35,11 +35,7 @@ export  function useEmailLogin () {
         return false;
       }
 
-      return {
-        user: data.user,
-        accessToken: data.access_token.access_token,
-        refreshToken: data.refresh_token.refresh_token
-      };
+      return data
 
     } catch (e: any) {
       setError(e.message);

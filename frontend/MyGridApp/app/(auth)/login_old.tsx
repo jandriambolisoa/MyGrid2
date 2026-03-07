@@ -1,12 +1,10 @@
-import { Container } from "@/components/widgets/Container";
-import { MainText } from "@/components/widgets/MainText";
-import { TouchableOpacity, StyleSheet, View } from "react-native";
+import { Container, SpotLight, MainText } from "@/components/widgets";
+import { TouchableOpacity, View } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { scopedI18n } from "@/translations/i18n";
 import * as AppleAuthentication from 'expo-apple-authentication';
 import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
-import { SpotLight } from "@/components/widgets/SpotLight";
 import { useEffect } from "react";
 
 const t = scopedI18n('auth.login')

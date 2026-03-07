@@ -3,6 +3,15 @@ import { Colors } from "./Colors";
 import { Constants } from "./Constants";
 
 export const GlobalStyles = StyleSheet.create({
+
+  // Lists
+  driverWidget: {
+    height: Constants.spacing.driverWidgetHeight,
+    flexDirection: 'row',
+    justifyContent: 'space-between'
+  },
+
+  // Buttons
   loginButton: {
     padding: Constants.spacing.buttonPadding,
     fontSize: 16,
@@ -17,25 +26,45 @@ export const GlobalStyles = StyleSheet.create({
     borderRadius: 4,
     overflow: 'hidden',
     alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 44
+  },
+  backButton: {
+    position: 'absolute',
+    width: 60,
+    left: 0,
+    bottom: 0,
+    top: 0,
+    alignItems: 'center',
     justifyContent: 'center'
   },
+
+  // Layout
   container: {
     flex: 1,
     backgroundColor: Colors.light.background,
     justifyContent: 'center',
     alignItems: 'center'
   },
-  tabBar: {
+  frame: {
     position: 'absolute',
+    width: '100%',
+    borderWidth: 0,
+    borderColor: Colors.light.borders
+  },
+  header: {
+    padding: Constants.spacing.buttonPadding,
+    alignItems: 'center'
+  },
+
+  // TabBar
+  tabBar: {
     bottom: 0,
     flexDirection: 'row',
-    width: '100%',
     alignItems: 'center',
     justifyContent: 'space-around',
     paddingTop: 10,
-    borderWidth: 0,
     borderTopWidth: 1,
-    borderColor: '#fff'
   },
   tabBarSlider: {
     position: 'absolute',
@@ -44,6 +73,7 @@ export const GlobalStyles = StyleSheet.create({
     width: Constants.spacing.sliderWidth,
     transform: [{ translateX: -Constants.spacing.sliderWidth / 2 }]
   },
+
   mainWidget: {
     alignSelf: 'stretch',
     marginHorizontal: Constants.spacing.mainWidgetMargin,
@@ -55,14 +85,12 @@ export const GlobalStyles = StyleSheet.create({
     justifyContent: 'space-evenly',
     alignSelf: 'stretch'
   },
+
   profilePicture: {
-    width: 200,
-    height: 200,
-    borderRadius: 500,
-    borderWidth: 1,
-    borderColor: Colors.light.borders,
-    marginVertical: 36
+    borderRadius: 1000,
+    borderColor: Colors.light.borders
   },
+
   eye: {
     position: 'absolute',
     justifyContent: 'center',
@@ -78,10 +106,16 @@ export const GlobalStyles = StyleSheet.create({
   },
   warning: {
     position: 'absolute',
-    bottom: '15%',
+    bottom: '10%',
     color: Colors.light.warning,
     left: '10%',
     right: '10%',
     textAlign: 'center'
+  },
+
+  mainWidgetButton: {
+    alignSelf: "stretch",
+    flexDirection: "row",
+    justifyContent: "space-between"
   }
 });

@@ -17,7 +17,21 @@
       "missingInfo": "Missing information",
       "signup": "Sign up",
       "passwordsDontMatch": "Passwords don't match",
-      "login": "Already have an account? Login"
+      "login": "Already have an account? Login",
+      "iAccept": "I accept the",
+      "privacyPolicy": "privacy policy",
+      "youMust": "You must accept the privacy policy"
+    }
+  },
+  "error": {
+    "maintenance": {
+      "back": "We'll be back soon!",
+      "maintenance": "We are updating the app, please come back later"
+    },
+    "update": {
+      "version": "A new version is alvailable!",
+      "please": "Please update the app to keep using it.",
+      "update": "Update the app"
     }
   },
   "home": {
@@ -25,6 +39,46 @@
       "memberSince": "Member since",
       "editProfile": "Edit profile",
       "logout": "Logout"
+    },
+    "social": {
+      "wip": "Work in progress...",
+      "stayTuned": "Leaderboards will be alvailable after the first session of the season, stay tuned!"
+    }
+  },
+  "index": {
+    "welcome": "Welcome to",
+    "mygrid": "MyGrid"
+  },
+  "profile": {
+    "modify": {
+      "modifyProfile": "Modify Profile",
+      "modifyPP": "Modify profile picture",
+      "permission": "Permission required",
+      "permissionTo": "Permission to access your photos is required"
+    }
+  },
+  "sessions": {
+    "predictions": {
+      "makePrediction": "Make prediction",
+      "potentialScore": "Potential score: ",
+      "pts": "Pts",
+      "onGoing": "Ongoing"
+    },
+    "results": {
+      "f1": "F1",
+      "loading": "Loading..."
+    }
+  },
+  "verify": {
+    "!": "!",
+    "welcome": "Welcome",
+    "weSent": "We sent you an email",
+    "verify": "Verify your account to make your predictions",
+    "letsGo": "Let's go!",
+    "resend": {
+      "yourAccount": "Your account is not verified",
+      "youNeed": "You need to verify your account in order to make your predictions",
+      "resend": "Resend verification mail"
     }
   },
   "utils": {
@@ -40,7 +94,10 @@
   "widgets": {
     "mainWidget": {
       "showResults": "Show results",
-      "live": "Live"
+      "live": "Live",
+      "onGoing": "Ongoing",
+      "finished": "Finished",
+      "sessions": "Sessions:"
     },
     "pagerTabBar": {
       "social": "Social",
@@ -51,10 +108,27 @@
       "championship": "Championship",
       "drivers": "Drivers",
       "constructors": "Constructors",
-      "noPrediction": "No prediction yet"
+      "noPrediction": "No prediction yet",
+      "pts": "Pts"
     },
     "eventCalendar": {
       "calendar": "Calendar"
+    },
+    "resultsFooter": {
+      "totalScore": "Total score: ",
+      "performance": "Performance: ",
+      "pts": "Pts"
+    },
+    "listsLabels": {
+      "myGrid": "My Grid",
+      "points": "Points",
+      "pos": "Pos",
+      "drivers": "Drivers"
+    }
+  },
+  "hooks": {
+    "useApi": {
+      "anError": "An error occured"
     }
   }
 }
