@@ -14,7 +14,7 @@ export default function Results () {
   const t = scopedI18n('sessions.results')
 
   const { id } = useLocalSearchParams();
-  const { datas, error, loading, api: getResults } = useApi()
+  const { datas, error, loading, api: getResults } = useApi(true)
 
   const [headerHeight, setHeaderHeight] = useState(0);
   const [footerHeight, setFooterHeight] = useState(0);
@@ -22,7 +22,6 @@ export default function Results () {
   useEffect(() => {
     auth && getResults({
       endpoint: `/events/sessions/predictions/${id}`,
-      method: 'GET',
       auth: auth
     })
   }, [auth])

@@ -29,7 +29,7 @@ export default function HomePagerView () {
           { useNativeDriver: false }
         )}
       >
-        <Social />
+        <Social tabBarHeight={tabBarHeight}/>
         <Events tabBarHeight={tabBarHeight}/>
         <Profile tabBarHeight={tabBarHeight}/>
       </PagerView>

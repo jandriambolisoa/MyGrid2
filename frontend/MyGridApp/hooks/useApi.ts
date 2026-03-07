@@ -7,7 +7,7 @@ export function useApi<T = any> (initLoading = false) {
   const t = scopedI18n('hooks.useApi');
 
   const [datas, setDatas] = useState<T | null>(null);
-  const [error, setError] = useState<unknown>(null);
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(initLoading);
   const [status, setStatus] = useState<number | null>(null);
 
@@ -30,6 +30,7 @@ export function useApi<T = any> (initLoading = false) {
     setError(null)
 
     try {
+
       const response = await apiFetch(props);
 
       setStatus(response.status);

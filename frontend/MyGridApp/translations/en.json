@@ -41,8 +41,12 @@
       "logout": "Logout"
     },
     "social": {
-      "wip": "Work in progress...",
-      "stayTuned": "Leaderboards will be alvailable after the first session of the season, stay tuned!"
+      "weekend": "Weekend",
+      "mygrid": "MyGrid",
+      "records": "Records",
+      "tapWeekend": "Tap to see this weekend's rankings",
+      "tapMygrid": "Tap to see the overall rankings",
+      "tapRecords": "Tap to see the point records"
     }
   },
   "index": {
@@ -54,8 +58,29 @@
       "modifyProfile": "Modify Profile",
       "modifyPP": "Modify profile picture",
       "permission": "Permission required",
-      "permissionTo": "Permission to access your photos is required"
+      "permissionTo": "Permission to access your photos is required",
+      "modifyPassword": "Modify password",
+      "oldPassword": "Old password",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm password",
+      "modify": "Modify",
+      "missingInfo": "Missing information",
+      "passwordsDontMatch": "New password and confirm password don't match",
+      "passwordModified": "Password modified",
+      "forSafety": "For safety reasons, you will be disconnected from your session.",
+      "pleaseLogin": "Please log in again"
     }
+  },
+  "rankings": {
+    "loading": "Loading...",
+    "weekendRankings": "Weekend rankings",
+    "globalRankings": "Global rankings",
+    "pts": "Pts",
+    "yourRank": "Your rank:",
+    "yourScore": "Your score:",
+    "you": "You",
+    "8events": "Score of 8 best events",
+    "feature": "See others' prediction - Coming soon."
   },
   "sessions": {
     "predictions": {
