@@ -131,7 +131,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme), db: Database = D
     obligation = db.cursor.fetchone()
 
     if obligation:
-        raise Obligation(obligation["obligation"], language=token_data.language)
+        raise Obligation(obligation["obligation"], language=current_user["language"])
 
     #TODO Block users who are not visible in the Online Manager
 

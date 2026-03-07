@@ -54,3 +54,23 @@ async def get_current_user_language(language: str = None, current_user: UserSelf
         db.conn.commit()
 
         return language
+
+async def is_user_have_obligation(user_id: int, obligation: str = None):
+    db = get_db()
+    if obligation:
+        db.cursor.execute("""\
+            SELECT *
+            FROM userobligations
+            WHERE user_id = %s AND obligation = %s""", (user_id, obligation))
+        has_obligation = db.cursor.fetchone()
+    else:
+        db.cursor.execute("""\
+            SELECT *
+            FROM userobligations
+            WHERE user_id = %s""", (user_id, obligation))
+        has_obligation = db.cursor.fetchone()
+
+    if has_obligation:
+        return True
+
+    return False

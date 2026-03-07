@@ -100,7 +100,7 @@ async def send_global_push_notification(to_send: PushNotification, language: str
 
 @router.post("/notification/mail/simple/send", status_code=status.HTTP_200_OK)
 async def send_global_simple_email(to_send: SimpleEmail, current_user: UserSelf = Depends(get_current_user)):
-    if not is_user_moderator_or_admin(current_user.id):
+    if not await is_user_moderator_or_admin(current_user.id):
         raise ForbiddenAccessException(language= "en")
 
     if app_settings.ms == 0:

@@ -1,4 +1,5 @@
 LOGIN_SUSPENSION_DURATION = 7200 #seconds
+LOSTPW_VALIDITY = 15 #minutes
 APPLE_TOKEN_ISSUER = "https://appleid.apple.com"
 APPLE_TOKEN_VALIDATION_ENDPOINT = "https://appleid.apple.com/auth/token"
 APPLE_PUBLIC_KEYS_URL= "https://appleid.apple.com/auth/keys"
