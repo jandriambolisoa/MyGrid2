@@ -6,3 +6,4 @@ export * from "./computeScore";
 export * from "./checkVersion";
 export * from './getPushTokenAsync';
 export * from './randomNumber';
+export * from './rankNumber';

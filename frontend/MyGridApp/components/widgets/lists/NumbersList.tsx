@@ -4,10 +4,12 @@ import { MainText, Separator } from "@/components/widgets"
 
 export function NumbersList ({
   numbers=0,
+  itemHeight,
   contentContainerStyle=null,
   ...otherProps
 } : {
   numbers?: number,
+  itemHeight?: number,
   contentContainerStyle?: any,
 }) {
 
@@ -19,7 +21,7 @@ export function NumbersList ({
   function numberRenderItem (item: any) {
     return (
       <View style={{
-        height: Constants.spacing.driverWidgetHeight,
+        height: itemHeight ? itemHeight : Constants.spacing.driverWidgetHeight,
         width: Constants.spacing.driverWidgetHeight,
         alignItems: 'center',
         justifyContent: 'center',

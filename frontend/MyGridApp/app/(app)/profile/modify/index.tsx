@@ -6,21 +6,23 @@ import { View, Alert, Platform, ActivityIndicator } from 'react-native'
 import * as ImagePicker from "expo-image-picker"
 import { ImageManipulator, SaveFormat } from "expo-image-manipulator"
 import { useApi } from '@/hooks'
-import { Colors } from '@/theme'
+import { Colors, Constants } from '@/theme'
+import { useRouter } from 'expo-router'
 
 export default function Modify () {
 
-  const t = scopedI18n('profile.modify')
-  const auth = useAuth()
+  const t = scopedI18n('profile.modify');
+  const auth = useAuth();
+  const router = useRouter();
 
-  const { loading: imageLoading, api: postImage } = useApi()
-  const { datas: userDatas, loading: userLoading, api: getUser } = useApi()
+  const { loading: imageLoading, api: postImage } = useApi();
+  const { datas: userDatas, loading: userLoading, api: getUser } = useApi();
 
-  const [headerHeight, setHeaderHeight] = useState(0)
+  const [headerHeight, setHeaderHeight] = useState(0);
 
   useEffect(() => {
     if (userDatas) {
-      auth.storeUser(userDatas.user)
+      auth.storeUser(userDatas.user);
     }
   }, [userDatas, auth])
 
@@ -28,7 +30,7 @@ export default function Modify () {
     const permissionResult = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (!permissionResult.granted) {
-      Alert.alert(t('permission'), t('permissionTo'))
+      Alert.alert(t('permission'), t('permissionTo'));
     }
 
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -86,8 +88,11 @@ export default function Modify () {
       </Header>
       <ProfilePicture link={auth.user?.image_url} size={100} borders={true} style={{ marginVertical: 44 }}/>
       <View style={{ width: '80%'}}>
-        <ShadowButton style={{ alignSelf: 'stretch' }} onPress={pickImage}>
+        <ShadowButton style={{ alignSelf: 'stretch', marginBottom: Constants.spacing.buttonMargin }} onPress={pickImage}>
           {ppButton()}
+        </ShadowButton>
+        <ShadowButton style={{ alignSelf: 'stretch' }} onPress={() => router.push('/profile/modify/password')}>
+          <MainText>{t('modifyPassword')}</MainText>
         </ShadowButton>
       </View>
     </Container>
