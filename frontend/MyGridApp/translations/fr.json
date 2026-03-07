@@ -41,8 +41,12 @@
       "logout": "Se déconnecter"
     },
     "social": {
-      "wip": "Travail en cours...",
-      "stayTuned": "Le classement sera disponible après la première session de l'année, restez connectés!"
+      "weekend": "Week-end",
+      "mygrid": "MyGrid",
+      "records": "Records",
+      "tapWeekend": "Cliquez pour voir le classement du week-end",
+      "tapMygrid": "Cliquez pour voir le classement général",
+      "tapRecords": "Cliquez pour voir les records de points"
     }
   },
   "index": {
@@ -54,8 +58,29 @@
       "modifyProfile": "Modifier le profil",
       "modifyPP": "Modifier la photo",
       "permission": "Permission requise",
-      "permissionTo": "La permission d'accéder à vos photos est requise"
+      "permissionTo": "La permission d'accéder à vos photos est requise",
+      "modifyPassword": "Modifier le mot de passe",
+      "oldPassword": "Ancien mot de passe",
+      "newPassword": "Nouveau mot de passe",
+      "confirmPassword": "Confirmer le mot de passe",
+      "modify": "Modifier",
+      "missingInfo": "Informations manquantes",
+      "passwordsDontMatch": "L'ancien mot de passe et le nouveau mot de passe ne correspondent pas",
+      "passwordModified": "Mot de passe modifié",
+      "forSafety": "Pour des raisons de sécurité, vous allez être déconnecté de votre session.",
+      "pleaseLogin": "Merci de vous reconnecter"
     }
+  },
+  "rankings": {
+    "loading": "Chargement...",
+    "weekendRankings": "Classement du week-end",
+    "globalRankings": "Classement général",
+    "pts": "Pts",
+    "yourRank": "Votre rang:",
+    "yourScore": "Votre score:",
+    "you": "Vous",
+    "8events": "Score des 8 meilleurs évenements",
+    "feature": "Voir la prédiction des autres - Bientôt dispo."
   },
   "sessions": {
     "predictions": {

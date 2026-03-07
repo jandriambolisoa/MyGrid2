@@ -15,7 +15,7 @@ export function ProfilePicture ({
   ...otherProps
 }: ProfilePictureProps) {
 
-  const imageSource = link ? { uri: link } : require('@/assets/images/default/default_profile_picture_v001.png')
+  const imageSource = link && link !== "" ? { uri: link } : require('@/assets/images/default/default_profile_picture_v001.png');
 
   return (
     <Image style={[GlobalStyles.profilePicture, {

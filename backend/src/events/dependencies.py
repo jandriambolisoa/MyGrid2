@@ -91,7 +91,7 @@ async def get_upcoming_event(language: str = "en"):
             LEFT JOIN sessions ON sessionsresults.session_id = sessions.id
             ORDER BY sessionsresults.session_id
         )
-        AND sessions.datetime > NOW() + INTERVAL '12 hours'
+        AND sessions.datetime > NOW() - INTERVAL '12 hours'
         ORDER BY datetime ASC""", (language,))
     event = db.cursor.fetchone()
 
