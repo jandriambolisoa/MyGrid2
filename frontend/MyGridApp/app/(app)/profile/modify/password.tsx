@@ -1,5 +1,5 @@
-import { BackButton, Container, MainText, ShadowButton } from "@/components/widgets";
-import { TextInput, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, ActivityIndicator } from "react-native";
+import { BackButton, Container, MainText, PasswordInput, ShadowButton } from "@/components/widgets";
+import { TextInput, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, ActivityIndicator, View, TouchableOpacity } from "react-native";
 import { useState, useEffect } from "react";
 import { Colors, GlobalStyles, Constants } from "@/theme";
 import { scopedI18n } from "@/translations/i18n";
@@ -7,6 +7,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useApi } from "@/hooks";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "expo-router";
+import { Octicons } from "@expo/vector-icons";
 
 export default function ModifyPassword () {
 
@@ -19,6 +20,9 @@ export default function ModifyPassword () {
   const [newP, setNewP] = useState('');
   const [confirmP, setConfirmP] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
+  const [showOldP, setShowOldP] = useState(false);
+  const [showNewP, setShowNewP] = useState(false);
+  const [showConfirmP, setShowConfirmP] = useState(false);
 
   const { error, loading, api: modifyPassword } = useApi();
 
@@ -63,36 +67,29 @@ export default function ModifyPassword () {
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
         <Container style={{ backgroundColor: 'transparent' }}>
           <MainText fontSize="title" style={{ marginBottom: 44 }}>{t('modifyPassword')}</MainText>
-          <TextInput
-            value={oldP}
+          <PasswordInput 
+            password={oldP}
+            showPass={showOldP}
+            setShowPass={() => setShowOldP(!showOldP)}
             placeholder={t('oldPassword')}
-            cursorColor={Colors.light.lightText}
-            selectionColor={Colors.light.lightText}
-            style={[GlobalStyles.button, GlobalStyles.loginButton]}
-            placeholderTextColor={Colors.light.disabledText}
-            autoComplete='password'
             onChangeText={text => setOldP(text)}
-            secureTextEntry={true}
+            autoComplete="current-password"
           />
-          <TextInput
-            value={newP}
+          <PasswordInput 
+            password={newP}
+            showPass={showNewP}
+            setShowPass={() => setShowNewP(!showNewP)}
             placeholder={t('newPassword')}
-            cursorColor={Colors.light.lightText}
-            selectionColor={Colors.light.lightText}
-            style={[GlobalStyles.button, GlobalStyles.loginButton]}
-            placeholderTextColor={Colors.light.disabledText}
             onChangeText={text => setNewP(text)}
-            secureTextEntry={true}
+            autoComplete="new-password"
           />
-          <TextInput
-            value={confirmP}
+          <PasswordInput 
+            password={confirmP}
+            showPass={showConfirmP}
+            setShowPass={() => setShowConfirmP(!showConfirmP)}
             placeholder={t('confirmPassword')}
-            cursorColor={Colors.light.lightText}
-            selectionColor={Colors.light.lightText}
-            style={[GlobalStyles.button, GlobalStyles.loginButton]}
-            placeholderTextColor={Colors.light.disabledText}
             onChangeText={text => setConfirmP(text)}
-            secureTextEntry={true}
+            autoComplete="new-password"
           />
           <ShadowButton style={{ width: '45%' }} onPress={modify}>
             {loading ? <ActivityIndicator color={Colors.light.lightText}/> : <MainText>{t('modify')}</MainText>}

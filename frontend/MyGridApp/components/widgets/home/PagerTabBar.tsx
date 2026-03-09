@@ -47,7 +47,7 @@ export function PagerTabBar ({
     <BlurView
       tint="light"
       intensity={20}
-      style={[GlobalStyles.frame, GlobalStyles.tabBar, { paddingBottom: insets.bottom + paddingBottom, backgroundColor: backgroundColor }]}
+      style={[GlobalStyles.frame, GlobalStyles.tabBar, { paddingBottom: insets.bottom + paddingBottom + 6, backgroundColor: backgroundColor }]}
       {...otherProps}
     >
       {Platform.OS === 'android' && 
@@ -62,7 +62,7 @@ export function PagerTabBar ({
       <TouchableOpacity onPress={() => setPage?.(2)} onLayout={(e) => setLastTabDim(e.nativeEvent.layout)} hitSlop={hitSlop}>
         <MainText>{t('profile')}</MainText>
       </TouchableOpacity>
-      <Animated.View style={[GlobalStyles.tabBarSlider, { bottom: insets.bottom, left }]} />
+      <Animated.View style={[GlobalStyles.tabBarSlider, { bottom: insets.bottom + paddingBottom, left }]} />
     </BlurView>
   )
 }
