@@ -17,6 +17,10 @@ class SessionWithPotential(Session):
     potential: int
     score: Optional[int] = 0
 
+class PredictionPreview(BaseModel):
+    user: User
+    sessions: List[SessionWithPotential]
+
 class Prediction(BaseModel):
     driver: Driver
     team: Team
