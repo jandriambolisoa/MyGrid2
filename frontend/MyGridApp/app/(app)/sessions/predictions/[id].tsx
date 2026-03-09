@@ -27,22 +27,21 @@ export default function Predictions () {
   const [listDatas, setListDatas] = useState<any[]>([]);
 
   useEffect(() => {
-    auth && getPredictions({
-      endpoint: `/events/sessions/${id}/drivers`,
-      method: 'GET',
-      auth: auth
-    });
-  }, [auth]);
-
-  useEffect(() => {
-    if (hasProno === 'true' || hasStarted === 'false') {
-      auth && !loading && getParams({
-        endpoint: `/scores/parameters/1`,
+    if (auth) {
+      getPredictions({
+        endpoint: `/events/sessions/${id}/drivers`,
         method: 'GET',
         auth: auth
       });
+      if (hasProno === 'true' || hasStarted === 'false') {
+        getParams({
+          endpoint: `/scores/parameters/1`,
+          method: 'GET',
+          auth: auth
+        });
+      }
     }
-  }, [loading]);
+  }, [auth]);
 
   useEffect(() => {
       if (datas?.drivers?.length > 0 && !listDatas.length) {
