@@ -132,6 +132,13 @@ async def login_email(request: Request, language: str = "en", db: Database = Dep
     if await is_user_banned(user["id"]):
         raise user_exceptions.BannedUserException(user_id=user["id"], language=language)
 
+    # Register new language
+    db.cursor.execute("""
+        UPDATE users
+        SET language = %s
+        WHERE id = %s""", (language, user["id"]))
+    db.conn.commit()
+
     access_token = await create_jwt_token({
         "user_id": user["id"],
         "username": user["username"],
@@ -202,6 +209,13 @@ async def login_refresh_token(request: Request, tokens: LoginRefreshTokenPost, l
         """, (tokens.access_token.access_token,))
     db.conn.commit()
 
+    # Register new language
+    db.cursor.execute("""
+        UPDATE users
+        SET language = %s
+        WHERE id = %s""", (language, user["id"]))
+    db.conn.commit()
+
     access_token = await create_jwt_token({
         "user_id": user["id"],
         "username": user["username"],
@@ -263,6 +277,13 @@ async def login_google(credential: str, referral_code: str = None, language: str
             WHERE id = %s""", (user_id,))
         user = db.cursor.fetchone()
 
+        # Register new language
+        db.cursor.execute("""
+            UPDATE users
+            SET language = %s
+            WHERE id = %s""", (language, user["id"]))
+        db.conn.commit()
+
         access_token = await create_jwt_token({
             "user_id": user["id"],
             "username": user["username"],
@@ -295,6 +316,13 @@ async def login_google(credential: str, referral_code: str = None, language: str
             SELECT * FROM users
             WHERE id = %s""", (user_id,))
         user = db.cursor.fetchone()
+
+        # Register new language
+        db.cursor.execute("""
+            UPDATE users
+            SET language = %s
+            WHERE id = %s""", (language, user["id"]))
+        db.conn.commit()
 
         access_token = await create_jwt_token({
             "user_id": user["id"],
@@ -370,6 +398,13 @@ async def login_google(credential: str, referral_code: str = None, language: str
 
     auth_signals.validate_mail.send(new_user["id"])
 
+    # Register new language
+    db.cursor.execute("""
+        UPDATE users
+        SET language = %s
+        WHERE id = %s""", (language, new_user["id"]))
+    db.conn.commit()
+
     access_token = await create_jwt_token({
         "user_id": new_user["id"],
         "username": new_user["username"],
@@ -440,6 +475,13 @@ async def login_apple(credential: str, nonce: str, referral_code: str = None, la
             WHERE id = %s""", (user_id,))
         user = db.cursor.fetchone()
 
+        # Register new language
+        db.cursor.execute("""
+            UPDATE users
+            SET language = %s
+            WHERE id = %s""", (language, user["id"]))
+        db.conn.commit()
+
         access_token = await create_jwt_token({
             "user_id": user["id"],
             "username": user["username"],
@@ -472,6 +514,13 @@ async def login_apple(credential: str, nonce: str, referral_code: str = None, la
             SELECT * FROM users
             WHERE id = %s""", (user_id,))
         user = db.cursor.fetchone()
+
+        # Register new language
+        db.cursor.execute("""
+            UPDATE users
+            SET language = %s
+            WHERE id = %s""", (language, user["id"]))
+        db.conn.commit()
 
         access_token = await create_jwt_token({
             "user_id": user["id"],
@@ -539,6 +588,13 @@ async def login_apple(credential: str, nonce: str, referral_code: str = None, la
     await create_obligation(code= "newname", user_id= new_user["id"], language= language)
 
     auth_signals.validate_mail.send(new_user["id"])
+
+    # Register new language
+    db.cursor.execute("""
+        UPDATE users
+        SET language = %s
+        WHERE id = %s""", (language, new_user["id"]))
+    db.conn.commit()
 
     access_token = await create_jwt_token({
         "user_id": new_user["id"],

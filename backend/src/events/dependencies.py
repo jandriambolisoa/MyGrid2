@@ -242,11 +242,11 @@ async def get_session_from_id(session_id: int, language: str = "en") -> Session:
     if not session:
         raise EventNotFoundError(language=language)
 
-    session["name"] = await get_session_full_name(session_id)
+    session["name"] = await get_session_full_name(session_id, language)
 
     return Session(**session)
 
-async def get_session_colors_from_id(session_id: int) -> List[str]:
+async def get_session_colors_from_id(session_id: int, language: str = "en") -> List[str]:
     db = get_db()
     db.cursor.execute("""\
         SELECT events.colors
