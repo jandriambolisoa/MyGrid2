@@ -31,7 +31,8 @@ export function RankingsWidget ({
 
   return (
     <TouchableOpacity
-      style={[GlobalStyles.button, { flex: 1 }, style]}
+    
+      style={[GlobalStyles.button, style]}
       onPress={handlePress}
     >
       {color1 && mode === 'diagonal' && <SpotLight color={color1} cx="35%" cy="35%" fx="5%" fy="5%" radius="60%"/>}

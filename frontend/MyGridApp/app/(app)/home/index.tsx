@@ -28,6 +28,7 @@ export default function HomePagerView () {
           [{ nativeEvent: { position, offset } }],
           { useNativeDriver: false }
         )}
+        offscreenPageLimit={1}
       >
         <Social tabBarHeight={tabBarHeight}/>
         <Events tabBarHeight={tabBarHeight}/>

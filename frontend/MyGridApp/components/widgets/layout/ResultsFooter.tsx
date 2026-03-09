@@ -22,7 +22,7 @@ export function ResultsFooter ({
   return (
     <Frame orientation='bottom' {...otherProps}>
       {spotColor && <View style={[StyleSheet.absoluteFill]}>
-        <SpotLight color={spotColor} cx="60%" cy="60%" fx="90%" fy="90%" radius="70%" opacityStart="0.5"/>
+        <SpotLight color={spotColor} cx="60%" cy="60%" fx="90%" fy="90%" radius="70%"/>
       </View>}
       <View style={GlobalStyles.header}>
         <MainText style={{ fontSize: Constants.fontSizes.header, margin: 2 }} bold={true}>{t('totalScore')}+ {score} {t('pts')}</MainText>

@@ -22,7 +22,7 @@ export function RankingsFooter ({
   return (
     <Frame orientation='bottom' {...otherProps}>
       {spotColor && <View style={[StyleSheet.absoluteFill]}>
-        <SpotLight color={spotColor} cx="60%" cy="60%" fx="90%" fy="90%" radius="80%" opacityStart="0.6"/>
+        <SpotLight color={spotColor} cx="60%" cy="60%" fx="90%" fy="90%" radius="80%"/>
       </View>}
       <View style={GlobalStyles.header}>
         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>

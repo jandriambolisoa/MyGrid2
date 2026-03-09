@@ -27,10 +27,6 @@ export function RankingsList ({
     )
   }
 
-  useEffect(() => {
-    console.log(datas)
-  }, [datas])
-
   return (
     <ScrollContainer footerHeight={footerHeight} headerHeight={headerHeight}>
       <View style={{ flexDirection: 'row', padding: Constants.spacing.listMargin }}>

@@ -28,7 +28,7 @@ export function PredictionsFooter ({
   return (
     <Frame orientation="bottom" {...otherProps}>
       {spotColor && <View style={[StyleSheet.absoluteFill]}>
-        <SpotLight color={spotColor} cx="60%" cy="60%" fx="90%" fy="90%" radius="70%" opacityStart="0.5"/>
+        <SpotLight color={spotColor} cx="60%" cy="60%" fx="90%" fy="90%" radius="70%"/>
       </View>}
       <ShadowButton style={{ margin: 10 }} onPress={handlePredictions}>
         {buttonContent()}

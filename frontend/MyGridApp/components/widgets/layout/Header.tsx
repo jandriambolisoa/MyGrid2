@@ -24,7 +24,7 @@ export function Header({
   return (
     <Frame {...otherProps}>
       {spotColor && <View style={[StyleSheet.absoluteFill]}>
-        <SpotLight color={spotColor} cx="40%" cy="40%" fx="10%" fy="10%" radius="70%" opacityStart='0.5'/>
+        <SpotLight color={spotColor} cx="40%" cy="40%" fx="10%" fy="10%" radius="70%"/>
       </View>}
       <View style={GlobalStyles.header}>
         {title && <MainText style={{ fontSize: Constants.fontSizes.header }} bold={true}>{title}</MainText>}

@@ -1,6 +1,6 @@
-import { ScrollContainer, MainWidget, ChampionshipWidget, EventCalendar } from "@/components/widgets";
-import { Colors, Constants } from "@/theme";
-import { ActivityIndicator, Dimensions, View } from "react-native";
+import { ScrollContainer, MainWidget, ChampionshipWidget, EventCalendar, SpotLight, ShadowSetup } from "@/components/widgets";
+import { Colors, Constants, GlobalStyles } from "@/theme";
+import { ActivityIndicator, Dimensions, View, TouchableOpacity } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useApi } from "@/hooks";
 import { useAuth } from "@/contexts/AuthContext";
@@ -15,7 +15,7 @@ function Events ({
 }: EventsProps) {
 
   const insets = useSafeAreaInsets();
-  const auth = useAuth()
+  const auth = useAuth();
 
   const { datas: mainDatas, error: mainError, loading: mainLoading, api: getMain } = useApi(true);
   const { datas: champDatas, error: champError, loading: champLoading, api: getChamp } = useApi(true);
@@ -46,7 +46,7 @@ function Events ({
   }, [champLoading])
 
   return (
-    <ScrollContainer footerHeight={tabBarHeight}>
+    <ScrollContainer footerHeight={tabBarHeight} overScrollMode="never">
       {mainDatas && !mainLoading && !mainError && <MainWidget datas={mainDatas} style={{ height: Dimensions.get('window').height - insets.top - tabBarHeight - Constants.spacing.mainWidgetMargin}}/>}
       {champDatas && !champLoading && !champError && <ChampionshipWidget datas={champDatas}/>}
       {calendarDatas && !calendarLoading && !calendarError && <EventCalendar datas={calendarDatas}/>}

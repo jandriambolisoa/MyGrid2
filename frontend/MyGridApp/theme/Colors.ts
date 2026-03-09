@@ -19,6 +19,7 @@ export const Colors = {
     warning: '#FF2F12',
     disabledText: '#f1f1f1',
     link: "#1A8BFF",
-    records: "#6409DE"
+    records: "#6409DE",
+    androidBackground: "#ddddddd0"
   },
 };
