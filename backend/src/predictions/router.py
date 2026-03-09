@@ -1,23 +1,26 @@
-from typing import Union, Any
+from typing import Union, Any, List
 
 from fastapi import APIRouter, Depends, status
 from psycopg.errors import UniqueViolation, ForeignKeyViolation
 from starlette.responses import Response
 
+from backend.constants import QUERY_LIMIT
 from backend.db.database import Database, get_db
 from backend import exceptions as app_exceptions
 from backend.oauth2 import get_current_user
 from backend.src import predictions
 from backend.src.auth.exceptions import UnverifiedUserError
-from backend.src.events.dependencies import valid_session_id, valid_session_id_not_started
-from backend.src.predictions.exceptions import DriverNotRegisteredForSessionError
+from backend.src.events.dependencies import valid_session_id, valid_session_id_not_started, is_session_over
+from backend.src.predictions.exceptions import DriverNotRegisteredForSessionError, PredictionNotAvailableError, \
+    NoPredictionError
 from backend.src.scores.algorithms import compute_score
 from backend.src.scores.router import get_score_parameters_of_a_championship
 from backend.src.users.dependencies import valid_user_id, get_current_user_language
 from backend.src.users.privileges import is_user_moderator_or_admin, is_user_verified
 from backend.src.users.schemas import UserSelf
 from backend.src.scores import algorithms
-from backend.src.predictions.schemas import PredictionSession, PredictionScoreSession, PredictionSessionPost
+from backend.src.predictions.schemas import PredictionSession, PredictionScoreSession, PredictionSessionPost, \
+    PredictionPreview
 
 router = APIRouter(
     prefix="/events/sessions/predictions",
@@ -28,10 +31,114 @@ router = APIRouter(
 # CRUD operations
 #
 
+@router.get("/search", response_model= PredictionPreview)
+async def search_user_predictions(
+        language: str = Depends(get_current_user_language),
+        db: Database = Depends(get_db),
+        current_user: UserSelf = Depends(get_current_user),
+        user_id: int = Depends(valid_user_id),
+        q: str = "",
+        competitive: bool = True,
+        limit: int = QUERY_LIMIT,
+        page: int = 0):
+    """
+    Search for a user prediction. If no user_id is given, will return the current user predictions.
+    Args:
+        language: the event's name translation
+        db: the database to use
+        current_user: the current user
+        user_id: the predictions' user_id, defaults to current user
+        q: the name of the event to search for
+        competitive: list competitive sessions, defaults to True
+        limit: the size of the query, defaults to QUERY_LIMIT
+        page: the page number of the query, defaults to 0
+
+    Returns:
+        A PredictionPreview schema
+    """
+    if not user_id:
+        user_id = current_user.id
+
+    search = "%" + q + "%"
+    offset = limit * page
+
+    db.cursor.execute("""\
+        WITH sessions_scores AS (
+            SELECT scores.user_id, 
+            scores.session_id, 
+            SUM(score) AS score 
+            FROM public.scores
+            GROUP BY scores.user_id, 
+            scores.session_id
+        ),
+        events_translations AS (
+            SELECT event_id, name
+            FROM eventstranslations
+            WHERE language = %s
+        ),
+        sessions_translations AS (
+            SELECT session_id, name
+            FROM sessionstranslations
+            WHERE language = %s
+        )
+        SELECT sessionspredictions.session_id,
+        COALESCE(events_translations.name, events.name)||' '||COALESCE(sessions_translations.name, sessions.name) AS session_name,
+        sessions.datetime AS session_datetime,
+        sessions.event_id AS session_event_id,
+        sessions.competitive AS session_competitive,
+        SUM(sessionspredictions.potential) AS session_potential,
+        sessions_scores.score AS session_score,
+        sessionspredictions.user_id,
+        users.username AS user_username,
+        users.created AS user_created,
+        users.image AS user_image
+        FROM sessionspredictions
+        LEFT JOIN sessions ON sessions.id = sessionspredictions.session_id
+        LEFT JOIN sessions_scores ON sessions_scores.user_id = sessionspredictions.user_id
+        AND sessions_scores.session_id = sessionspredictions.session_id
+        LEFT JOIN users ON users.id = sessionspredictions.user_id
+        LEFT JOIN events ON events.id = sessions.event_id
+        LEFT JOIN events_translations ON events_translations.event_id = events.id
+        LEFT JOIN sessions_translations ON sessions_translations.session_id = sessions.id
+        WHERE LOWER(COALESCE(events_translations.name, events.name)||' '||COALESCE(sessions_translations.name, sessions.name))
+        LIKE LOWER(%s)
+        AND sessionspredictions.user_id = %s
+        AND sessions.competitive = %s
+        GROUP BY sessionspredictions.session_id,
+        session_name,
+        sessions.datetime,
+        sessions.event_id,
+        sessions.competitive,
+        sessions_scores.score,
+        sessionspredictions.user_id,
+        users.username,
+        users.created,
+        users.image
+        ORDER BY sessions.datetime DESC
+        LIMIT %s OFFSET %s""", (language, language, search, user_id, competitive, limit, offset))
+    results = db.cursor.fetchall()
+
+    if not results:
+        raise NoPredictionError(language=language)
+
+    return {
+        "sessions": [
+            {
+                key.removeprefix("session_"): result[key] for key in result.keys() if key.startswith("session_")
+            } for result in results
+        ],
+        "user": {key.removeprefix("user_"): results[0][key] for key in results[0].keys() if
+                  key.startswith("user_")}
+    }
+
+
 @router.get("/{session_id}", response_model=Union[PredictionSession, PredictionScoreSession], status_code=status.HTTP_200_OK)
 async def get_user_prediction(session_id: int = Depends(valid_session_id), user_id: int = Depends(valid_user_id), language: str = Depends(get_current_user_language), db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     if not user_id:
         user_id = current_user.id
+
+    elif not is_session_over(session_id):
+        raise PredictionNotAvailableError(language)
 
     db.cursor.execute("""
         SELECT id, username, created, image
