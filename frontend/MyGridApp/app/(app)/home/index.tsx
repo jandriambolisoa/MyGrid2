@@ -10,8 +10,6 @@ import Social from "./social";
 export default function HomePagerView () {
 
   const pagerRef = useRef<PagerView>(null);
-  
-  //const [scroll, setScroll] = useState<any>({ position: 1, offset: 0});
   const position = useRef(new Animated.Value(1)).current;
   const offset = useRef(new Animated.Value(0)).current;
 
@@ -34,7 +32,13 @@ export default function HomePagerView () {
         <Events tabBarHeight={tabBarHeight}/>
         <Profile tabBarHeight={tabBarHeight}/>
       </PagerView>
-      <PagerTabBar setPage={(page) => pagerRef.current?.setPage(page)} scroll={offset} position={position} onLayout={(e) => setTabBarHeight(e.nativeEvent.layout.height)}/>
+      <PagerTabBar
+        setPage={(page) => {
+          pagerRef.current?.setPage(page);
+        }}
+        scroll={offset} position={position}
+        onLayout={(e) => setTabBarHeight(e.nativeEvent.layout.height)}
+      />
     </View>
   )
 }
