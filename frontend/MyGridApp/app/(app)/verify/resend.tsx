@@ -9,10 +9,10 @@ import { useRouter } from "expo-router";
 export default function Resend () {
 
   const t = scopedI18n('verify.resend');
-  const auth = useAuth()
-  const router = useRouter()
+  const auth = useAuth();
+  const router = useRouter();
 
-  const { loading, api: resendEmail } = useApi()
+  const { loading, api: resendEmail } = useApi();
 
   async function handlePress () {
     const success = await resendEmail({

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Container, ShadowButton, MainText } from "@/components/widgets";
+import { Container, ShadowButton, MainText, PasswordInput } from "@/components/widgets";
 import { Dimensions, Keyboard, TextInput, TouchableWithoutFeedback, TouchableOpacity, View, ActivityIndicator, KeyboardAvoidingView, Linking } from "react-native";
 import { scopedI18n } from "@/translations/i18n";
 import { GlobalStyles, Colors, Constants } from "@/theme";
@@ -43,6 +43,10 @@ export default function Signup () {
 
   useEffect(() => {
     if (error) {
+      if (error === 'AUTH') {
+        router.push('/serverError');
+        return;
+      }
       setErrorMsg(error);
     }
   }, [error])
@@ -114,38 +118,22 @@ export default function Signup () {
             autoComplete='email'
             onChangeText={text => setEmail(text)}
           />
-          <View style={{ alignSelf: 'stretch' }}>
-            <TextInput
-              value={password}
-              placeholder={t('password')}
-              placeholderTextColor={Colors.light.disabledText}
-              cursorColor={Colors.light.lightText}
-              selectionColor={Colors.light.lightText}
-              style={[GlobalStyles.button, GlobalStyles.loginButton]}
-              secureTextEntry={showPass ? false : true}
-              autoComplete='password'
-              onChangeText={text => setPassword(text)}
-            />
-            {password.length > 0 && <TouchableOpacity style={GlobalStyles.eye} onPress={() => setShowPass(!showPass)}>
-              <Octicons name={showPass ? 'eye-closed' : 'eye'} size={20} color={Colors.light.lightText}/>
-            </TouchableOpacity>}
-          </View>
-          <View style={{ alignSelf: 'stretch' }}>
-            <TextInput
-              value={confirmPassword}
-              placeholder={t('confirmPassword')}
-              placeholderTextColor={Colors.light.disabledText}
-              cursorColor={Colors.light.lightText}
-              selectionColor={Colors.light.lightText}
-              style={[GlobalStyles.button, GlobalStyles.loginButton]}
-              secureTextEntry={showConfirmPass ? false : true}
-              autoComplete='password'
-              onChangeText={text => setConfirmPassword(text)}
-            />
-            {confirmPassword.length > 0 && <TouchableOpacity style={GlobalStyles.eye} onPress={() => setShowConfirmPass(!showConfirmPass)}>
-              <Octicons name={showConfirmPass ? 'eye-closed' : 'eye'} size={20} color={Colors.light.lightText}/>
-            </TouchableOpacity>}
-          </View>
+          <PasswordInput
+            password={password}
+            showPass={showPass}
+            setShowPass={() => setShowPass(!showPass)}
+            placeholder={t('password')}
+            onChangeText={text => setPassword(text)}
+            autoComplete="new-password"
+          />
+          <PasswordInput
+            password={confirmPassword}
+            showPass={showConfirmPass}
+            setShowPass={() => setShowConfirmPass(!showConfirmPass)}
+            placeholder={t('confirmPassword')}
+            onChangeText={text => setConfirmPassword(text)}
+            autoComplete="new-password"
+          />
           <View style={{ flexDirection: 'row', maxWidth: '90%', marginBottom: 20, alignItems: 'center' }}>
             <TouchableOpacity
               style={{

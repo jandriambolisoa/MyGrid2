@@ -82,12 +82,18 @@
     "8events": "Score of 8 best events",
     "feature": "See others' prediction - Coming soon."
   },
+  "serverError": {
+    "oops": "Oops!",
+    "something": "Something went wrong on our servers.",
+    "please": "Please try again shortly."
+  },
   "sessions": {
     "predictions": {
       "makePrediction": "Make prediction",
       "potentialScore": "Potential score: ",
       "pts": "Pts",
-      "onGoing": "Ongoing"
+      "onGoing": "Ongoing",
+      "predictionSent": "Prediction sent!"
     },
     "results": {
       "f1": "F1",

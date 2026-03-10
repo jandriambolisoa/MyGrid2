@@ -1,5 +1,5 @@
 import { Constants } from "@/theme";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, Platform } from "react-native";
 import { Shadow } from "@/components/widgets";
 
 /**
@@ -8,6 +8,12 @@ import { Shadow } from "@/components/widgets";
  */
 
 export function ShadowSetup() {
+
+  // Deactivate shadows on android (drops fps)
+  if (Platform.OS === 'android') {
+    return null;
+  }
+
   return (
     <View style={[StyleSheet.absoluteFill]}>
       <Shadow orientation="top" thickness={Constants.shadow.topThickness}/>

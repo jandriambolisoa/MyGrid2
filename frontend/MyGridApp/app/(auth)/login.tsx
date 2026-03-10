@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Container, ShadowButton, MainText } from "@/components/widgets";
+import { Container, ShadowButton, MainText, PasswordInput } from "@/components/widgets";
 import { Dimensions, Keyboard, TextInput, TouchableWithoutFeedback, TouchableOpacity, View, ActivityIndicator, KeyboardAvoidingView } from "react-native";
 import { scopedI18n } from "@/translations/i18n";
 import { GlobalStyles, Colors, Constants } from "@/theme";
@@ -27,6 +27,10 @@ export default function Login () {
 
   useEffect(() => {
     if (error) {
+      if (error === 'AUTH') {
+        router.push('/serverError');
+        return;
+      }
       setErrorMsg(error);
     }
   }, [error])
@@ -92,22 +96,14 @@ export default function Login () {
             autoComplete='username'
             onChangeText={text => setUsername(text)}
           />
-          <View style={{ alignSelf: 'stretch' }}>
-            <TextInput
-              value={password}
-              placeholder={t('password')}
-              placeholderTextColor={Colors.light.disabledText}
-              cursorColor={Colors.light.lightText}
-              selectionColor={Colors.light.lightText}
-              style={[GlobalStyles.button, GlobalStyles.loginButton]}
-              secureTextEntry={showPass ? false : true}
-              autoComplete='password'
-              onChangeText={text => setPassword(text)}
-            />
-            {password.length > 0 && <TouchableOpacity style={GlobalStyles.eye} onPress={() => setShowPass(!showPass)}>
-              <Octicons name={showPass ? 'eye-closed' : 'eye'} size={20} color={Colors.light.lightText}/>
-            </TouchableOpacity>}
-          </View>
+          <PasswordInput
+            password={password}
+            showPass={showPass}
+            setShowPass={() => setShowPass(!showPass)}
+            placeholder={t('password')}
+            onChangeText={text => setPassword(text)}
+            autoComplete="current-password"
+          />
           <ShadowButton style={[GlobalStyles.loginButton, { width: width * 0.5, padding: 0 }]} onPress={handleLogin}>
             {loading ? <ActivityIndicator color={Colors.light.lightText}/> : <MainText>{t('login')}</MainText>}
           </ShadowButton>

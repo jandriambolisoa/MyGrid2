@@ -11,7 +11,9 @@ export const Constants = {
     driverWidgetWidthWide: '80%',
     listMargin: 6,
     profileButtonWidth: '60%',
-    userWidgetHeight: 60
+    userWidgetHeight: 60,
+    androidPadding: 20,
+    listNumber: 50
   },
   shadow: {
     topThickness: 11,

@@ -1,8 +1,7 @@
 import { BlurView } from "expo-blur";
-import { StyleSheet, ViewProps, View } from "react-native";
-import { Constants, GlobalStyles } from "@/theme";
+import { ViewProps, Platform } from "react-native";
+import { Constants, GlobalStyles, Colors } from "@/theme";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { SpotLight } from "@/components/widgets"
 
 export type FrameProps = ViewProps & {
   orientation?: 'top' | 'bottom';
@@ -14,6 +13,7 @@ export function Frame({
 }: FrameProps) {
 
   const insets = useSafeAreaInsets()
+  const backgroundColor = Platform.OS === 'ios' ? 'transparent' : Colors.light.androidBackground
 
   const orientedStyle = orientation === 'top'
     ? {
@@ -31,7 +31,7 @@ export function Frame({
     <BlurView
       tint="light"
       intensity={20}
-      style={[GlobalStyles.frame, orientedStyle, otherProps.style]}
+      style={[GlobalStyles.frame, orientedStyle, { backgroundColor: backgroundColor }, otherProps.style]}
       {...otherProps}
     />
   )
