@@ -33,7 +33,7 @@ export default function Rankings () {
       {error && <View style={[StyleSheet.absoluteFill, GlobalStyles.container]}>
         <MainText style={{ color: Colors.light.warning }}>{error}</MainText>
       </View>}
-      {datas?.ranks && <RankingsList datas={datas.ranks} footerHeight={footerHeight} headerHeight={headerHeight} color={color1}/>}
+      {datas?.ranks && <RankingsList datas={datas.ranks} footerHeight={footerHeight} headerHeight={headerHeight} color={color1} event={datas?.event}/>}
       <Header
         onLayout={(e: any) => setHeaderHeight(e.nativeEvent.layout.height)}
         spotColor={color1}

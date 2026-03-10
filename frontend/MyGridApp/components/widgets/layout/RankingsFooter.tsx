@@ -7,10 +7,12 @@ import { rankNumber } from "@/utils";
 export function RankingsFooter ({
   datas=null,
   spotColor=null,
+  self=true,
   ...otherProps
 } : FrameProps & {
   datas?: any;
   spotColor?: string | null;
+  self?: boolean;
 }) {
 
   if (!datas) {
@@ -26,11 +28,11 @@ export function RankingsFooter ({
       </View>}
       <View style={GlobalStyles.header}>
         <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
-          <MainText fontSize="header" style={{ marginEnd: 6 }}>{t('yourRank')}</MainText>
+          <MainText fontSize="header" style={{ marginEnd: 6 }}>{self ? t('yourRank') : t('rank')}</MainText>
           <MainText fontSize="title" bold={true}>{rankNumber(datas?.rank)}</MainText>
         </View>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <MainText fontSize="main" style={{ marginEnd: 6 }}>{t('yourScore')}</MainText>
+          <MainText fontSize="main" style={{ marginEnd: 6 }}>{self ? t('yourScore') : t('score')}</MainText>
           <MainText fontSize="header" bold={true}>{datas?.score} {t('pts')}</MainText>
         </View>
       </View>
