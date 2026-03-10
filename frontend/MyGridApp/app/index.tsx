@@ -29,44 +29,52 @@ export default function MainScreen () {
         return
       }
 
+      let data;
+
       try {
-        const data = await refreshLogin(oldAccessToken, oldRefreshToken);
+        data = await refreshLogin(oldAccessToken, oldRefreshToken);
+      } catch (e: any) {
 
-        const loginDatas = {
-          user: data.user,
-          accessToken: data.access_token.access_token,
-          refreshToken: oldRefreshToken
-        }
-
-        await login(loginDatas)
-
-        if (data.app_status.maintenance) {
-          router.replace('/error/maintenance')
+        if (e.message === 'AUTH') {
+          logout();
+          router.replace('/login');
           return;
         }
 
-        if (!checkVersion(data.app_status.version)) {
-          router.replace('/error/update')
-          return;
-        }
-
-        const pushToken = await getPushTokenAsync();
-        const oldPushToken = await SecureStore.getItemAsync('pushToken');
-
-        try {
-          if (pushToken && pushToken !== oldPushToken) {
-            await registerPushToken(data.access_token.access_token, pushToken)
-          }
-        } catch (e) {
-          console.log(e)
-        }
-
-        router.replace('/home')
-
-      } catch {
-        logout();
-        router.replace('/login')
+        router.replace('/serverError');
+        return;
       }
+
+      const loginDatas = {
+        user: data.user,
+        accessToken: data.access_token.access_token,
+        refreshToken: oldRefreshToken
+      }
+
+      await login(loginDatas)
+
+      if (data.app_status.maintenance) {
+        router.replace('/error/maintenance')
+        return;
+      }
+
+      if (!checkVersion(data.app_status.version)) {
+        router.replace('/error/update')
+        return;
+      }
+
+      const pushToken = await getPushTokenAsync();
+      const oldPushToken = await SecureStore.getItemAsync('pushToken');
+
+      try {
+        if (pushToken && pushToken !== oldPushToken) {
+          await registerPushToken(data.access_token.access_token, pushToken)
+        }
+      } catch (e) {
+        console.log(e)
+      }
+
+      router.replace('/home')
     }
 
     initAuth()

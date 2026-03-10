@@ -86,16 +86,10 @@ export default function Predictions () {
       })
 
       if (success) {
-        showToast({
-          title: t('predictionSent'),
-          type: 'success'
-        })
-        router.back()
+        router.back();
       }
       return
     }
-    // Should be removed
-    console.log("Predictions can't be done after session has started")
   }
 
   const color1 = datas?.session?.event_colors?.[0]

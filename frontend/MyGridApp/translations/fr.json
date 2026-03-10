@@ -82,6 +82,11 @@
     "8events": "Score des 8 meilleurs évenements",
     "feature": "Voir la prédiction des autres - Bientôt dispo."
   },
+  "serverError": {
+    "oops": "Oups!",
+    "something": "Une erreur est survenue côté serveur.",
+    "please": "Merci de réessayer dans quelques instants."
+  },
   "sessions": {
     "predictions": {
       "makePrediction": "Faire un prono",

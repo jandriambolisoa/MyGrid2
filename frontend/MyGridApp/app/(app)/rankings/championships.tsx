@@ -11,7 +11,7 @@ export default function Rankings () {
   const auth = useAuth();
   const t = scopedI18n('rankings');
 
-  const { datas, error, loading, api: getRankings } = useApi(true);
+  const { datas, error, loading, api: getRankings } = useApi(true, false);
 
   const [headerHeight, setHeaderHeight] = useState(0);
   const [footerHeight, setFooterHeight] = useState(0);

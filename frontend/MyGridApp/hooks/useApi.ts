@@ -37,6 +37,17 @@ export function useApi<T = any> (initLoading = false, toast = true) {
 
       setStatus(response.status);
 
+      if (response.status >= 500) {
+        setError('Server error');
+        if (toast) {
+          showToast({
+            title: 'Server error',
+            type: 'error'
+          })
+        }
+        return false;
+      }
+
       const data = await response.json();
 
       if (!response.ok) {

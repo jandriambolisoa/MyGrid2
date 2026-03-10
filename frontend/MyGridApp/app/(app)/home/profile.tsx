@@ -17,8 +17,6 @@ export default function Profile ({
   tabBarHeight=0
 }) {
 
-  const { showToast } = useToast();
-
   const router = useRouter();
   const locale = Localization.getLocales()[0]?.languageCode || 'en';
   const t = scopedI18n('home.profile');
@@ -34,10 +32,6 @@ export default function Profile ({
   }
 
   function handleModify () {
-    showToast({
-      type: 'error',
-      title: 'Hello'
-    })
     router.push('/profile/modify')
   }
 
