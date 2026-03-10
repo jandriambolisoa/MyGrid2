@@ -12,7 +12,8 @@ export const Constants = {
     listMargin: 6,
     profileButtonWidth: '60%',
     userWidgetHeight: 60,
-    androidPadding: 20
+    androidPadding: 20,
+    listNumber: 50
   },
   shadow: {
     topThickness: 11,

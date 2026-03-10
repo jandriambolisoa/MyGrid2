@@ -1,8 +1,7 @@
-import { ScrollContainer, Separator, NumbersList, RankingsUserWidget } from "@/components/widgets";
+import { ScrollContainer, RankingsUserWidget } from "@/components/widgets";
 import { Constants } from "@/theme";
-import { FlatList, View } from "react-native";
+import { FlatList } from "react-native";
 import { useAuth } from '@/contexts/AuthContext'
-import { useEffect } from "react";
 
 export function RankingsList ({
   datas=[],
@@ -29,17 +28,12 @@ export function RankingsList ({
 
   return (
     <ScrollContainer footerHeight={footerHeight} headerHeight={headerHeight}>
-      <View style={{ flexDirection: 'row', padding: Constants.spacing.listMargin }}>
-      <NumbersList numbers={datas.length} contentContainerStyle={{ paddingEnd: 4 }} itemHeight={Constants.spacing.userWidgetHeight}/>
-        <View style={{ width: '90%' }}>
-          <FlatList
-            data={datas}
-            renderItem={({item}) => renderItem(item)}
-            scrollEnabled={false}
-            ItemSeparatorComponent={() => Separator}
-          />
-        </View>
-      </View>
+      <FlatList
+        data={datas}
+        renderItem={({item}) => renderItem(item)}
+        scrollEnabled={false}
+        contentContainerStyle={{ paddingVertical: Constants.spacing.listMargin / 2 }}
+      />
     </ScrollContainer>
   )
 }
