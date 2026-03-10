@@ -24,6 +24,7 @@ export const Colors = {
     toastError: "#ff000022",
     toastErrorBorders: "#ff0000",
     toastSuccess: "#00ff0022",
-    toastSuccessBorders: "#00ff00"
+    toastSuccessBorders: "#00ff00",
+    toastInfo: "#ffffff22"
   },
 };

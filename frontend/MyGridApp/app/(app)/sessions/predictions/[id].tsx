@@ -47,24 +47,24 @@ export default function Predictions () {
   }, [auth]);
 
   useEffect(() => {
-      if (datas?.drivers?.length > 0 && !listDatas.length) {
-        if (hasProno === 'false' && hasStarted === 'false') {
-          const newDatas = datas.drivers.map((item: any, index: number) => ({
-            ...item,
-            mygrid: index + 1
-          }))
-          setListDatas(newDatas);
-        } else {
-          setListDatas(datas.drivers);
-        }
+    if (datas?.drivers?.length > 0 && !listDatas.length) {
+      if (hasProno === 'false' && hasStarted === 'false') {
+        const newDatas = datas.drivers.map((item: any, index: number) => ({
+          ...item,
+          mygrid: index + 1
+        }))
+        setListDatas(newDatas);
+      } else {
+        setListDatas(datas.drivers);
       }
+    }
   }, [datas]);
 
   useEffect(() => {
       if (makeStatus === 403) {
         router.push('/verify/resend')
       }
-  }, [makeStatus])
+  }, [makeStatus]);
 
   async function handlePredictions () {
 
@@ -86,6 +86,10 @@ export default function Predictions () {
       })
 
       if (success) {
+        showToast({
+          title: t('predictionSent'),
+          type: 'success'
+        })
         router.back()
       }
       return

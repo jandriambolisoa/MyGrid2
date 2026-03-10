@@ -123,6 +123,6 @@ export const GlobalStyles = StyleSheet.create({
   toast: {
     alignSelf: 'stretch',
     padding: Constants.spacing.buttonPadding,
-    marginHorizontal: Constants.spacing.buttonMargin + 6
+    marginHorizontal: Constants.spacing.buttonMargin - 6
   }
 });

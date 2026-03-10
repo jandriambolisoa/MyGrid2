@@ -87,7 +87,8 @@
       "makePrediction": "Make prediction",
       "potentialScore": "Potential score: ",
       "pts": "Pts",
-      "onGoing": "Ongoing"
+      "onGoing": "Ongoing",
+      "predictionSent": "Prediction sent!"
     },
     "results": {
       "f1": "F1",

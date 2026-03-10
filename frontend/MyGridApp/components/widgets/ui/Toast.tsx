@@ -17,7 +17,7 @@ export function Toast ({
   const insets = useSafeAreaInsets();
   const android = Platform.OS === 'android';
   const borderColor = type === 'error' ? Colors.light.toastErrorBorders : type === 'success' ? Colors.light.toastSuccessBorders : Colors.light.borders;
-  const backgroundColor = type === 'error' ? Colors.light.toastError : type === 'success' ? Colors.light.toastSuccess : Colors.light.borders;
+  const backgroundColor = type === 'error' ? Colors.light.toastError : type === 'success' ? Colors.light.toastSuccess : Colors.light.toastInfo;
 
   return (
     <TouchableOpacity style={[GlobalStyles.toast, GlobalStyles.button, {

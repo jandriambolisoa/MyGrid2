@@ -1,5 +1,5 @@
 import { Toast } from "@/components/widgets";
-import { createContext, useRef, useContext, useState } from "react"
+import { createContext, useRef, useContext, useState, useEffect } from "react"
 import { StyleSheet, View, Animated, Easing } from "react-native";
 
 export const ToastContext = createContext<ToastContextType | undefined>(undefined);
@@ -18,10 +18,9 @@ type ToastContextType = {
 export function ToastProvider ({ children }: any) {
 
   const position = useRef(new Animated.Value(-200)).current;
+  const durationRef = useRef(3000);
 
-  const [toast, setToast] = useState<ToastParams>({
-    // Empty as long as no params are mandatory.
-  });
+  const [toast, setToast] = useState<ToastParams | null>(null);
 
   function showToast ({
     title,
@@ -30,30 +29,39 @@ export function ToastProvider ({ children }: any) {
     duration=3000
   }: ToastParams) {
 
+    durationRef.current = duration;
+
     setToast({
       title,
       subtitle,
       type
     })
-
-    Animated.sequence([
-      Animated.timing(position, {
-        toValue: 0,
-        duration: 200,
-        easing: Easing.out(Easing.ease),
-        useNativeDriver: true,
-      }),
-
-      Animated.delay(duration),
-
-      Animated.timing(position, {
-        toValue: -200,
-        duration: 200,
-        easing: Easing.ease,
-        useNativeDriver: true,
-      }),
-    ]).start();
   }
+
+  useEffect(() => {
+
+      if (!toast) return;
+
+      Animated.sequence([
+        Animated.timing(position, {
+          toValue: 0,
+          duration: 200,
+          easing: Easing.out(Easing.ease),
+          useNativeDriver: true,
+        }),
+
+        Animated.delay(durationRef.current),
+
+        Animated.timing(position, {
+          toValue: -200,
+          duration: 200,
+          easing: Easing.ease,
+          useNativeDriver: true,
+        }),
+      ]).start(() => {
+        setToast(null);
+      });
+    }, [toast]);
 
   return (
     <ToastContext.Provider
@@ -68,11 +76,11 @@ export function ToastProvider ({ children }: any) {
             transform: [{ translateY: position }],
           }}
         >
-          <Toast
+          {toast && <Toast
             title={toast.title}
             subtitle={toast.subtitle}
             type={toast.type}
-          />
+          />}
         </Animated.View>
       </View>
     </ToastContext.Provider>

@@ -34,6 +34,10 @@ export default function Profile ({
   }
 
   function handleModify () {
+    showToast({
+      type: 'error',
+      title: 'Hello'
+    })
     router.push('/profile/modify')
   }
 

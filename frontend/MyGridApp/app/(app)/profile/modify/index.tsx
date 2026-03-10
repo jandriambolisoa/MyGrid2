@@ -16,7 +16,7 @@ export default function Modify () {
   const router = useRouter();
 
   const { loading: imageLoading, api: postImage } = useApi();
-  const { datas: userDatas, loading: userLoading, api: getUser } = useApi();
+  const { datas: userDatas, loading: userLoading, api: getUser } = useApi(false, false);
 
   const [headerHeight, setHeaderHeight] = useState(0);
 

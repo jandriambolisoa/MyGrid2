@@ -87,7 +87,8 @@
       "makePrediction": "Faire un prono",
       "potentialScore": "Score potentiel: ",
       "pts": "Pts",
-      "onGoing": "En cours"
+      "onGoing": "En cours",
+      "predictionSent": "Prono envoyé!"
     },
     "results": {
       "f1": "F1",

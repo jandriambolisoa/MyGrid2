@@ -1,5 +1,5 @@
 import { BackButton, Container, MainText, PasswordInput, ShadowButton } from "@/components/widgets";
-import { TextInput, TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, ActivityIndicator, View, TouchableOpacity } from "react-native";
+import { TouchableWithoutFeedback, Keyboard, KeyboardAvoidingView, ActivityIndicator } from "react-native";
 import { useState, useEffect } from "react";
 import { Colors, GlobalStyles, Constants } from "@/theme";
 import { scopedI18n } from "@/translations/i18n";
@@ -7,7 +7,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useApi } from "@/hooks";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "expo-router";
-import { Octicons } from "@expo/vector-icons";
 
 export default function ModifyPassword () {
 
@@ -24,7 +23,7 @@ export default function ModifyPassword () {
   const [showNewP, setShowNewP] = useState(false);
   const [showConfirmP, setShowConfirmP] = useState(false);
 
-  const { error, loading, api: modifyPassword } = useApi();
+  const { error, loading, api: modifyPassword } = useApi(false, false);
 
   useEffect(() => {
     if (error) {
