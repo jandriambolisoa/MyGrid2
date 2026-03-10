@@ -7,10 +7,13 @@ import { Header, PredictionsList, PredictionsFooter, ListsLabels } from "@/compo
 import { scopedI18n } from "@/translations/i18n";
 import { DateTime } from "luxon";
 import { Colors } from "@/theme";
+import { useToast } from "@/contexts/ToastContext";
 
 export default function Predictions () {
 
   const auth = useAuth();
+  const { showToast } = useToast();
+
   const t = scopedI18n('sessions.predictions');
   const router = useRouter();
 
@@ -64,6 +67,7 @@ export default function Predictions () {
   }, [makeStatus])
 
   async function handlePredictions () {
+
     if (datas?.session?.datetime && DateTime.fromISO(datas.session.datetime) > DateTime.now()) {
       const makeList = {
         predictions: listDatas.map((item: any, index: number) => {

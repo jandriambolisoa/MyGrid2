@@ -7,6 +7,7 @@ import { StyleSheet, View } from 'react-native';
 import { MyGridBackground } from '@/components/widgets';
 import { Colors } from '@/theme';
 import { AuthProvider } from '@/contexts/AuthContext';
+import { ToastProvider } from '@/contexts/ToastContext';
 import * as Notifications from 'expo-notifications';
 import { StatusBar } from 'expo-status-bar';
 
@@ -39,14 +40,16 @@ export default function Layout() {
   return (
     <SafeAreaProvider>
       <AuthProvider>
-        <View style={{ flex: 1, alignSelf: 'stretch', backgroundColor: Colors.light.background}} onLayout={onLayoutRootView}>
-          <View style={StyleSheet.absoluteFill}>
-            <MyGridBackground />
+        <ToastProvider>
+          <View style={{ flex: 1, alignSelf: 'stretch', backgroundColor: Colors.light.background}} onLayout={onLayoutRootView}>
+            <View style={StyleSheet.absoluteFill}>
+              <MyGridBackground />
+            </View>
+            <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: 'transparent' } }}>
+              <Stack.Screen name="index" />
+            </Stack>
           </View>
-          <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: 'transparent' } }}>
-            <Stack.Screen name="index" />
-          </Stack>
-        </View>
+        </ToastProvider>
       </AuthProvider>
       <StatusBar style='light'/>
     </SafeAreaProvider>

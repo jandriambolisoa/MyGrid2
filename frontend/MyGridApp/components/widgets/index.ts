@@ -13,6 +13,7 @@ export * from './ui/MainText';
 export * from './ui/Sticker';
 export * from './ui/MainLoading';
 export * from './ui/PasswordInput';
+export * from './ui/Toast';
 
 export * from './buttons/ShadowButton';
 export * from './buttons/LiteButton';

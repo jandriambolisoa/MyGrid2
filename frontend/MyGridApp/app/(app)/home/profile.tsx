@@ -7,6 +7,7 @@ import { Colors, Constants } from "@/theme";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLogout } from "@/hooks";
 import { useRouter } from "expo-router";
+import { useToast } from "@/contexts/ToastContext";
 
 export type ProfileProps = {
   tabBarHeight: number
@@ -15,6 +16,8 @@ export type ProfileProps = {
 export default function Profile ({
   tabBarHeight=0
 }) {
+
+  const { showToast } = useToast();
 
   const router = useRouter();
   const locale = Localization.getLocales()[0]?.languageCode || 'en';
@@ -30,12 +33,16 @@ export default function Profile ({
     }
   }
 
+  function handleModify () {
+    router.push('/profile/modify')
+  }
+
   return (
     <Container style={{ justifyContent: 'space-between', paddingBottom: tabBarHeight, backgroundColor: 'transparent' }}>
       <View style={{ alignItems: 'center', marginTop: 50, alignSelf: 'stretch' }}>
         <MainText style={{ fontSize: Constants.fontSizes.title }}>{user?.username}</MainText>
         <ProfilePicture link={user?.image_url} borders={true} size={150} style={{ marginVertical: 36 }}/>
-        <ShadowButton style={{ minWidth: Constants.spacing.profileButtonWidth as any }} onPress={() => router.push('/profile/modify')}>
+        <ShadowButton style={{ minWidth: Constants.spacing.profileButtonWidth as any }} onPress={handleModify}>
           <MainText>{t('editProfile')}</MainText>
         </ShadowButton>
         <ShadowButton style={{ marginTop: Constants.spacing.mainWidgetMargin, minWidth: Constants.spacing.profileButtonWidth as any }} onPress={handleLogout}>

@@ -116,6 +116,13 @@ export const GlobalStyles = StyleSheet.create({
   mainWidgetButton: {
     alignSelf: "stretch",
     flexDirection: "row",
-    justifyContent: "space-between"
+    justifyContent: "space-between",
+
+  },
+
+  toast: {
+    alignSelf: 'stretch',
+    padding: Constants.spacing.buttonPadding,
+    marginHorizontal: Constants.spacing.buttonMargin + 6
   }
 });
