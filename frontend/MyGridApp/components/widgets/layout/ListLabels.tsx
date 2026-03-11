@@ -6,13 +6,15 @@ import { View } from "react-native"
 export type ListsLabelsProps = {
   points?: boolean,
   leftLabel?: string,
-  noGrid?: boolean
+  noGrid?: boolean,
+  self?: boolean
 }
 
 export function ListsLabels ({
   points=false,
   leftLabel = '',
-  noGrid=false
+  noGrid=false,
+  self=false
 }) {
 
   const t = scopedI18n('widgets.listsLabels')
@@ -23,7 +25,7 @@ export function ListsLabels ({
       {leftLabel && <MainText style={{ flex: 1 }}>{leftLabel}</MainText>}
       <MainText style={{ width: Constants.spacing.driverWidgetHeight * 1.5 }}>{t('pos')}</MainText>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: driverWidth as any, paddingHorizontal: Constants.spacing.mainWidgetMargin }}>
-        <MainText>{noGrid ? t('drivers') : t('myGrid')}</MainText>
+        <MainText>{noGrid ? t('drivers') : self? t('hisGrid') : t('myGrid')}</MainText>
         {points && <MainText>{t('points')}</MainText>}
       </View>
     </View>

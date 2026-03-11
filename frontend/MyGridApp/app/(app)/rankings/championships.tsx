@@ -24,8 +24,6 @@ export default function Rankings () {
     })
   }, [auth])
 
-  console.log(datas.event)
-
   return (
     <View style={{ flex: 1, backgroundColor: Colors.light.background }}>
       <MainLoading loading={loading} color="orange"/>

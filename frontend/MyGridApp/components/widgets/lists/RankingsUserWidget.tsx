@@ -37,7 +37,8 @@ export function RankingsUserWidget ({
           pathname: `/rankings/search/${item?.user?.id}` as any,
           params: {
             event: JSON.stringify(event),
-            item: JSON.stringify(item)
+            item: JSON.stringify(item),
+            userColor: color
           }
         })}
       >

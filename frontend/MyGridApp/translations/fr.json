@@ -82,7 +82,8 @@
     "score": "Score:",
     "you": "Vous",
     "8events": "Score des 8 meilleurs évenements",
-    "feature": "Voir la prédiction des autres - Bientôt dispo."
+    "feature": "Voir la prédiction des autres - Bientôt dispo.",
+    "f1": "F1"
   },
   "serverError": {
     "oops": "Oups!",
@@ -156,7 +157,8 @@
       "myGrid": "Ma Grille",
       "points": "Points",
       "pos": "Pos",
-      "drivers": "Pilotes"
+      "drivers": "Pilotes",
+      "hisGrid": "Sa Grille"
     }
   },
   "hooks": {

@@ -11,7 +11,7 @@ import { niceDatetime } from "@/utils";
 
 export default function UserResults () {
   const auth = useAuth();
-  const t = scopedI18n('sessions.results')
+  const t = scopedI18n('rankings')
 
   const { userId, sessionId } = useLocalSearchParams();
   const { datas, error, loading, api: getResults } = useApi(true);
@@ -45,7 +45,7 @@ export default function UserResults () {
         spotColor={color1}
       >
         
-        <ListsLabels points={true} leftLabel={t('f1')}/>
+        <ListsLabels points={true} leftLabel={t('f1')} self={true}/>
       </Header>
       <ResultsFooter
         onLayout={(e: any) => setFooterHeight(e.nativeEvent.layout.height)}
