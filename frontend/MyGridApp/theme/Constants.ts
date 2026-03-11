@@ -14,7 +14,8 @@ export const Constants = {
     userWidgetHeight: 60,
     androidPadding: 20,
     listNumber: 50,
-    backButtonSize: 60
+    backButtonSize: 60,
+    wideMargin: 44
   },
   shadow: {
     topThickness: 11,
