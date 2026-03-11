@@ -4,13 +4,22 @@ export const Constants = {
     sliderWidth: 24,
     mainWidgetMargin: 14,
     buttonHeight: 38,
-    buttonMargin: 14
+    buttonMargin: 14,
+    borderWidth: 1,
+    driverWidgetHeight: 50,
+    driverWidgetWidth: '65%',
+    driverWidgetWidthWide: '80%',
+    listMargin: 6,
+    profileButtonWidth: '60%',
+    userWidgetHeight: 60,
+    androidPadding: 20,
+    listNumber: 50
   },
   shadow: {
-    topThickness: 18,
-    leftThickness: 14,
-    bottomThickness: 8,
-    rightThickness: 5,
+    topThickness: 11,
+    leftThickness: 7,
+    bottomThickness: 5,
+    rightThickness: 3,
     darkOpacity: "0.2",
     lightOpacity: "0.8"
   },
@@ -19,8 +28,9 @@ export const Constants = {
   },
   fontSizes: {
     mainText: 16,
-    giant: 64,
+    header: 20,
+    title: 28,
     big: 40,
-    header: 20
+    giant: 64,
   }
 }

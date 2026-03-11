@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Container, LiteButton, MainText } from "@/components/widgets";
+import { Container, ShadowButton, MainText, PasswordInput } from "@/components/widgets";
 import { Dimensions, Keyboard, TextInput, TouchableWithoutFeedback, TouchableOpacity, View, ActivityIndicator, KeyboardAvoidingView } from "react-native";
 import { scopedI18n } from "@/translations/i18n";
 import { GlobalStyles, Colors, Constants } from "@/theme";
@@ -7,6 +7,9 @@ import { Octicons } from '@expo/vector-icons';
 import { useEmailLogin } from "@/hooks";
 import { useRouter } from "expo-router";
 import { useAuth } from "@/contexts/AuthContext";
+import { checkVersion, getPushTokenAsync } from "@/utils";
+import * as SecureStore from "expo-secure-store";
+import { registerPushToken } from "@/api/registerPushToken";
 
 export default function Login () {
 
@@ -20,10 +23,14 @@ export default function Login () {
   const [errorMsg, setErrorMsg] = useState('');
 
   const { emailLogin, error, loading } = useEmailLogin();
-  const { login } = useAuth();
+  const auth = useAuth();
 
   useEffect(() => {
     if (error) {
+      if (error === 'AUTH') {
+        router.push('/serverError');
+        return;
+      }
       setErrorMsg(error);
     }
   }, [error])
@@ -40,8 +47,35 @@ export default function Login () {
     const data = await emailLogin(username, password);
 
     if (data) {
-      await login(data);
 
+      const loginDatas = {
+        user: data.user,
+        accessToken: data.access_token.access_token,
+        refreshToken: data.refresh_token.refresh_token
+      };
+
+      await auth.login(loginDatas);
+
+      if (data.app_status.maintenance) {
+        router.replace('/error/maintenance');
+        return;
+      }
+
+      if (!checkVersion(data.app_status.version)) {
+        router.replace('/error/update');
+        return;
+      }
+
+      const pushToken = await getPushTokenAsync();
+      const oldPushToken = await SecureStore.getItemAsync('pushToken');
+
+      try {
+        if (pushToken && pushToken !== oldPushToken) {
+          await registerPushToken(data.access_token.access_token, pushToken)
+        }
+      } catch (e) {
+        console.log(e)
+      }
       router.replace('/home')
     }
   }
@@ -62,26 +96,18 @@ export default function Login () {
             autoComplete='username'
             onChangeText={text => setUsername(text)}
           />
-          <View style={{ alignSelf: 'stretch' }}>
-            <TextInput
-              value={password}
-              placeholder={t('password')}
-              placeholderTextColor={Colors.light.disabledText}
-              cursorColor={Colors.light.lightText}
-              selectionColor={Colors.light.lightText}
-              style={[GlobalStyles.button, GlobalStyles.loginButton]}
-              secureTextEntry={showPass ? false : true}
-              autoComplete='password'
-              onChangeText={text => setPassword(text)}
-            />
-            {password.length > 0 && <TouchableOpacity style={GlobalStyles.eye} onPress={() => setShowPass(!showPass)}>
-              <Octicons name={showPass ? 'eye-closed' : 'eye'} size={20} color={Colors.light.lightText}/>
-            </TouchableOpacity>}
-          </View>
-          <LiteButton style={[GlobalStyles.loginButton, { width: width * 0.5 }]} onPress={handleLogin}>
+          <PasswordInput
+            password={password}
+            showPass={showPass}
+            setShowPass={() => setShowPass(!showPass)}
+            placeholder={t('password')}
+            onChangeText={text => setPassword(text)}
+            autoComplete="current-password"
+          />
+          <ShadowButton style={[GlobalStyles.loginButton, { width: width * 0.5, padding: 0 }]} onPress={handleLogin}>
             {loading ? <ActivityIndicator color={Colors.light.lightText}/> : <MainText>{t('login')}</MainText>}
-          </LiteButton>
-          <TouchableOpacity style={GlobalStyles.authLink} onPress={() => router.replace('/signup')}>
+          </ShadowButton>
+          <TouchableOpacity style={GlobalStyles.authLink} onPress={() => router.replace('/signup')} hitSlop={10}>
             <MainText>{t('signup')}</MainText>
           </TouchableOpacity>
           <MainText style={GlobalStyles.warning}>{errorMsg}</MainText>

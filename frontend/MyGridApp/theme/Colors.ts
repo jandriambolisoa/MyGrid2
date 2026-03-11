@@ -18,5 +18,13 @@ export const Colors = {
     live: '#E31B00',
     warning: '#FF2F12',
     disabledText: '#f1f1f1',
+    link: "#1A8BFF",
+    records: "#6409DE",
+    androidBackground: "#ddddddd0",
+    toastError: "#ff000022",
+    toastErrorBorders: "#ff0000",
+    toastSuccess: "#00ff0022",
+    toastSuccessBorders: "#00ff00",
+    toastInfo: "#ffffff22"
   },
 };

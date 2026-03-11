@@ -2,13 +2,114 @@
   "auth": {
     "login": {
       "signInGoogle": "Se connecter avec Google",
-      "signInApple": "Se connecter avec Apple"
+      "signInApple": "Se connecter avec Apple",
+      "usernameEmail": "Nom d'utilisateur ou email",
+      "password": "Mot de passe",
+      "login": "Se connecter",
+      "missingInfo": "Informations manquantes",
+      "signup": "Pas de compte? S'inscrire"
+    },
+    "signup": {
+      "username": "Nom d'utilisateur",
+      "email": "Email",
+      "password": "Mot de passe",
+      "confirmPassword": "Confirmer le mot de passe",
+      "missingInfo": "Informations manquantes",
+      "signup": "S'inscrire",
+      "passwordsDontMatch": "Les mots de passe ne correspondent pas",
+      "login": "Déjà un compte? Se connecter",
+      "iAccept": "J'accepte la",
+      "privacyPolicy": "politique de confidentialité",
+      "youMust": "Vous devez accepter la politique de confidentialité"
+    }
+  },
+  "error": {
+    "maintenance": {
+      "back": "Nous serons bientôt de retour!",
+      "maintenance": "Nous mettons l'app à jour, revenez plus tard"
+    },
+    "update": {
+      "version": "Une nouvelle version est dispo!",
+      "please": "Mettez à jour pour continuer de l'utiliser.",
+      "update": "Mettre à jour"
     }
   },
   "home": {
     "profile": {
       "memberSince": "Membre depuis le",
-      "editProfile": "Modifier le profil"
+      "editProfile": "Modifier le profil",
+      "logout": "Se déconnecter"
+    },
+    "social": {
+      "weekend": "Week-end",
+      "mygrid": "MyGrid",
+      "records": "Records",
+      "tapWeekend": "Cliquez pour voir le classement du week-end",
+      "tapMygrid": "Cliquez pour voir le classement général",
+      "tapRecords": "Cliquez pour voir les records de points"
+    }
+  },
+  "index": {
+    "welcome": "Bienvenue sur",
+    "mygrid": "MyGrid"
+  },
+  "profile": {
+    "modify": {
+      "modifyProfile": "Modifier le profil",
+      "modifyPP": "Modifier la photo",
+      "permission": "Permission requise",
+      "permissionTo": "La permission d'accéder à vos photos est requise",
+      "modifyPassword": "Modifier le mot de passe",
+      "oldPassword": "Ancien mot de passe",
+      "newPassword": "Nouveau mot de passe",
+      "confirmPassword": "Confirmer le mot de passe",
+      "modify": "Modifier",
+      "missingInfo": "Informations manquantes",
+      "passwordsDontMatch": "L'ancien mot de passe et le nouveau mot de passe ne correspondent pas",
+      "passwordModified": "Mot de passe modifié",
+      "forSafety": "Pour des raisons de sécurité, vous allez être déconnecté de votre session.",
+      "pleaseLogin": "Merci de vous reconnecter"
+    }
+  },
+  "rankings": {
+    "loading": "Chargement...",
+    "weekendRankings": "Classement du week-end",
+    "globalRankings": "Classement général",
+    "pts": "Pts",
+    "yourRank": "Votre rang:",
+    "yourScore": "Votre score:",
+    "you": "Vous",
+    "8events": "Score des 8 meilleurs évenements",
+    "feature": "Voir la prédiction des autres - Bientôt dispo."
+  },
+  "serverError": {
+    "oops": "Oups!",
+    "something": "Une erreur est survenue côté serveur.",
+    "please": "Merci de réessayer dans quelques instants."
+  },
+  "sessions": {
+    "predictions": {
+      "makePrediction": "Faire un prono",
+      "potentialScore": "Score potentiel: ",
+      "pts": "Pts",
+      "onGoing": "En cours",
+      "predictionSent": "Prono envoyé!"
+    },
+    "results": {
+      "f1": "F1",
+      "loading": "Chargement..."
+    }
+  },
+  "verify": {
+    "!": "!",
+    "welcome": "Bienvenue",
+    "weSent": "Nous vous avons envoyé un email",
+    "verify": "Verifiez votre compte pour pouvoir faire vos pronos",
+    "letsGo": "C'est parti!",
+    "resend": {
+      "yourAccount": "Votre compte n'est pas vérifié",
+      "youNeed": "Vous devez vérifier votre compte pour faire vos pronos",
+      "resend": "Renvoyer l'email de vérification"
     }
   },
   "utils": {
@@ -24,7 +125,10 @@
   "widgets": {
     "mainWidget": {
       "showResults": "Voir les résultats",
-      "live": "En direct"
+      "live": "En direct",
+      "onGoing": "En cours",
+      "finished": "Terminé",
+      "sessions": "Sessions:"
     },
     "pagerTabBar": {
       "social": "Social",
@@ -35,10 +139,27 @@
       "championship": "Championnat",
       "drivers": "Pilotes",
       "constructors": "Constructeurs",
-      "noPrediction": "Pas encore de prono"
+      "noPrediction": "Pas encore de prono",
+      "pts": "Pts"
     },
     "eventCalendar": {
       "calendar": "Calendrier"
+    },
+    "resultsFooter": {
+      "totalScore": "Score total: ",
+      "performance": "Performance: ",
+      "pts": "Pts"
+    },
+    "listsLabels": {
+      "myGrid": "Ma Grille",
+      "points": "Points",
+      "pos": "Pos",
+      "drivers": "Pilotes"
+    }
+  },
+  "hooks": {
+    "useApi": {
+      "anError": "Une erreur est survenue"
     }
   }
 }

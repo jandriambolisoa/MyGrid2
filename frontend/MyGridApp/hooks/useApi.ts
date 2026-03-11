@@ -1,11 +1,17 @@
 import { apiFetch, FetchProps } from "@/api/fetch";
+import { useToast } from "@/contexts/ToastContext";
+import { scopedI18n } from "@/translations/i18n";
 import { useState } from "react";
 
-export function useApi<T = any> () {
+export function useApi<T = any> (initLoading = false, toast = true) {
+
+  const t = scopedI18n('hooks.useApi');
+  const { showToast } = useToast();
 
   const [datas, setDatas] = useState<T | null>(null);
-  const [error, setError] = useState<unknown>(null);
-  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(initLoading);
+  const [status, setStatus] = useState<number | null>(null);
 
   /**
    * Makes an API call using `apiFetch` and updates state.
@@ -14,6 +20,7 @@ export function useApi<T = any> () {
    * @param {string} props.endpoint - API endpoint (e.g., '/users').
    * @param {unknown} [props.body] - Optional request body for POST/PUT requests.
    * @param {'GET' | 'POST' | 'PUT' | 'DELETE'} props.method - HTTP method.
+   * @param {string} props.contentType - Headers Content-Type.
    * @param {AuthContextType} props.auth - Authentication context with tokens and login/logout methods.
    *
    * @returns {Promise<T | undefined>} - Resolves with API response data of type T, or undefined if there is an error.
@@ -25,15 +32,51 @@ export function useApi<T = any> () {
     setError(null)
 
     try {
-      const data = await apiFetch<T>(props);
+
+      const response = await apiFetch(props);
+
+      setStatus(response.status);
+
+      if (response.status >= 500) {
+        setError('Server error');
+        if (toast) {
+          showToast({
+            title: 'Server error',
+            type: 'error'
+          })
+        }
+        return false;
+      }
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data?.detail ?? t('anError'))
+        if (toast) {
+          showToast({
+            title: data?.detail ?? t('anError'),
+            type: 'error'
+          })
+        }
+        return false;
+      }
+
       setDatas(data);
-      return data;
+      return true;
+
     } catch (e) {
-      setError(e)
+      setError(e instanceof Error ? e.message : t('anError'));
+      if (toast) {
+        showToast({
+          title: e instanceof Error ? e.message : t('anError'),
+          type: 'error'
+        })
+      }
+      return false
     } finally {
       setLoading(false)
     }
   }
 
-  return { datas, error, loading, api }
+  return { datas, error, status, loading, api }
 }

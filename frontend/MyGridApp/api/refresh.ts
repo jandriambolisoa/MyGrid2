@@ -31,15 +31,19 @@ export async function refreshLogin (accessToken: string | null, refreshToken: st
 
   const response = await fetch(`${API_URL}/auth/login-refresh-token?language=${locale}`, options);
 
+  if (response.status >= 500) {
+    throw new Error('SERVER');
+  }
+
+  if (response.status === 401) {
+    throw new Error('AUTH');
+  }
+
   if (!response.ok) {
-    throw new Error('Refresh failed')
+    throw new Error('UNKOWN');
   }
 
-  const data = await response.json()
-
-  if (data.detail) {
-    throw new Error(data.detail);
-  }
+  const data = await response.json();
 
   return data;
 }

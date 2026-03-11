@@ -1,61 +1,62 @@
 import { ScrollContainer, MainWidget, ChampionshipWidget, EventCalendar } from "@/components/widgets";
-import { Constants } from "@/theme";
-import { Dimensions } from "react-native";
+import { Colors, Constants } from "@/theme";
+import { ActivityIndicator, Dimensions, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useApi } from "@/hooks";
-import { AuthContext } from "@/contexts/AuthContext";
-import { useContext, useEffect } from "react";
-
-// Temporary example datas
-/*
-import { mainEventDatas } from "./_tmp_main-event"
-import { championshipsDatas } from "./_tmp_championships"
-import { calendarDatas } from "./_tmp_calendar" */
+import { useAuth } from "@/contexts/AuthContext";
+import { useState, memo, useCallback } from "react";
+import { useFocusEffect } from "expo-router";
 
 export type EventsProps = {
   tabBarHeight?: number;
 }
 
-export default function Events ({ 
-  tabBarHeight=0
+function Events ({ 
+  tabBarHeight=0,
 }: EventsProps) {
 
   const insets = useSafeAreaInsets();
-  const auth = useContext(AuthContext)
+  const auth = useAuth();
 
-  const { datas: mainDatas, error: mainError, loading: mainLoading, api: getMain } = useApi();
-  const { datas: champDatas, error: champError, loading: champLoading, api: getChamp } = useApi();
-  const { datas: calendarDatas, error: calendarError, loading: calendarLoading, api: getCalendar } = useApi();
+  const [refresh, setRefresh] = useState(true);
 
-  useEffect(() => {
-    auth && getMain({
-      endpoint: '/nav/home/main-event?championship_id=1',
-      method: 'GET',
-      auth: auth
-    })
-  }, [auth])
+  const { datas: mainDatas, error: mainError, loading: mainLoading, api: getMain } = useApi(true);
+  const { datas: champDatas, error: champError, loading: champLoading, api: getChamp } = useApi(true);
+  const { datas: calendarDatas, error: calendarError, loading: calendarLoading, api: getCalendar } = useApi(true);
 
-  useEffect(() => {
-    auth && !mainLoading && getChamp({
-      endpoint: '/nav/home/championships?championship_id=1',
-      method: 'GET',
-      auth: auth
-    })
-  }, [mainLoading])
-
-  useEffect(() => {
-    auth && !champLoading && getCalendar({
-      endpoint: '/nav/home/events?championship_id=1',
-      method: 'GET',
-      auth: auth
-    })
-  }, [champLoading])
+  useFocusEffect(
+    useCallback(() => {
+      if (auth && refresh) {
+        setRefresh(true);
+        getMain({
+          endpoint: '/nav/home/main-event?championship_id=1',
+          method: 'GET',
+          auth: auth
+        });
+        getChamp({
+          endpoint: '/nav/home/championships?championship_id=1',
+          method: 'GET',
+          auth: auth
+        });
+        getCalendar({
+          endpoint: '/nav/home/events?championship_id=1',
+          method: 'GET',
+          auth: auth
+        });
+      }
+    }, [auth, refresh])
+  )
 
   return (
-    <ScrollContainer tabBarHeight={tabBarHeight}>
+    <ScrollContainer footerHeight={tabBarHeight} overScrollMode="never">
       {mainDatas && !mainLoading && !mainError && <MainWidget datas={mainDatas} style={{ height: Dimensions.get('window').height - insets.top - tabBarHeight - Constants.spacing.mainWidgetMargin}}/>}
       {champDatas && !champLoading && !champError && <ChampionshipWidget datas={champDatas}/>}
       {calendarDatas && !calendarLoading && !calendarError && <EventCalendar datas={calendarDatas}/>}
+      {calendarLoading && <View style={{ marginVertical: Constants.spacing.mainWidgetMargin }}>
+        <ActivityIndicator color={Colors.light.orangeLogo}/>
+      </View>}
     </ScrollContainer>
   )
 }
+
+export default memo(Events)

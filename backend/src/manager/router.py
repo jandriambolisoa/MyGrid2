@@ -64,8 +64,8 @@ async def send_global_push_notification(to_send: PushNotification, language: str
                 response = PushClient(session=session).publish(
                     PushMessage(
                         to=token.token,
-                        title=to_send.title[token.language],
-                        body=to_send.body[token.language]
+                        title=to_send.title.get(token.language, to_send.title["en"]),
+                        body=to_send.body.get(token.language, to_send.body["en"])
                     )
                 )
 
