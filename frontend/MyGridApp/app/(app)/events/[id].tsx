@@ -14,7 +14,7 @@ import * as Localization from "expo-localization";
 export default function Events () {
 
   const t = scopedI18n('widgets.mainWidget')
-  const local = useLocalSearchParams();
+  const { id } = useLocalSearchParams();
   const auth = useAuth();
   const insets = useSafeAreaInsets();
 
@@ -22,48 +22,35 @@ export default function Events () {
 
   const { datas, error, loading, api: getEvent } = useApi(true);
 
-  const [eventDatas, setEventDatas] = useState<any>(null);
-
-  console.log(local.eventName)
-
   useEffect(() => {
     auth && getEvent({
-      //endpoint: `/events/search?q=${local.eventName}`,
-      endpoint: `/events/search?q=${local.eventName}&language=${locale}`,
+      endpoint: `/nav/home/events/${id}`,
       auth
     })
   }, [auth])
 
-  useEffect(() => {
-    if (datas?.length) {
-      setEventDatas(datas[0]);
-    }
-  }, [datas])
-
   function eventDatetime () {
-    const lastEvent = eventDatas?.sessions?.reduce((prev: any, current: any) => 
+    const lastEvent = datas.sessions?.reduce((prev: any, current: any) => 
       DateTime.fromISO(current.datetime) > DateTime.fromISO(prev.datetime) ? current : prev
     );
     return fromToDatetime(lastEvent.datetime)
   }
 
-  const color1 = eventDatas?.colors?.[0];
-  const color2 = eventDatas?.colors?.[1] ?? color1;
-
-  console.log(eventDatas)
+  const color1 = datas?.event?.colors?.[0];
+  const color2 = datas?.event?.colors?.[1] ?? color1;
 
   return (
     <View style={{ flex: 1, backgroundColor: Colors.light.background }}>
-      {eventDatas &&
+      {datas &&
       <>
         <SpotLight color={color1} cx="35%" cy="35%" fx="5%" fy="5%" radius="50%"/>
         <SpotLight color={color2} cx="70%" cy="70%" fx="95%" fy="95%" radius="45%"/>
         <View style={[StyleSheet.absoluteFill, { padding: Constants.spacing.buttonPadding , alignItems: 'center', paddingTop: insets.top }]}>
-          <MainText style={{ fontSize: Constants.fontSizes.title, marginTop: Constants.spacing.mainWidgetMargin }}>{eventDatas.name}</MainText>
-          <Image source={{ uri: eventDatas.flag }} style={[{ width: 200, height: 50 }]} resizeMode="contain"/>
+          <MainText style={{ fontSize: Constants.fontSizes.title, marginTop: Constants.spacing.mainWidgetMargin }}>{datas.event?.name}</MainText>
+          <Image source={{ uri: datas.event?.flag }} style={[{ width: 200, height: 50 }]} resizeMode="contain"/>
           <MainText style={{ marginBottom: 40, marginTop: Constants.spacing.mainWidgetMargin }}>{eventDatetime()}</MainText>
           <MainText style={{ alignSelf: 'flex-start', marginBottom: Constants.spacing.buttonPadding }}>{t('sessions')}</MainText>
-          {eventDatas.sessions && <SessionsList datas={eventDatas.sessions}/>}
+          {datas.sessions && <SessionsList datas={datas.sessions}/>}
         </View>
       </>
       }

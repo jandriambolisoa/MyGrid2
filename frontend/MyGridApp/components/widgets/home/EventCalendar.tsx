@@ -38,9 +38,6 @@ export function EventCalendarWidget ({
     extrapolate: 'clamp'
   })
 
-  // Temporary disable -> should be removed after event page creation
-  const disabled = true;
-
   const [showShadow, setShowShadow] = useState(true);
 
   useEffect(() => {
@@ -63,10 +60,6 @@ export function EventCalendarWidget ({
       style={[GlobalStyles.button, { height: size, width: size, alignSelf: 'center', transform: [{ scale: scale }]  }]}
       onPress={() => router.push({
         pathname: `/events/${datas?.id}` as any,
-        // Name should be removed
-        params: {
-          eventName: datas?.name
-        }
       })}
     >
       {showShadow && 
