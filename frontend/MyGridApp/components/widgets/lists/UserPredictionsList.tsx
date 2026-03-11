@@ -1,27 +1,41 @@
-import { FlatList, View } from "react-native";
-import { MainText, ScrollContainer, SpotLight } from "@/components/widgets";
+import { FlatList, TouchableOpacity, View } from "react-native";
+import { MainText, SpotLight } from "@/components/widgets";
 import { Constants, GlobalStyles } from "@/theme";
+import { scopedI18n } from "@/translations/i18n";
+import { useRouter } from "expo-router";
 
 export function UserPredictionsList ({
   datas=[],
   footerHeight=0,
   headerHeight=0,
+  userId=0
 } : {
   datas: any;
   footerHeight?: number;
   headerHeight?: number;
+  userId?: number;
 }) {
+
+  const t = scopedI18n('rankings')
+  const router = useRouter();
 
   function renderItem (item: any) {
 
-    const color1 = item?.event_colors[0];
-    const color2 = item?.event_colors.length > 1 ? datas?.event.colors[1] : color1;
+    const color = item?.event_colors[0];
 
     return (
-      <View style={[GlobalStyles.button, { marginHorizontal: Constants.spacing.listMargin, marginVertical: Constants.spacing.listMargin / 2 }]}>
-        <SpotLight color={color1}/>
-        <MainText>{item?.name}</MainText>
-      </View>
+      <TouchableOpacity
+        style={[GlobalStyles.button, { marginHorizontal: Constants.spacing.listMargin, marginVertical: Constants.spacing.listMargin / 2 }]}
+        onPress={() => router.push({
+          pathname: `/rankings/results/${userId}/${item?.id}` as any
+        })}
+      >
+        <SpotLight color={color} cx="60%" cy="65%" fx="85%" fy="85%" radius="70%"/>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignSelf: 'stretch', paddingHorizontal: Constants.spacing.buttonPadding }}>
+          <MainText>{item?.name}</MainText>
+          <MainText>{item?.score} {t('pts')}</MainText>
+        </View>
+      </TouchableOpacity>
     )
   }
 
@@ -30,8 +44,8 @@ export function UserPredictionsList ({
       data={datas}
       renderItem={({item}) => renderItem(item)}
       style={{ 
-        paddingTop: headerHeight,
-        paddingBottom: footerHeight
+        paddingTop: headerHeight +  Constants.spacing.listMargin / 2,
+        paddingBottom: footerHeight + Constants.spacing.listMargin / 2
       }}
     />
   )

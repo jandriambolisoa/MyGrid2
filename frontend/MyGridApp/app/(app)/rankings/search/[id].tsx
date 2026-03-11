@@ -29,12 +29,16 @@ export default function Search () {
   useEffect(() => {
     if (datas?.sessions?.length && !listDatas.length) {
       if (!event) {
-        setListDatas(datas);
+        const newDatas = datas.sessions.filter(
+          (item: any) => item.score !== null
+        );
+
+        setListDatas(newDatas);
         return;
       }
 
       const newDatas = datas.sessions.filter(
-        (item: any) => item.event_id === event.id
+        (item: any) => item.event_id === event.id && item.score !== null
       );
 
       setListDatas(newDatas);
@@ -44,14 +48,13 @@ export default function Search () {
   const color1 = event?.colors[0];
   const color2 = event?.colors.length > 1 ? event?.colors[1] : color1;
 
-  console.log(listDatas)
-
   return (
     <View style={{ flex: 1, backgroundColor: Colors.light.background }}>
       {listDatas.length && <UserPredictionsList
         datas={listDatas}
         footerHeight={footerHeight}
         headerHeight={headerHeight}
+        userId={Number(local.id)}
       />}
       <Header 
         onLayout={(e: any) => setHeaderHeight(e.nativeEvent.layout.height)}
