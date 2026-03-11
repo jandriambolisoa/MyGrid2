@@ -5,13 +5,14 @@ from jinja2 import Environment
 
 from backend.config import settings as app_settings
 from backend.db.database import get_db
-from backend.exceptions import MicroservicesAreOffException
+from backend.exceptions import MicroservicesAreOffException, UnexpectedError
 from backend.oauth2 import create_jwt_token
 from backend.src.auth import signals as auth_signals
 from backend.src.users import signals as users_signals
 from backend.src.auth.texts import mailing_welcome_subject, mailing_welcome_preview, mailing_welcome_body, \
     mailing_welcome_title, mailing_verification_title, mailing_verification_subject, mailing_verification_confirm, \
-    mailing_verification_preview, mailing_verification_body
+    mailing_verification_preview, mailing_verification_body, mailing_lostpw_title, mailing_lostpw_subject, \
+    mailing_lostpw_preview, mailing_lostpw_body, mailing_lostpw_instructions
 from backend.src.users.exceptions import NoUserFoundError
 
 
@@ -90,6 +91,42 @@ async def send_verification_email(user_id: int):
         print("# ERROR: %s" % err)
 
 
+async def send_lostpw_email(user_id: int, code: str):
+    if app_settings.ms == 0:
+        raise MicroservicesAreOffException()
+
+    db = get_db()
+    db.cursor.execute("""\
+        SELECT *
+        FROM users
+        WHERE id = %s""", (user_id,))
+    user = db.cursor.fetchone()
+
+    if not user:
+        raise UnexpectedError(language="en")
+
+    title_text = Environment().from_string(mailing_lostpw_title[user["language"]])
+
+    datas = {
+        "receiver": user["email"],
+        "subject": mailing_lostpw_subject[user["language"]],
+        "fields": {
+            "PREVIEW_TEXT": mailing_lostpw_preview[user["language"]],
+            "BODY": mailing_lostpw_body[user["language"]],
+            "INSTRUCTIONS": mailing_lostpw_instructions[user["language"]],
+            "IMAGE_URL": "https://assets.zyrosite.com/k1JwmslwXt9ap0c7/forgot_password_img-fyiPbkpPyrlFcVZ2.jpg",
+            "TITLE": title_text.render(USERNAME = user["username"]),
+            "CODE": code
+        }
+    }
+    print("# INFO: Sending lostpw email")
+    try:
+        requests.post(f"{app_settings.ms_mailings_url}/sending/code", data=json.dumps(datas))
+    except requests.exceptions.ConnectionError as err:
+        print("# ERROR: %s" % err)
+
+
 def init_listener():
+    auth_signals.request_reset_password.connect(send_lostpw_email)
     auth_signals.validate_mail.connect(send_welcome_email)
     users_signals.created.connect(send_verification_email)

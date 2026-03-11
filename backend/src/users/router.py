@@ -3,14 +3,14 @@ import base64
 import requests
 from argon2 import verify_password
 from fastapi import APIRouter, Depends, UploadFile
-from sqlalchemy.sql.functions import user
+from sqlalchemy.sql.functions import user, current_user
 from starlette import status
 from starlette.responses import StreamingResponse, Response, JSONResponse
 
 from backend.constants import QUERY_LIMIT
 from backend.config import settings as app_settings
 from backend.db.database import Database, get_db
-from backend.oauth2 import get_current_user, get_current_token
+from backend.oauth2 import get_current_user, get_current_token, verify_access_token
 from backend.obligations import delete_obligation
 from backend.src.auth.exceptions import WrongCredentialsError
 from backend.src.auth.listener import send_verification_email
@@ -158,8 +158,6 @@ async def update_user_profile_password(datas: ChangePassword, db:Database = Depe
         WHERE id = %s""", (hash_password(new_password), current_user.id))
     db.conn.commit()
 
-    await delete_obligation("newpwd", current_user.id)
-
     await logout(db, current_user, current_token)
 
     return {
@@ -173,3 +171,31 @@ async def resend_verification_email(language: str = Depends(get_current_user_lan
     return JSONResponse({
         "detail": email_verification_sent_message[language]
     })
+
+
+@router.put("/profile/edit/reset-password", status_code=status.HTTP_202_ACCEPTED)
+async def update_user_profile_reset_password(datas: ChangePassword, db:Database = Depends(get_db), current_token: AccessToken = Depends(get_current_token)):
+    # Get current user
+    token_datas = await verify_access_token(current_token.access_token)
+    db.cursor.execute("""\
+        SELECT *
+        FROM users
+        WHERE id = %s""", (token_datas.user_id,))
+    this_user = db.cursor.fetchone()
+    this_user = UserSelf(**this_user)
+
+    new_password = await valid_password(datas.new_password, this_user.language)
+
+    db.cursor.execute("""\
+        UPDATE users
+        SET password = %s
+        WHERE id = %s""", (hash_password(new_password), this_user.id))
+    db.conn.commit()
+
+    await delete_obligation("newpwd", this_user.id)
+
+    await logout(db, this_user, current_token)
+
+    return {
+        "message": successful_password_update_message[this_user.language]
+    }
