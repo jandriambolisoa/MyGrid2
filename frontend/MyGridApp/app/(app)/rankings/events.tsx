@@ -39,9 +39,7 @@ export default function Rankings () {
         spotColor={color1}
         title={datas?.event.name ? datas.event.name : t('loading')}
         subtitle={t('weekendRankings')}
-      >
-        <MainText style={{ marginBottom: 6, color: Colors.light.warning }}>{t('feature')}</MainText>
-      </Header>
+      />
       <RankingsFooter
         onLayout={(e: any) => setFooterHeight(e.nativeEvent.layout.height)}
         datas={datas?.viewer_rank}
