@@ -1,10 +1,9 @@
-import { GlobalStyles, Constants, Colors } from "@/theme";
-import { View, ViewProps, StyleSheet, Image, FlatList } from "react-native";
-import { ShadowSetup, MainText, SpotLight, ShadowButton, Sticker } from "@/components/widgets";
+import { GlobalStyles, Constants } from "@/theme";
+import { View, ViewProps, StyleSheet, Image } from "react-native";
+import { ShadowSetup, MainText, SpotLight, SessionsList } from "@/components/widgets";
 import { DateTime } from "luxon"
-import { fromToDatetime, niceDatetime } from "@/utils"
+import { fromToDatetime } from "@/utils"
 import { scopedI18n } from "@/translations/i18n";
-import { useRouter } from "expo-router";
 
 export type MainWidgetProps = ViewProps & {
   datas?: any
@@ -17,78 +16,9 @@ export function MainWidget({
 }: MainWidgetProps) {
 
   const t = scopedI18n('widgets.mainWidget');
-  const router = useRouter()
 
   const color1 = datas.event.colors[0];
   const color2 = datas.event.colors.length > 1 ? datas.event.colors[1] : color1;
-
-  function renderItem({item} : any) {
-
-    function handlePress () {
-
-      if (!item.competitive) {
-        return;
-      }
-
-      if (item.is_over) {
-        if (item.has_prono) {
-          router.push(`/sessions/results/${item.id}`);
-          return;
-        }
-        
-        router.push(`/sessions/resultsAlone/${item.id}`);
-        return;
-      }
-
-      // Live session later
-      
-      router.push({
-        pathname: `/sessions/predictions/${item.id}` as any,
-        params: { hasProno: item.has_prono, hasStarted: String(hasStarted), datetime: item.datetime }
-      })
-      return;
-    }
-
-    const hasStarted = DateTime.fromISO(item.datetime) < DateTime.now()
-
-    function rightItem () {
-      if (item.is_over) {
-        return (
-          <MainText>{t('showResults')}</MainText>
-        )
-      }
-
-      if (hasStarted) {
-
-        if (!item.competitive && DateTime.fromISO(item.datetime).plus({ hour: 1 }) < DateTime.now()) {
-          return (
-            <MainText>{t('finished')}</MainText>
-          )
-        }
-        return (
-          <MainText style={{ color: Colors.light.live }}>{t('onGoing')}</MainText>
-        )
-      }
-
-      return (
-        <MainText>{niceDatetime(item.datetime)}</MainText>
-      )
-    }
-
-    return(
-      <View style={{ overflow: 'hidden', marginBottom: Constants.spacing.buttonPadding }}>
-        <ShadowButton
-          innerStyle={[GlobalStyles.mainWidgetButton]}
-          style={{ overflow: "visible" }}
-          onPress={handlePress}
-          absoluteChild={item.has_prono && <Sticker style={{ left: '30%' }}/>}
-        >
-          <MainText>{item.name}</MainText>
-          {rightItem()}
-        </ShadowButton>
-      </View>
-    )
-  }
 
   function eventDatetime () {
     const lastEvent = datas.sessions.reduce((prev: any, current: any) => 
@@ -107,13 +37,7 @@ export function MainWidget({
         <Image source={{ uri: datas.event.flag }} style={{ width: 200, height: 50 }} resizeMode="contain"/>
         <MainText style={{ marginBottom: 40, marginTop: Constants.spacing.mainWidgetMargin }}>{eventDatetime()}</MainText>
         <MainText style={{ alignSelf: 'flex-start', marginBottom: Constants.spacing.buttonPadding }}>{t('sessions')}</MainText>
-        <FlatList
-          data={datas.sessions}
-          renderItem={renderItem}
-          // Should be tested on android: nestedScrollEnabled
-          showsVerticalScrollIndicator={false}
-          style={{ alignSelf: "stretch" }}
-        />
+        <SessionsList datas={datas.sessions}/>
       </View>
     </View>
   )

@@ -4,14 +4,14 @@ import { ActivityIndicator, Dimensions, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useApi } from "@/hooks";
 import { useAuth } from "@/contexts/AuthContext";
-import { useState, memo, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { useFocusEffect } from "expo-router";
 
 export type EventsProps = {
   tabBarHeight?: number;
 }
 
-function Events ({ 
+export default function Events ({
   tabBarHeight=0,
 }: EventsProps) {
 
@@ -58,5 +58,3 @@ function Events ({
     </ScrollContainer>
   )
 }
-
-export default memo(Events)

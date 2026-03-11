@@ -5,6 +5,7 @@ import { DateTime } from "luxon"
 import { useRef, useEffect, useState, useMemo } from "react"
 import { fromToDatetime } from "@/utils"
 import { scopedI18n } from "@/translations/i18n"
+import { useRouter } from "expo-router"
 
 const t = scopedI18n('widgets.eventCalendar')
 
@@ -22,6 +23,8 @@ export function EventCalendarWidget ({
   index=0,
   ...otherProps
 }: EventCalendarWidgetProps) {
+
+  const router = useRouter();
 
   const inputRange = [
     (index - 1) * (size + Constants.spacing.buttonPadding),
@@ -56,7 +59,16 @@ export function EventCalendarWidget ({
   }, [scroll, index, size]);
 
   return(
-    <TouchableOpacity style={[GlobalStyles.button, { height: size, width: size, alignSelf: 'center', transform: [{ scale: scale }]  }]} disabled={disabled}>
+    <TouchableOpacity
+      style={[GlobalStyles.button, { height: size, width: size, alignSelf: 'center', transform: [{ scale: scale }]  }]}
+      onPress={() => router.push({
+        pathname: `/events/${datas?.id}` as any,
+        // Name should be removed
+        params: {
+          eventName: datas?.name
+        }
+      })}
+    >
       {showShadow && 
         <>
           <SpotLight color={datas?.colors[0] || Colors.light.background} cx="35%" cy="35%" fx="5%" fy="5%" radius="50%"/>
