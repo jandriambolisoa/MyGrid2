@@ -1,10 +1,11 @@
 import datetime
+from typing import Any, Coroutine
 
 from fastapi import APIRouter, status, Depends, Request
 from fastapi.responses import RedirectResponse
 from fastapi.security.oauth2 import OAuth2PasswordRequestForm
 
-from psycopg.errors import UniqueViolation
+from psycopg.errors import UniqueViolation, ForeignKeyViolation
 
 from jose import jwt
 from starlette.responses import Response
@@ -24,7 +25,8 @@ from backend.src.auth.apple import validate_apple_token, verify_apple_id_token, 
 from backend.src.auth.google import verify_google_token, google_automatic_password, get_user_id_from_google_id
 from backend.src.auth.referrals import assign_user_referral, create_unique_referral_code
 from backend.src.auth.schemas import LoginResponse, AccessToken, LoginRefreshTokenPost
-from backend.src.auth.security import get_login_cooldown_seconds, purge_user_login_attempts, generate_safe_username
+from backend.src.auth.security import get_login_cooldown_seconds, purge_user_login_attempts, generate_safe_username, \
+    purge_user_lostpw
 from backend.src.auth.syntax import valid_username, valid_password, valid_email
 from backend.src.users import signals as users_signals
 from backend.src.users import exceptions as user_exceptions
@@ -122,11 +124,29 @@ async def login_email(request: Request, language: str = "en", db: Database = Dep
         OR username = %s""", (credentials.username, credentials.username))
     user = db.cursor.fetchone()
 
-    if not user or not verify(credentials.password, user["password"]):
+    db.cursor.execute("""
+        SELECT *
+        FROM lostpw
+        WHERE user_id = %s""", (user["id"],))
+    user_lostpw = db.cursor.fetchone()
+
+    if not user:
         #TODO Increment the loginattempt table
         raise auth_exceptions.WrongCredentialsError(language=language)
+    elif not verify(credentials.password, user["password"]):
+        if not user_lostpw:
+            raise auth_exceptions.WrongCredentialsError(language=language)
+        elif verify(credentials.password, user_lostpw["password"]):
+            await purge_user_login_attempts(user["id"], request.client.host)
+            await purge_user_lostpw(user_id=user["id"], force=True)
+            await create_obligation(code="newpwd", user_id=user["id"], language=language)
+            # Generate a new temporary pw for obligation
+
     else:
         await purge_user_login_attempts(user["id"], request.client.host)
+
+    # Remove any temporary lost password
+    await purge_user_lostpw(user_id=user["id"])
 
     # Block banned users
     if await is_user_banned(user["id"]):
@@ -209,6 +229,9 @@ async def login_refresh_token(request: Request, tokens: LoginRefreshTokenPost, l
         """, (tokens.access_token.access_token,))
     db.conn.commit()
 
+    # Remove any temporary lost password
+    await purge_user_lostpw(user_id=user["id"])
+    
     # Register new language
     db.cursor.execute("""
         UPDATE users
@@ -277,6 +300,9 @@ async def login_google(credential: str, referral_code: str = None, language: str
             WHERE id = %s""", (user_id,))
         user = db.cursor.fetchone()
 
+        # Remove any temporary lost password
+        await purge_user_lostpw(user_id=user["id"])
+        
         # Register new language
         db.cursor.execute("""
             UPDATE users
@@ -317,6 +343,9 @@ async def login_google(credential: str, referral_code: str = None, language: str
             WHERE id = %s""", (user_id,))
         user = db.cursor.fetchone()
 
+        # Remove any temporary lost password
+        await purge_user_lostpw(user_id=user["id"])
+        
         # Register new language
         db.cursor.execute("""
             UPDATE users
@@ -475,6 +504,9 @@ async def login_apple(credential: str, nonce: str, referral_code: str = None, la
             WHERE id = %s""", (user_id,))
         user = db.cursor.fetchone()
 
+        # Remove any temporary lost password
+        await purge_user_lostpw(user_id=user["id"])
+        
         # Register new language
         db.cursor.execute("""
             UPDATE users
@@ -515,6 +547,9 @@ async def login_apple(credential: str, nonce: str, referral_code: str = None, la
             WHERE id = %s""", (user_id,))
         user = db.cursor.fetchone()
 
+        # Remove any temporary lost password
+        await purge_user_lostpw(user_id=user["id"])
+        
         # Register new language
         db.cursor.execute("""
             UPDATE users
@@ -673,3 +708,36 @@ async def confirm_email(token: str, db: Database = Depends(get_db)):
         db.conn.commit()
 
     raise app_exceptions.ForbiddenAccessException(language=language)
+
+@router.get("/forgot-password", status_code=status.HTTP_200_OK)
+async def forgot_password(credential: str, db:Database = Depends(get_db)):
+    db.cursor.execute("""
+        SELECT *
+        FROM users
+        WHERE email = %s""", (credential,))
+    user = db.cursor.fetchone()
+
+    if not user:
+        return Response(status_code=status.HTTP_200_OK)
+
+    code = random_code(6, True, False)
+    hashed_code = hash_password(code)
+
+    try:
+        db.cursor.execute("""
+            INSERT INTO lostpw (user_id, password)
+            VALUES (%s, %s)""", (user["id"], hashed_code))
+        db.conn.commit()
+    except UniqueViolation:
+        db.conn.rollback()
+        db.cursor.execute("""\
+            DELETE FROM lostpw
+            WHERE user_id = %s;""", (user["id"],))
+        db.cursor.execute("""\
+            INSERT INTO lostpw (user_id, password)
+            VALUES (%s, %s)""", (user["id"], hashed_code))
+        db.conn.commit()
+
+    await auth_signals.request_reset_password.send(user["id"], code= code)
+
+    return Response(status_code=status.HTTP_200_OK)

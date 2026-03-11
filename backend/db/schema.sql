@@ -1,4 +1,4 @@
-\restrict lU93RsOdR7cw33NaGCguHUfSO1Ow5Xx4fyGxVJaZH6UYiRMImEVKatQbw9lbWsj
+\restrict B7NTgt8z9ZKBxFuJA8w2t6pBTsQLayFNuhWtRYnvFfIRv4ees2QcP7tgvXQrNZQ
 
 -- Dumped from database version 18.1
 -- Dumped by pg_dump version 18.1
@@ -74,6 +74,17 @@ CREATE SEQUENCE public.appstatus_id_seq
 --
 
 ALTER SEQUENCE public.appstatus_id_seq OWNED BY public.appstatus.id;
+
+
+--
+-- Name: apscheduler_jobs; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.apscheduler_jobs (
+    id character varying(191) NOT NULL,
+    next_run_time double precision,
+    job_state bytea NOT NULL
+);
 
 
 --
@@ -326,6 +337,17 @@ CREATE TABLE public.googleids (
 
 CREATE TABLE public.loginattempts (
     address character varying NOT NULL,
+    created timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: lostpw; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.lostpw (
+    user_id integer NOT NULL,
+    password character varying NOT NULL,
     created timestamp with time zone DEFAULT now() NOT NULL
 );
 
@@ -890,6 +912,14 @@ ALTER TABLE ONLY public.appstatus
 
 
 --
+-- Name: apscheduler_jobs apscheduler_jobs_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.apscheduler_jobs
+    ADD CONSTRAINT apscheduler_jobs_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: bannedhistory bannedhistory_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -999,6 +1029,14 @@ ALTER TABLE ONLY public.googleids
 
 ALTER TABLE ONLY public.loginattempts
     ADD CONSTRAINT loginattempts_pkey PRIMARY KEY (address, created);
+
+
+--
+-- Name: lostpw lostpw_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.lostpw
+    ADD CONSTRAINT lostpw_pkey PRIMARY KEY (user_id);
 
 
 --
@@ -1226,6 +1264,13 @@ ALTER TABLE ONLY public.wdcpredictions
 
 
 --
+-- Name: ix_apscheduler_jobs_next_run_time; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX ix_apscheduler_jobs_next_run_time ON public.apscheduler_jobs USING btree (next_run_time);
+
+
+--
 -- Name: appleids appleids_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1287,6 +1332,14 @@ ALTER TABLE ONLY public.eventstranslations
 
 ALTER TABLE ONLY public.googleids
     ADD CONSTRAINT googleids_users_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: lostpw lostpw_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.lostpw
+    ADD CONSTRAINT lostpw_users_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -1533,7 +1586,7 @@ ALTER TABLE ONLY public.wdcpredictions
 -- PostgreSQL database dump complete
 --
 
-\unrestrict lU93RsOdR7cw33NaGCguHUfSO1Ow5Xx4fyGxVJaZH6UYiRMImEVKatQbw9lbWsj
+\unrestrict B7NTgt8z9ZKBxFuJA8w2t6pBTsQLayFNuhWtRYnvFfIRv4ees2QcP7tgvXQrNZQ
 
 
 --
@@ -1576,4 +1629,6 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20260215154056'),
     ('20260215204125'),
     ('20260222162507'),
-    ('20260225212055');
+    ('20260225212055'),
+    ('20260304221356'),
+    ('20260306231602');

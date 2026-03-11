@@ -2,7 +2,8 @@ from datetime import datetime, timedelta, UTC
 
 from backend.db.database import get_db
 from backend.config import settings as app_settings
-from backend.src.auth.constants import LOGIN_SUSPENSION_DURATION, INCREMENTAL_SUSPENSION_DURATIONS
+from backend.src.auth.constants import LOGIN_SUSPENSION_DURATION, INCREMENTAL_SUSPENSION_DURATIONS, LOSTPW_VALIDITY
+
 
 async def get_login_cooldown_seconds(address) -> int:
     if app_settings.debug:
@@ -44,6 +45,18 @@ async def purge_user_refresh_tokens(user_id: int) -> None:
         WHERE user_id = %s""", (user_id,))
     db.conn.commit()
 
+async def purge_user_lostpw(user_id: int, force= False) -> None:
+    db = get_db()
+    if not force:
+        db.cursor.execute("""\
+            DELETE FROM lostpw
+            WHERE user_id = %s AND NOW()-created > %s""", (user_id, timedelta(minutes=LOSTPW_VALIDITY)))
+    else:
+        db.cursor.execute("""\
+            DELETE FROM lostpw
+            WHERE user_id = %s""", (user_id,))
+    db.conn.commit()
+
 async def generate_safe_username(user_id: int = None) -> str:
     new_username = "user%09d" % user_id if user_id else None
 
@@ -59,3 +72,4 @@ async def generate_safe_username(user_id: int = None) -> str:
             new_username = "user%09d" % tmp_id
 
     return new_username
+
