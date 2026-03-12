@@ -31,8 +31,8 @@ export function useApi<T = any> (initLoading = false, toast = true) {
 
   async function api (props: FetchProps) {
 
-    setLoading(true)
-    setError(null)
+    setLoading(true);
+    setError(null);
 
     try {
 

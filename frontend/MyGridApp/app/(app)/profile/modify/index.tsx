@@ -2,7 +2,7 @@ import { Container, Header, ProfilePicture, ShadowButton, MainText } from '@/com
 import { useAuth } from "@/contexts/AuthContext"
 import { scopedI18n } from '@/translations/i18n'
 import { useEffect, useState } from 'react'
-import { View, Alert, Platform, ActivityIndicator } from 'react-native'
+import { View, Alert, ActivityIndicator } from 'react-native'
 import * as ImagePicker from "expo-image-picker"
 import { ImageManipulator, SaveFormat } from "expo-image-manipulator"
 import { useApi } from '@/hooks'
@@ -16,7 +16,7 @@ export default function Modify () {
   const router = useRouter();
 
   const { loading: imageLoading, api: postImage } = useApi();
-  const { datas: userDatas, loading: userLoading, api: getUser } = useApi(false, false);
+  const { datas: userDatas, api: getUser } = useApi(false, false);
 
   const [headerHeight, setHeaderHeight] = useState(0);
 
@@ -54,10 +54,10 @@ export default function Modify () {
 
       const formData = new FormData();
       formData.append('image', {
-        uri: Platform.OS === 'ios' ? uri.replace('file://', '') : uri,
-        name: filename
+        uri: uri,
+        name: filename,
+        type: 'image/jpeg'
       } as any);
-
       
       await postImage({
         endpoint: '/users/profile/edit/pp',

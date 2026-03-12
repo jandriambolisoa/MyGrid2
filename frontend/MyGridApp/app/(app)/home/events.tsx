@@ -26,8 +26,7 @@ export default function Events ({
 
   useFocusEffect(
     useCallback(() => {
-      if (auth && refresh) {
-        setRefresh(false);
+      if (auth) {
         getMain({
           endpoint: '/nav/home/main-event?championship_id=1',
           auth: auth
@@ -41,7 +40,7 @@ export default function Events ({
           auth: auth
         });
       }
-    }, [auth, refresh])
+    }, [auth])
   )
 
   return (
