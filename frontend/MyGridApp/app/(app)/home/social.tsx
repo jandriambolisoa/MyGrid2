@@ -1,9 +1,9 @@
-import { RankingsWidget, ScrollContainer } from "@/components/widgets";
+import { RankingsWidget } from "@/components/widgets";
 import { scopedI18n } from "@/translations/i18n";
 import { useApi } from "@/hooks";
 import { useAuth } from "@/contexts/AuthContext"
 import { useEffect } from "react";
-import { View } from "react-native";
+import { View, ActivityIndicator } from "react-native";
 import { Colors, Constants } from "@/theme";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -45,7 +45,6 @@ export default function Social ({
       backgroundColor: Colors.light.background,
       flex: 1
     }}>
-      
       {eventDatas && <RankingsWidget
         title={t('weekend')}
         subtitle={t('tapWeekend')}
@@ -66,7 +65,9 @@ export default function Social ({
         style={{ marginBottom: margin }} 
         path='/rankings/championships'
       />}
-       
+      {(eventLoading || champLoading) && <View style={{ marginVertical: Constants.spacing.mainWidgetMargin }}>
+        <ActivityIndicator color={Colors.light.orangeLogo}/>
+      </View>}
     </View>
   )
 }

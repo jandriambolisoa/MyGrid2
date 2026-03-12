@@ -26,8 +26,7 @@ export default function Events ({
 
   useFocusEffect(
     useCallback(() => {
-      if (auth && refresh) {
-        setRefresh(true);
+      if (auth) {
         getMain({
           endpoint: '/nav/home/main-event?championship_id=1',
           auth: auth
@@ -41,7 +40,7 @@ export default function Events ({
           auth: auth
         });
       }
-    }, [auth, refresh])
+    }, [auth])
   )
 
   return (
@@ -49,7 +48,7 @@ export default function Events ({
       {mainDatas && !mainLoading && !mainError && <MainWidget datas={mainDatas} style={{ height: Dimensions.get('window').height - insets.top - tabBarHeight - Constants.spacing.mainWidgetMargin}}/>}
       {champDatas && !champLoading && !champError && <ChampionshipWidget datas={champDatas}/>}
       {calendarDatas && !calendarLoading && !calendarError && <EventCalendar datas={calendarDatas}/>}
-      {calendarLoading || champLoading || mainLoading && <View style={{ marginVertical: Constants.spacing.mainWidgetMargin }}>
+      {(calendarLoading || champLoading || mainLoading) && <View style={{ marginVertical: Constants.spacing.mainWidgetMargin }}>
         <ActivityIndicator color={Colors.light.orangeLogo}/>
       </View>}
     </ScrollContainer>

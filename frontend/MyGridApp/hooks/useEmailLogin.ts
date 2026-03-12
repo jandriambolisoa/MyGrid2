@@ -30,7 +30,7 @@ export function useEmailLogin () {
       const response = await fetch(`${API_URL}/auth/login-email?language=${locale}`, options);
 
       if (response.status >= 500) {
-        setError('AUTH');
+        setError('SERVER');
         return false;
       }
 

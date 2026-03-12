@@ -43,7 +43,7 @@ export default function Signup () {
 
   useEffect(() => {
     if (error) {
-      if (error === 'AUTH') {
+      if (error === 'SERVER') {
         router.push('/serverError');
         return;
       }
