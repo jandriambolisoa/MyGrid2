@@ -17,7 +17,7 @@ export async function forgotPassword (email: string | null) {
   const response = await fetch(`${API_URL}/auth/forgot-password?credential=${email}`, options);
 
   if (!response.ok) {
-    throw new Error('UNKOWN');
+    return false;
   }
 
   return true;

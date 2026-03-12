@@ -110,7 +110,8 @@ export const GlobalStyles = StyleSheet.create({
   warning: {
     marginTop: Constants.spacing.wideMargin,
     color: Colors.light.warning,
-    textAlign: 'center'
+    textAlign: 'center',
+    maxWidth: '80%'
   },
 
   mainWidgetButton: {
