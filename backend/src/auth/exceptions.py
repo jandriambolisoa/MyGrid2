@@ -15,6 +15,12 @@ class NotAValidUsernameCharactersError(HTTPException):
         super().__init__(self.status_code, **kwargs)
         self.detail = not_a_valid_username_characters_message[language]
 
+class NotAValidUsernameSpacebarError(HTTPException):
+    status_code = status.HTTP_406_NOT_ACCEPTABLE
+    def __init__(self, language: str = "en", **kwargs):
+        super().__init__(self.status_code, **kwargs)
+        self.detail = not_a_valid_username_spacebar_message[language]
+
 class NotAvailableUsernameError(HTTPException):
     status_code = status.HTTP_406_NOT_ACCEPTABLE
     def __init__(self, language: str = "en", **kwargs):

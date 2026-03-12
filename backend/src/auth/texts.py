@@ -16,6 +16,13 @@ not_a_valid_username_characters_message = defaultdict(
     }
 )
 
+not_a_valid_username_spacebar_message = defaultdict(
+    lambda: "Spaces are not allowed in your username.",
+    {
+        "fr": "Les espaces ne sont pas autorisés dans le nom d'utilisateur.",
+    }
+)
+
 not_available_username_message = defaultdict(
     lambda: "Username not available.",
     {

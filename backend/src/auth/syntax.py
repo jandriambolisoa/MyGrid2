@@ -7,7 +7,8 @@ from backend.db.database import get_db
 from backend.src.users.schemas import UserCreate
 from backend.src.auth.constants import USERNAME_MAX_LENGTH, USERNAME_MIN_LENGTH, PW_MIN_LENGTH
 from backend.src.auth.exceptions import NotAValidUsernameLengthError, NotAValidUsernameCharactersError, \
-    NotAvailableUsernameError, NotAValidPasswordLength, NotAValidPasswordStrength, NotAValidEmailError
+    NotAvailableUsernameError, NotAValidPasswordLength, NotAValidPasswordStrength, NotAValidEmailError, \
+    NotAValidUsernameSpacebarError
 
 
 async def valid_username(username: str, language: str = "en") -> str:
@@ -17,6 +18,8 @@ async def valid_username(username: str, language: str = "en") -> str:
     authorized_characters = [*string.ascii_lowercase, *string.ascii_uppercase, *string.digits, "_", "-"]
 
     for character in username:
+        if character == " ":
+            raise NotAValidUsernameSpacebarError(language=language)
         if not character in authorized_characters:
             raise NotAValidUsernameCharactersError(language=language)
 
