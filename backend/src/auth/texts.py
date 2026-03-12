@@ -16,6 +16,13 @@ not_a_valid_username_characters_message = defaultdict(
     }
 )
 
+not_a_valid_username_spacebar_message = defaultdict(
+    lambda: "Spaces are not allowed in your username.",
+    {
+        "fr": "Les espaces ne sont pas autorisés dans le nom d'utilisateur.",
+    }
+)
+
 not_available_username_message = defaultdict(
     lambda: "Username not available.",
     {
@@ -146,5 +153,40 @@ mailing_verification_title = defaultdict(
     lambda: "Dear {{ USERNAME }},",
     {
         "fr": "Cher {{ USERNAME }},",
+    }
+)
+
+mailing_lostpw_subject = defaultdict(
+    lambda: "Did you forget your password? 🛡️",
+    {
+        "fr": "Avez-vous oublié votre mot de passe ? 🛡️",
+    }
+)
+
+mailing_lostpw_preview = defaultdict(
+    lambda: "If not, ignore this email.",
+    {
+        "fr": "Si non, ignorez cet email.",
+    }
+)
+
+mailing_lostpw_title = defaultdict(
+    lambda: "Dear {{ USERNAME }},",
+    {
+        "fr": "Cher {{ USERNAME }},",
+    }
+)
+
+mailing_lostpw_body = defaultdict(
+    lambda: "We received a request to reset the password for your account. If you initiated this request, use your username as your identifier and the temporary code below as your password to log in :",
+    {
+        "fr": "Nous avons bien reçu ta demande de réinitialisation de mot de passe. Si tu es à l'origine de cette démarche, utilise ton nom d'utilisateur en identifiant et le code temporaire ci-dessous comme mot de passe pour te connecter :",
+    }
+)
+
+mailing_lostpw_instructions = defaultdict(
+    lambda: "If you did not request a password reset, you can safely ignore this email. Your account remains secure.",
+    {
+        "fr": "Si tu n'as pas demandé de réinitialisation, tu peux simplement ignorer cet e-mail. Ton compte reste en sécurité.",
     }
 )

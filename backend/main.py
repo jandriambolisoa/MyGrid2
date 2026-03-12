@@ -23,6 +23,7 @@ from backend.src.ranks import router as ranks_router
 from backend.src.registrations import router as registrations_router
 from backend.src.results import router as results_router
 from backend.src.scores import router as scores_router
+from backend.src.social import router as social_router
 from backend.src.users import router as users_router
 
 from backend.src.collectibles import listener as collectibles_listener
@@ -72,6 +73,7 @@ app.include_router(predictions_router.router)
 app.include_router(ranks_router.router)
 app.include_router(results_router.router)
 app.include_router(scores_router.router)
+app.include_router(social_router.router)
 app.include_router(registrations_router.router)
 app.include_router(users_router.router)
 

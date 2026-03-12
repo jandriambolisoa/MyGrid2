@@ -1,6 +1,6 @@
-from http.client import HTTPException
+from fastapi.exceptions import HTTPException
 
-from psycopg.errors import ForeignKeyViolation
+from psycopg.errors import ForeignKeyViolation, UniqueViolation
 from starlette import status
 
 from backend import texts
@@ -29,6 +29,8 @@ async def create_obligation(code: str, user_id: int, language: str = "en"):
     except ForeignKeyViolation:
         db.conn.rollback()
         raise NotAUserError(language= language)
+    except UniqueViolation:
+        db.conn.rollback()
 
 async def delete_obligation(code: str, user_id: int, language: str = "en"):
     db = get_db()
@@ -52,11 +54,11 @@ def obligation_content(code: str, language: str = "en"):
         ),
         "newpwd": ObligationResponse(
             message= texts.obligation_newpwd[language],
-            redirection= f"{app_settings.api_url}/users/profile/edit/password",
-            fields= {"body": {
-                "old_password": "str",
+            redirection= f"{app_settings.api_url}/users/profile/edit/reset-password",
+            fields= {
+                "old_password": "_",
                 "new_password": "str"
-            }}
+            }
         ),
     }
     return obligations[code]
@@ -66,6 +68,5 @@ class Obligation(HTTPException):
     status_code = status.HTTP_428_PRECONDITION_REQUIRED
     def __init__(self, code: str, language: str = "en", **kwargs):
         super().__init__(self.status_code, **kwargs)
-        self.detail = {
-            obligation_content(code, language).model_dump(mode= "json")
-        }
+        self.detail = obligation_content(code, language).model_dump(mode= "json")
+

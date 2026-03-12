@@ -3,7 +3,7 @@ import { ExpoConfig } from "expo/config";
 const config: ExpoConfig = {
   name: "MyGridApp",
   slug: "MyGridApp",
-  version: "2.1.1",
+  version: "2.2.0",
   orientation: "portrait",
   icon: "./assets/images/app/mygrid2_icon_v001.png",
   scheme: "mygridapp",

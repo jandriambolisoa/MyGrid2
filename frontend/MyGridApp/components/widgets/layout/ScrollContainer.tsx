@@ -1,11 +1,11 @@
-import { ViewProps, ScrollView } from 'react-native';
+import { ScrollView, ScrollViewProps } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Container }  from '@/components/widgets';
 
 export type ScrollContainerProps = {
   footerHeight?: number;
-  headerHeight?: number
-} & ViewProps
+  headerHeight?: number;
+} & ScrollViewProps
 
 // Scrollable container for home pages
 
@@ -21,7 +21,12 @@ export function ScrollContainer ({
 
   return (
     <Container style={{ paddingBottom: 0, paddingTop: 0 }}>
-      <ScrollView style={{ alignSelf: 'stretch' }} contentContainerStyle={{ paddingBottom: paddingBottom, paddingTop: paddingTop }} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={{ alignSelf: 'stretch' }}
+        contentContainerStyle={{ paddingBottom: paddingBottom, paddingTop: paddingTop }}
+        showsVerticalScrollIndicator={false}
+        {...otherProps}
+      >
         {otherProps.children}
       </ScrollView>
     </Container>

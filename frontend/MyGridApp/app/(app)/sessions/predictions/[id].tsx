@@ -7,10 +7,13 @@ import { Header, PredictionsList, PredictionsFooter, ListsLabels } from "@/compo
 import { scopedI18n } from "@/translations/i18n";
 import { DateTime } from "luxon";
 import { Colors } from "@/theme";
+import { useToast } from "@/contexts/ToastContext";
 
 export default function Predictions () {
 
   const auth = useAuth();
+  const { showToast } = useToast();
+
   const t = scopedI18n('sessions.predictions');
   const router = useRouter();
 
@@ -27,44 +30,44 @@ export default function Predictions () {
   const [listDatas, setListDatas] = useState<any[]>([]);
 
   useEffect(() => {
-    auth && getPredictions({
-      endpoint: `/events/sessions/${id}/drivers`,
-      method: 'GET',
-      auth: auth
-    });
-  }, [auth]);
-
-  useEffect(() => {
-    if (hasProno === 'true' || hasStarted === 'false') {
-      auth && !loading && getParams({
-        endpoint: `/scores/parameters/1`,
+    if (auth) {
+      getPredictions({
+        endpoint: `/events/sessions/${id}/drivers`,
         method: 'GET',
         auth: auth
       });
+      if (hasProno === 'true' || hasStarted === 'false') {
+        getParams({
+          endpoint: `/scores/parameters/1`,
+          method: 'GET',
+          auth: auth
+        });
+      }
     }
-  }, [loading]);
+  }, [auth]);
 
   useEffect(() => {
-      if (datas?.drivers?.length > 0 && !listDatas.length) {
-        if (hasProno === 'false' && hasStarted === 'false') {
-          const newDatas = datas.drivers.map((item: any, index: number) => ({
-            ...item,
-            mygrid: index + 1
-          }))
-          setListDatas(newDatas);
-        } else {
-          setListDatas(datas.drivers);
-        }
+    if (datas?.drivers?.length > 0 && !listDatas.length) {
+      if (hasProno === 'false' && hasStarted === 'false') {
+        const newDatas = datas.drivers.map((item: any, index: number) => ({
+          ...item,
+          mygrid: index + 1
+        }))
+        setListDatas(newDatas);
+      } else {
+        setListDatas(datas.drivers);
       }
+    }
   }, [datas]);
 
   useEffect(() => {
       if (makeStatus === 403) {
         router.push('/verify/resend')
       }
-  }, [makeStatus])
+  }, [makeStatus]);
 
   async function handlePredictions () {
+
     if (datas?.session?.datetime && DateTime.fromISO(datas.session.datetime) > DateTime.now()) {
       const makeList = {
         predictions: listDatas.map((item: any, index: number) => {
@@ -83,12 +86,10 @@ export default function Predictions () {
       })
 
       if (success) {
-        router.back()
+        router.back();
       }
       return
     }
-    // Should be removed
-    console.log("Predictions can't be done after session has started")
   }
 
   const color1 = datas?.session?.event_colors?.[0]

@@ -1,19 +1,20 @@
-import { ScrollContainer, Separator, NumbersList, RankingsUserWidget } from "@/components/widgets";
+import { ScrollContainer, RankingsUserWidget } from "@/components/widgets";
 import { Constants } from "@/theme";
-import { FlatList, View } from "react-native";
+import { FlatList } from "react-native";
 import { useAuth } from '@/contexts/AuthContext'
-import { useEffect } from "react";
 
 export function RankingsList ({
   datas=[],
   footerHeight=0,
   headerHeight=0,
   color=null,
+  event=null
 }: {
   datas: any;
   footerHeight?: number;
   headerHeight?: number;
   color?: string | null;
+  event?: any;
 }) {
 
   const { user } = useAuth()
@@ -23,27 +24,18 @@ export function RankingsList ({
     const you = user?.username === item?.user?.username ? true : false
 
     return (
-      <RankingsUserWidget item={item} spotColor={color} you={you}/>
+      <RankingsUserWidget item={item} spotColor={color} you={you} event={event}/>
     )
   }
 
-  useEffect(() => {
-    console.log(datas)
-  }, [datas])
-
   return (
     <ScrollContainer footerHeight={footerHeight} headerHeight={headerHeight}>
-      <View style={{ flexDirection: 'row', padding: Constants.spacing.listMargin }}>
-      <NumbersList numbers={datas.length} contentContainerStyle={{ paddingEnd: 4 }} itemHeight={Constants.spacing.userWidgetHeight}/>
-        <View style={{ width: '90%' }}>
-          <FlatList
-            data={datas}
-            renderItem={({item}) => renderItem(item)}
-            scrollEnabled={false}
-            ItemSeparatorComponent={() => Separator}
-          />
-        </View>
-      </View>
+      <FlatList
+        data={datas}
+        renderItem={({item}) => renderItem(item)}
+        scrollEnabled={false}
+        contentContainerStyle={{ paddingVertical: Constants.spacing.listMargin / 2 }}
+      />
     </ScrollContainer>
   )
 }

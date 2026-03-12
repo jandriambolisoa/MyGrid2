@@ -5,7 +5,7 @@ const API_URL = process.env.EXPO_PUBLIC_API_URL
 
 export  function useEmailSignup () {
 
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   async function emailSignup (username: string, email:string, password: string, locale: string) {
@@ -30,7 +30,13 @@ export  function useEmailSignup () {
       setError(null);
 
       const response = await fetch(`${API_URL}/auth/signup?language=${locale}`, options);
-      const data = await response.json()
+
+      if (response.status >= 500) {
+        setError('AUTH');
+        return false;
+      }
+
+      const data = await response.json();
 
       if (data.detail) {
         setError(data.detail);

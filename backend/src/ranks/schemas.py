@@ -12,6 +12,18 @@ class UserRank(BaseModel):
     user: Optional[User] = None
     score: Optional[int] = None
 
+class UserChampionshipRank(BaseModel):
+    rank: int
+    user: User
+    championship: Championship
+    score: Optional[int] = 0
+
+class UserEventRank(BaseModel):
+    rank: int
+    user: User
+    event: Event
+    score: Optional[int] = 0
+
 class UserSessionRank(BaseModel):
     rank: int
     user: User

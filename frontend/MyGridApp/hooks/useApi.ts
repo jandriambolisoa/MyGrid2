@@ -1,10 +1,12 @@
 import { apiFetch, FetchProps } from "@/api/fetch";
+import { useToast } from "@/contexts/ToastContext";
 import { scopedI18n } from "@/translations/i18n";
 import { useState } from "react";
 
-export function useApi<T = any> (initLoading = false) {
+export function useApi<T = any> (initLoading = false, toast = true) {
 
   const t = scopedI18n('hooks.useApi');
+  const { showToast } = useToast();
 
   const [datas, setDatas] = useState<T | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -35,10 +37,27 @@ export function useApi<T = any> (initLoading = false) {
 
       setStatus(response.status);
 
+      if (response.status >= 500) {
+        setError('Server error');
+        if (toast) {
+          showToast({
+            title: 'Server error',
+            type: 'error'
+          })
+        }
+        return false;
+      }
+
       const data = await response.json();
 
       if (!response.ok) {
         setError(data?.detail ?? t('anError'))
+        if (toast) {
+          showToast({
+            title: data?.detail ?? t('anError'),
+            type: 'error'
+          })
+        }
         return false;
       }
 
@@ -47,6 +66,12 @@ export function useApi<T = any> (initLoading = false) {
 
     } catch (e) {
       setError(e instanceof Error ? e.message : t('anError'));
+      if (toast) {
+        showToast({
+          title: e instanceof Error ? e.message : t('anError'),
+          type: 'error'
+        })
+      }
       return false
     } finally {
       setLoading(false)

@@ -1,5 +1,5 @@
 from datetime import datetime, UTC
-from typing import List
+from typing import List, Any, Coroutine
 
 from fastapi.params import Depends
 
@@ -232,21 +232,7 @@ async def get_session_full_name(session_id: int, language: str = "en"):
 
     return session["name"]
 
-async def get_session_from_id(session_id: int, language: str = "en") -> Session:
-    db = get_db()
-    db.cursor.execute("""\
-        SELECT * FROM sessions
-        WHERE id = %s""", (session_id,))
-    session = db.cursor.fetchone()
-
-    if not session:
-        raise EventNotFoundError(language=language)
-
-    session["name"] = await get_session_full_name(session_id)
-
-    return Session(**session)
-
-async def get_session_colors_from_id(session_id: int) -> List[str]:
+async def get_session_colors_from_id(session_id: int, language: str = "en") -> List[str]:
     db = get_db()
     db.cursor.execute("""\
         SELECT events.colors
@@ -283,3 +269,56 @@ async def get_upcoming_sessions(language: str = "en") -> List[Session]:
         raise EventNotFoundError(language=language)
 
     return [Session(**session) for session in sessions]
+
+
+async def get_championship_from_id(championship_id: int, language: str = "en") -> Championship | None:
+    db = get_db()
+    db.cursor.execute("""\
+        SELECT *
+        FROM championships
+        WHERE id = %s
+        """, (championship_id,))
+    championship = db.cursor.fetchone()
+
+    if not championship:
+        return None
+
+    return Championship(**championship)
+
+async def get_event_from_id(event_id: int, language: str = "en") -> Event | None:
+    db = get_db()
+    db.cursor.execute("""\
+        WITH events_translations AS (
+            SELECT event_id, name
+            FROM eventstranslations
+            WHERE language = %s
+        )
+        SELECT events.id,
+        COALESCE(events_translations.name, events.name) AS name,
+        events.colors,
+        events.flag,
+        events.championship_id
+        FROM events
+        LEFT JOIN events_translations ON events_translations.event_id = events.id
+        WHERE id = %s
+        """, (language, event_id))
+    event = db.cursor.fetchone()
+
+    if not event:
+        return None
+
+    return Event(**event)
+
+async def get_session_from_id(session_id: int, language: str = "en") -> Session:
+    db = get_db()
+    db.cursor.execute("""\
+        SELECT * FROM sessions
+        WHERE id = %s""", (session_id,))
+    session = db.cursor.fetchone()
+
+    if not session:
+        raise EventNotFoundError(language=language)
+
+    session["name"] = await get_session_full_name(session_id, language)
+
+    return Session(**session)

@@ -16,7 +16,7 @@ export default function Modify () {
   const router = useRouter();
 
   const { loading: imageLoading, api: postImage } = useApi();
-  const { datas: userDatas, loading: userLoading, api: getUser } = useApi();
+  const { datas: userDatas, loading: userLoading, api: getUser } = useApi(false, false);
 
   const [headerHeight, setHeaderHeight] = useState(0);
 
@@ -84,7 +84,7 @@ export default function Modify () {
   return (
     <Container style={{ backgroundColor: 'transparent', justifyContent: 'flex-start', paddingTop: headerHeight }}>
       <Header title={t('modifyProfile')} onLayout={(e) => setHeaderHeight(e.nativeEvent.layout.height)}>
-        <View style={{ height: 10 }}/>
+        <View style={{ height: 20 }}/>
       </Header>
       <ProfilePicture link={auth.user?.image_url} size={100} borders={true} style={{ marginVertical: 44 }}/>
       <View style={{ width: '80%'}}>

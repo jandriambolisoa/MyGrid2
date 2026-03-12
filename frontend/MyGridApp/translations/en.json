@@ -78,16 +78,26 @@
     "pts": "Pts",
     "yourRank": "Your rank:",
     "yourScore": "Your score:",
+    "rank": "Rank",
+    "score": "Score",
     "you": "You",
     "8events": "Score of 8 best events",
-    "feature": "See others' prediction - Coming soon."
+    "feature": "See others' prediction - Coming soon.",
+    "f1": "F1",
+    "notRankedYet": "Not ranked yet"
+  },
+  "serverError": {
+    "oops": "Oops!",
+    "something": "Something went wrong on our servers.",
+    "please": "Please try again shortly."
   },
   "sessions": {
     "predictions": {
       "makePrediction": "Make prediction",
       "potentialScore": "Potential score: ",
       "pts": "Pts",
-      "onGoing": "Ongoing"
+      "onGoing": "Ongoing",
+      "predictionSent": "Prediction sent!"
     },
     "results": {
       "f1": "F1",
@@ -148,7 +158,8 @@
       "myGrid": "My Grid",
       "points": "Points",
       "pos": "Pos",
-      "drivers": "Drivers"
+      "drivers": "Drivers",
+      "hisGrid": "His Grid"
     }
   },
   "hooks": {
