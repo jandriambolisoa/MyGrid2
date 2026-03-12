@@ -53,19 +53,19 @@ class LoginSuspendedError(HTTPException):
         self.detail = jinja_template.render(duration=duration)
 
 class WrongCredentialsError(HTTPException):
-    status_code = status.HTTP_401_UNAUTHORIZED
+    status_code = status.HTTP_406_NOT_ACCEPTABLE
     def __init__(self, language: str = "en", **kwargs):
         super().__init__(self.status_code, **kwargs)
         self.detail = wrong_credentials_message[language]
 
 class GoogleSSOLoginFailedError(HTTPException):
-    status_code = status.HTTP_401_UNAUTHORIZED
+    status_code = status.HTTP_406_NOT_ACCEPTABLE
     def __init__(self, language: str = "en", **kwargs):
         super().__init__(self.status_code, **kwargs)
         self.detail = google_sso_login_failed_message[language]
 
 class AppleSSOLoginFailedError(HTTPException):
-    status_code = status.HTTP_401_UNAUTHORIZED
+    status_code = status.HTTP_406_NOT_ACCEPTABLE
     def __init__(self, language: str = "en", **kwargs):
         super().__init__(self.status_code, **kwargs)
         self.detail = apple_sso_login_failed_message[language]
