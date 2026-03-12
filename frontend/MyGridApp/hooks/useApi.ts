@@ -1,11 +1,14 @@
 import { apiFetch, FetchProps } from "@/api/fetch";
 import { useToast } from "@/contexts/ToastContext";
 import { scopedI18n } from "@/translations/i18n";
+import { useRouter } from "expo-router";
 import { useState } from "react";
 
 export function useApi<T = any> (initLoading = false, toast = true) {
 
   const t = scopedI18n('hooks.useApi');
+  const router = useRouter();
+
   const { showToast } = useToast();
 
   const [datas, setDatas] = useState<T | null>(null);
@@ -50,11 +53,15 @@ export function useApi<T = any> (initLoading = false, toast = true) {
 
       const data = await response.json();
 
+      if (response.status === 428) {
+        router.replace('/profile/modify/resetPassword');
+      }
+
       if (!response.ok) {
-        setError(data?.detail ?? t('anError'))
+        setError(data?.detail?.message ?? data?.detail ?? t('anError'))
         if (toast) {
           showToast({
-            title: data?.detail ?? t('anError'),
+            title: data?.detail?.message ?? data?.detail ?? t('anError'),
             type: 'error'
           })
         }

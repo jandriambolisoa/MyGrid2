@@ -27,7 +27,7 @@ export default function Login () {
 
   useEffect(() => {
     if (error) {
-      if (error === 'AUTH') {
+      if (error === 'SERVER') {
         router.push('/serverError');
         return;
       }
@@ -107,11 +107,14 @@ export default function Login () {
           <ShadowButton style={[GlobalStyles.loginButton, { width: width * 0.5, padding: 0 }]} onPress={handleLogin}>
             {loading ? <ActivityIndicator color={Colors.light.lightText}/> : <MainText>{t('login')}</MainText>}
           </ShadowButton>
-          <TouchableOpacity style={GlobalStyles.authLink} onPress={() => router.replace('/signup')} hitSlop={10}>
-            <MainText>{t('signup')}</MainText>
+          <TouchableOpacity style={{ marginTop: Constants.spacing.buttonMargin }} onPress={() => router.push('/forgotPassword')} hitSlop={10}>
+            <MainText>{t('forgotPassword')}</MainText>
           </TouchableOpacity>
           <MainText style={GlobalStyles.warning}>{errorMsg}</MainText>
         </Container>
+        <TouchableOpacity style={GlobalStyles.authLink} onPress={() => router.replace('/signup')} hitSlop={10}>
+          <MainText>{t('signup')}</MainText>
+        </TouchableOpacity>
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   )

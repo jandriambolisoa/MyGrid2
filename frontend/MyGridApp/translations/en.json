@@ -1,5 +1,15 @@
 {
   "auth": {
+    "forgotPassword": {
+      "forgotPassword": "Forgot your password?",
+      "pleaseEnter": "Please enter your email adress below",
+      "email": "Email adress",
+      "weWillSend": "We will send you an email to reset your password",
+      "sendEmail": "Send email",
+      "confirm": "Confirm",
+      "pleaseEnterCode": "Please enter the 6-digits code we sent you by email",
+      "missingEmail": "Missing email"
+    },
     "login": {
       "signInGoogle": "Sign in with Google",
       "signInApple": "Sign in with Apple",
@@ -7,7 +17,8 @@
       "password": "Password",
       "login": "Login",
       "missingInfo": "Missing information",
-      "signup": "Don't have an account? Sign up"
+      "signup": "Don't have an account? Sign up",
+      "forgotPassword": "Forgot your password?"
     },
     "signup": {
       "username": "Username",
