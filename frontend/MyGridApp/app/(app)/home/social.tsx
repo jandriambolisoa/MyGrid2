@@ -18,44 +18,55 @@ export default function Social ({
   const auth = useAuth();
   const margin = Constants.spacing.mainWidgetMargin;
 
-  const { datas: mainDatas, error: mainError, loading: mainLoading, api: getMain } = useApi(true);
+  const { datas: eventDatas, loading: eventLoading, api: getEventRank } = useApi(true);
+  const { datas: champDatas, loading: champLoading, api: getChampRank } = useApi(true);
 
   useEffect(() => {
-    auth && getMain({
-      endpoint: '/nav/home/main-event?championship_id=1',
-      method: 'GET',
-      auth: auth
-    })
+    if (auth) {
+      getEventRank({
+        endpoint: '/nav/social/home/event-rank',
+        auth: auth
+      });
+      getChampRank({
+        endpoint: '/nav/social/home/championship-rank?championship_id=1',
+        auth: auth
+      });
+    }
   }, [auth])
 
-  const color1 = mainDatas? mainDatas.event.colors[0] : null;
-  const color2 = mainDatas?.event?.colors?.[1] ?? color1;
+  const color1 = eventDatas? eventDatas.event.colors[0] : null;
+  const color2 = eventDatas?.event?.colors?.[1] ?? color1;
 
   return (
     <View style={{
-      justifyContent: 'space-evenly',
       paddingBottom: tabBarHeight,
       paddingTop: insets.top,
       paddingHorizontal: margin,
       backgroundColor: Colors.light.background,
       flex: 1
     }}>
-      <RankingsWidget
+      
+      {eventDatas && <RankingsWidget
         title={t('weekend')}
         subtitle={t('tapWeekend')}
+        rank={eventDatas.rank}
+        score={eventDatas.score}
         color1={color1}
         color2={color2}
-        style={{ marginBottom: margin, flex: 1 }}
+        style={{ marginBottom: margin }}
         path='/rankings/events'
-      />
-      <RankingsWidget
+      />}
+      {champDatas && <RankingsWidget
         title={t('mygrid')}
         subtitle={t('tapMygrid')}
+        rank={champDatas.rank}
+        score={champDatas.score}
         color1={Colors.light.cyanLogo}
         color2={Colors.light.orangeLogo}
-        style={{ marginBottom: margin, flex: 1 }} 
+        style={{ marginBottom: margin }} 
         path='/rankings/championships'
-      />
+      />}
+       
     </View>
   )
 }

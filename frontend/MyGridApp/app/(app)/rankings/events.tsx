@@ -33,15 +33,13 @@ export default function Rankings () {
       {error && <View style={[StyleSheet.absoluteFill, GlobalStyles.container]}>
         <MainText style={{ color: Colors.light.warning }}>{error}</MainText>
       </View>}
-      {datas?.ranks && <RankingsList datas={datas.ranks} footerHeight={footerHeight} headerHeight={headerHeight} color={color1}/>}
+      {datas?.ranks && <RankingsList datas={datas.ranks} footerHeight={footerHeight} headerHeight={headerHeight} color={color1} event={datas?.event}/>}
       <Header
         onLayout={(e: any) => setHeaderHeight(e.nativeEvent.layout.height)}
         spotColor={color1}
         title={datas?.event.name ? datas.event.name : t('loading')}
         subtitle={t('weekendRankings')}
-      >
-        <MainText style={{ marginBottom: 6, color: Colors.light.warning }}>{t('feature')}</MainText>
-      </Header>
+      />
       <RankingsFooter
         onLayout={(e: any) => setFooterHeight(e.nativeEvent.layout.height)}
         datas={datas?.viewer_rank}

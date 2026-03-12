@@ -7,10 +7,12 @@ import { rankNumber } from "@/utils";
 export function RankingsFooter ({
   datas=null,
   spotColor=null,
+  self=true,
   ...otherProps
 } : FrameProps & {
   datas?: any;
   spotColor?: string | null;
+  self?: boolean;
 }) {
 
   if (!datas) {
@@ -19,21 +21,34 @@ export function RankingsFooter ({
 
   const t = scopedI18n('rankings')
 
+  function footerContent () {
+    if (datas.rank && datas.rank > 0) {
+      return (
+        <View style={GlobalStyles.header}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
+            <MainText fontSize="header" style={{ marginEnd: 6 }}>{self ? t('yourRank') : t('rank')}</MainText>
+            <MainText fontSize="title" bold={true}>{rankNumber(datas?.rank)}</MainText>
+          </View>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <MainText fontSize="main" style={{ marginEnd: 6 }}>{self ? t('yourScore') : t('score')}</MainText>
+            <MainText fontSize="header" bold={true}>{datas?.score} {t('pts')}</MainText>
+          </View>
+        </View>
+      )
+    }
+    return (
+      <View style={GlobalStyles.header}>
+        <MainText fontSize='header'>{t('notRankedYet')}</MainText>
+      </View>
+    )
+  }
+
   return (
     <Frame orientation='bottom' {...otherProps}>
       {spotColor && <View style={[StyleSheet.absoluteFill]}>
         <SpotLight color={spotColor} cx="60%" cy="60%" fx="90%" fy="90%" radius="80%"/>
       </View>}
-      <View style={GlobalStyles.header}>
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
-          <MainText fontSize="header" style={{ marginEnd: 6 }}>{t('yourRank')}</MainText>
-          <MainText fontSize="title" bold={true}>{rankNumber(datas?.rank)}</MainText>
-        </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <MainText fontSize="main" style={{ marginEnd: 6 }}>{t('yourScore')}</MainText>
-          <MainText fontSize="header" bold={true}>{datas?.score} {t('pts')}</MainText>
-        </View>
-      </View>
+      {footerContent()}
     </Frame>
   )
 }

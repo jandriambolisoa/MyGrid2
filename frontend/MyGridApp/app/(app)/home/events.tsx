@@ -4,14 +4,14 @@ import { ActivityIndicator, Dimensions, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useApi } from "@/hooks";
 import { useAuth } from "@/contexts/AuthContext";
-import { useState, memo, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { useFocusEffect } from "expo-router";
 
 export type EventsProps = {
   tabBarHeight?: number;
 }
 
-function Events ({ 
+export default function Events ({
   tabBarHeight=0,
 }: EventsProps) {
 
@@ -30,17 +30,14 @@ function Events ({
         setRefresh(true);
         getMain({
           endpoint: '/nav/home/main-event?championship_id=1',
-          method: 'GET',
           auth: auth
         });
         getChamp({
           endpoint: '/nav/home/championships?championship_id=1',
-          method: 'GET',
           auth: auth
         });
         getCalendar({
           endpoint: '/nav/home/events?championship_id=1',
-          method: 'GET',
           auth: auth
         });
       }
@@ -52,11 +49,9 @@ function Events ({
       {mainDatas && !mainLoading && !mainError && <MainWidget datas={mainDatas} style={{ height: Dimensions.get('window').height - insets.top - tabBarHeight - Constants.spacing.mainWidgetMargin}}/>}
       {champDatas && !champLoading && !champError && <ChampionshipWidget datas={champDatas}/>}
       {calendarDatas && !calendarLoading && !calendarError && <EventCalendar datas={calendarDatas}/>}
-      {calendarLoading && <View style={{ marginVertical: Constants.spacing.mainWidgetMargin }}>
+      {calendarLoading || champLoading || mainLoading && <View style={{ marginVertical: Constants.spacing.mainWidgetMargin }}>
         <ActivityIndicator color={Colors.light.orangeLogo}/>
       </View>}
     </ScrollContainer>
   )
 }
-
-export default memo(Events)
