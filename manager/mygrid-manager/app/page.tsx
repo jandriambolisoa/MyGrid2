@@ -26,7 +26,10 @@ export default function Home () {
       return;
     }
 
-    //const data = await emailLogin(username, password);
+    const res = await emailLogin(username, password);
+    if (res.success) {
+      console.log("Login ok!")
+    }
 
   }
 
@@ -36,8 +39,8 @@ export default function Home () {
       <input
         className="input"
         placeholder="Email or username"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
       />
       <input
         className="input"
@@ -48,6 +51,7 @@ export default function Home () {
         onChange={(e) => setPassword(e.target.value)}
       />
       <button className="button" onClick={handleLogin}>Login</button>
+      <h1 className="error">{errorMsg}</h1>
     </div>
   )
 }

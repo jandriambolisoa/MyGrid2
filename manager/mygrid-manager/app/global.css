@@ -45,6 +45,10 @@ body {
 }
 
 .button:active {
-
   opacity: 0.5;
+}
+
+.error {
+  color: #ff0000;
+  margin-top: var(--titleMargin);
 }

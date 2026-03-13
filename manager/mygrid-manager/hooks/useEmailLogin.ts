@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 
-const API_URL = process.env.EXPO_PUBLIC_API_URL
-
 export function useEmailLogin () {
 
   const [error, setError] = useState<string | null>(null);
@@ -11,22 +9,15 @@ export function useEmailLogin () {
 
   async function emailLogin (username: string, password: string) {
 
-    const body = `${encodeURIComponent('username')}=${encodeURIComponent(username)}&${encodeURIComponent('password')}=${encodeURIComponent(password)}`
-
-    const options = {
-      method: "POST",
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: body
-    }
-
     try {
       setLoading(true);
       setError(null);
 
-      const response = await fetch(`${API_URL}/auth/login-email`, options);
+      const response = await fetch("/api/login", {
+        method: 'POST',
+        body: JSON.stringify({ username, password }),
+        headers: { "Content-Type": "application/json"}
+      });
 
       if (response.status >= 500) {
         setError('SERVER');
