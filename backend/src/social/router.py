@@ -110,7 +110,7 @@ async def get_social_session_rank(
         raise NoRanksError(language)
 
     session = await get_session_from_id(rank["session_id"], language=language)
-    event = await get_event_from_id(session.id, language=language)
+    event = await get_event_from_id(session.event_id, language=language)
 
     return {
         "rank": rank["rank"],
