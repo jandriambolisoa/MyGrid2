@@ -124,16 +124,17 @@ async def login_email(request: Request, language: str = "en", db: Database = Dep
         OR username = %s""", (credentials.username, credentials.username))
     user = db.cursor.fetchone()
 
-    db.cursor.execute("""
-        SELECT *
-        FROM lostpw
-        WHERE user_id = %s""", (user["id"],))
-    user_lostpw = db.cursor.fetchone()
-
     if not user:
         #TODO Increment the loginattempt table
         raise auth_exceptions.WrongCredentialsError(language=language)
-    elif not verify(credentials.password, user["password"]):
+    else:
+        db.cursor.execute("""
+            SELECT *
+            FROM lostpw
+            WHERE user_id = %s""", (user["id"],))
+        user_lostpw = db.cursor.fetchone()
+
+    if not verify(credentials.password, user["password"]):
         if not user_lostpw:
             raise auth_exceptions.WrongCredentialsError(language=language)
         elif verify(credentials.password, user_lostpw["password"]):
