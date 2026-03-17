@@ -19,13 +19,13 @@ export default function Rankings () {
   useEffect(() => {
     auth && getRankings({
       // Limit should be replaced by paging as soon as possible
-      endpoint: `/ranks/events?limit=300`,
+      endpoint: `/ranks/records/sessions/1?limit=300`,
       auth: auth
     })
   }, [auth])
 
-  const color1 = datas?.event.colors[0];
-  const color2 = datas?.event.colors.length > 1 ? datas?.event.colors[1] : color1;
+  const color1 = Colors.light.records;
+  const color2 = Colors.light.records;
 
   return (
     <View style={{ flex: 1, backgroundColor: Colors.light.background }}>
@@ -33,20 +33,22 @@ export default function Rankings () {
       {error && <View style={[StyleSheet.absoluteFill, GlobalStyles.container]}>
         <MainText style={{ color: Colors.light.warning }}>{error}</MainText>
       </View>}
-      {datas?.ranks && <RankingsList datas={datas.ranks} footerHeight={footerHeight} headerHeight={headerHeight} color={color1}/>}
+      {datas && <RankingsList datas={datas.ranks} footerHeight={footerHeight} headerHeight={headerHeight} color={color1} records={true}/>}
       <Header
         onLayout={(e: any) => setHeaderHeight(e.nativeEvent.layout.height)}
         spotColor={color1}
-        title={datas?.event.name ? datas.event.name : t('loading')}
-        subtitle={t('weekendRankings')}
-      >
+        title={t('records')}
+        subtitle={t('pointRecords')}
+      />
+      {/*
+      To be changed later.
 
-      </Header>
       <RankingsFooter
         onLayout={(e: any) => setFooterHeight(e.nativeEvent.layout.height)}
         datas={datas?.viewer_rank}
         spotColor={color2}
       />
+      */}
     </View>
   )
 }

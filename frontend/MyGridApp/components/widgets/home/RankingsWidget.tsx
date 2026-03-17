@@ -53,12 +53,12 @@ export function RankingsWidget ({
           <MainText fontSize="header" style={{ marginEnd: 6 }}>{self ? t('yourRank') : t('rank')}</MainText>
           <MainText fontSize="title" bold={true}>{rankNumber(rank)}</MainText>
         </View>}
-        {score > 0 && <View style={{ flexDirection: 'row', alignItems: 'center', alignSelf: 'center', marginBottom: Constants.spacing.wideMargin }}>
+        {score > 0 && <View style={{ flexDirection: 'row', alignItems: 'center', alignSelf: 'center' }}>
           <MainText fontSize="main" style={{ marginEnd: 6 }}>{self ? t('yourScore') : t('score')}</MainText>
           <MainText fontSize="header" bold={true}>{score} {t('pts')}</MainText>
         </View>}
-        {score < 1 && <MainText style={{ marginBottom: Constants.spacing.wideMargin }} fontSize="header">{t('notRankedYet')}</MainText>}
-        {subtitle && <MainText style={{ maxWidth: '80%' }}>{subtitle}</MainText>}
+        {score < 1 && <MainText fontSize="header">{t('notRankedYet')}</MainText>}
+        {subtitle && <MainText style={{ maxWidth: '80%', marginTop: Constants.spacing.wideMargin }}>{subtitle}</MainText>}
       </View>
     </TouchableOpacity>
   )

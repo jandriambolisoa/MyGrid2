@@ -20,6 +20,7 @@ export default function Social ({
 
   const { datas: eventDatas, loading: eventLoading, api: getEventRank } = useApi(true);
   const { datas: champDatas, loading: champLoading, api: getChampRank } = useApi(true);
+  //const { datas: recordDatas, loading: recordLoading, api: getRecordsRank } = useApi(true);
 
   useEffect(() => {
     if (auth) {
@@ -47,7 +48,6 @@ export default function Social ({
     }}>
       {eventDatas && <RankingsWidget
         title={t('weekend')}
-        subtitle={t('tapWeekend')}
         rank={eventDatas.rank}
         score={eventDatas.score}
         color1={color1}
@@ -57,7 +57,6 @@ export default function Social ({
       />}
       {champDatas && <RankingsWidget
         title={t('mygrid')}
-        subtitle={t('tapMygrid')}
         rank={champDatas.rank}
         score={champDatas.score}
         color1={Colors.light.cyanLogo}
@@ -65,6 +64,13 @@ export default function Social ({
         style={{ marginBottom: margin }} 
         path='/rankings/championships'
       />}
+      <RankingsWidget
+        title={t('records')}
+        color1={Colors.light.records}
+        color2={Colors.light.records}
+        style={{ marginBottom: margin }} 
+        path='/rankings/records'
+      />
       {(eventLoading || champLoading) && <View style={{ marginVertical: Constants.spacing.mainWidgetMargin }}>
         <ActivityIndicator color={Colors.light.orangeLogo}/>
       </View>}

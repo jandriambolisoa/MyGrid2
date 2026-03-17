@@ -15,7 +15,8 @@ export const Constants = {
     androidPadding: 20,
     listNumber: 50,
     backButtonSize: 60,
-    wideMargin: 44
+    wideMargin: 44,
+    recordWidgetHeight: 84
   },
   shadow: {
     topThickness: 11,
