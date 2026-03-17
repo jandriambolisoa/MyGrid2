@@ -19,14 +19,27 @@ export function useEmailLogin () {
         headers: { "Content-Type": "application/json"}
       });
 
+      let data: any;
+      const text = await response.text();
+      try {
+        data = JSON.parse(text);
+      } catch {
+        data = { message: text };
+      }
+
       if (response.status >= 500) {
         setError('SERVER');
         return false;
       }
 
-      const data = await response.json()
+      if (!response.ok) {
+        console.log(data)
+        setError(data?.detail || data?.message || data?.error || `HTTP ${response.status}`);
+        return false;
+      }
 
-      if (data.detail) {
+      // Erreur renvoyée dans le JSON
+      if (data?.detail) {
         setError(data.detail);
         return false;
       }
@@ -34,7 +47,7 @@ export function useEmailLogin () {
       return data
 
     } catch (e: any) {
-      setError(String(e.message));
+      setError(e?.message || "An unexpected error occured.");
       return false;
     } finally {
       setLoading(false);

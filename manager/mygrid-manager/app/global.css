@@ -48,7 +48,31 @@ body {
   opacity: 0.5;
 }
 
+.homeButton {
+  border: 1px solid var(--foreground);
+  border-radius: 4px;
+  cursor: pointer;
+  padding: var(--buttonPadding);
+  width: 100%;
+  margin: 6px;
+  align-self: stretch;
+}
+
+.homeButton:active {
+  opacity: 0.5;
+}
+
 .error {
   color: #ff0000;
   margin-top: var(--titleMargin);
+}
+
+.homeCategory {
+  align-self: stretch;
+  padding: 10px 10px;
+}
+
+.label {
+  margin-top: 6px;
+  margin-left: 40px;
 }

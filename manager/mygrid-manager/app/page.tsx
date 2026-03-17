@@ -1,9 +1,12 @@
 "use client"
 
+import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useEmailLogin } from "@/hooks"
 
 export default function Home () {
+
+  const router = useRouter();
 
   const { emailLogin, error, loading } = useEmailLogin();
 
@@ -28,7 +31,7 @@ export default function Home () {
 
     const res = await emailLogin(username, password);
     if (res.success) {
-      console.log("Login ok!")
+      router.replace("/home")
     }
 
   }
@@ -50,7 +53,13 @@ export default function Home () {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      <button className="button" onClick={handleLogin}>Login</button>
+      <button className="button" onClick={handleLogin}>
+        {loading ? (
+          <span className="spinner"></span>
+        ) : (
+          "Login"
+        )}
+      </button>
       <h1 className="error">{errorMsg}</h1>
     </div>
   )

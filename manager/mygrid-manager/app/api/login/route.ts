@@ -5,11 +5,13 @@ export async function POST(req: Request) {
   const API_URL = process.env.API_URL;
 
   const {username, password} = await req.json();
-  const data = await fetch(`${API_URL}/auth/login-email`, {
+  const response = await fetch(`${API_URL}/auth/login-email`, {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: `username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`,
-  }).then(r => r.json());
+  });
+
+  const data = await response.json();
 
   if (data.access_token) {
     const res = NextResponse.json({ success: true });
@@ -25,5 +27,5 @@ export async function POST(req: Request) {
     return res
   }
 
-  return NextResponse.json({ error: data.detail || "Login failed"}, { status: 400 });
+  return NextResponse.json({ error: data.detail || "Login failed"}, { status: response.status });
 }
