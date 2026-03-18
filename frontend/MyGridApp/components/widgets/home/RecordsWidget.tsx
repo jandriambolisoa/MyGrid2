@@ -3,6 +3,7 @@ import { MainText, ProfilePicture, ShadowSetup, SpotLight } from "@/components/w
 import { Constants, GlobalStyles, Colors } from "@/theme";
 import { useAuth } from "@/contexts/AuthContext";
 import { scopedI18n } from "@/translations/i18n";
+import { useRouter } from "expo-router";
 
 function PodiumButton ({
   item=null,
@@ -13,6 +14,7 @@ function PodiumButton ({
 }) {
 
   const t = scopedI18n('home.social')
+  const router = useRouter();
 
   const { user } = useAuth()
 
@@ -23,7 +25,10 @@ function PodiumButton ({
 
   return (
     <TouchableOpacity
-    style={[GlobalStyles.button, { flex: 1, justifyContent: 'flex-start' }, style]}
+      style={[GlobalStyles.button, { flex: 1, justifyContent: 'flex-start' }, style]}
+      onPress={() => router.push({
+        pathname: `/rankings/results/${item?.user?.id}/${item?.session?.id}` as any
+      })}
     >
       <SpotLight color={color} cx="60%" cy="60%" fx="80%" fy="70%" radius="70%" opacityStart="0.8" opacityEnd="0.1"/>
       <ShadowSetup/>
