@@ -50,14 +50,14 @@ export default function Social ({
       backgroundColor: Colors.light.background,
       flex: 1
     }}>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-evenly' }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', marginBottom: Constants.spacing.mainWidgetMargin }}>
         {eventDatas && <RankingsWidget
           title={t('weekend')}
           rank={eventDatas.rank}
           score={eventDatas.score}
           color1={color1}
           color2={color2}
-          style={{ marginBottom: margin }}
+          style={{ marginEnd: Constants.spacing.mainWidgetMargin }}
           path='/rankings/events'
         />}
         {champDatas && <RankingsWidget
@@ -65,8 +65,7 @@ export default function Social ({
           rank={champDatas.rank}
           score={champDatas.score}
           color1={Colors.light.cyanLogo}
-          color2={Colors.light.orangeLogo}
-          style={{ marginBottom: margin }} 
+          color2={Colors.light.orangeLogo} 
           path='/rankings/championships'
         />}
       </View>

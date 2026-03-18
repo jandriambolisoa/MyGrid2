@@ -56,7 +56,7 @@ export function RecordsWidget ({
   return (
     <View style={[GlobalStyles.button, { height: 320 }]}>
       {<SpotLight cx='50%' cy='10%' fx='40%' fy='10%' color={Colors.light.records}/>}
-      <MainText fontSize='header' style={{ marginTop: Constants.spacing.buttonPadding }}>{type === 'sessions' ? t('sessionRecords') : t('eventRecords')}</MainText>
+      <MainText bold={true} fontSize='header' style={{ marginTop: Constants.spacing.buttonPadding }}>{type === 'sessions' ? t('sessionRecords') : t('eventRecords')}</MainText>
       <View style={{ flexDirection: 'row', flex: 1, alignItems: 'flex-end', margin: Constants.spacing.listMargin, marginTop: Constants.spacing.mainWidgetMargin }}>
         <PodiumButton style={{ height: '90%', marginEnd: Constants.spacing.listMargin }} item={datas?.[1]}/>
         <PodiumButton style={{ height: '100%', marginEnd: Constants.spacing.listMargin }} item={datas?.[0]}/>
