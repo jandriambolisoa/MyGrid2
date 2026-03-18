@@ -30,6 +30,7 @@ export const Constants = {
     swipeThreshold: 70
   },
   fontSizes: {
+    small: 12,
     mainText: 16,
     header: 20,
     title: 28,

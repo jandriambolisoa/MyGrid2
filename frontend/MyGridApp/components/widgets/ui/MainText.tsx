@@ -1,12 +1,12 @@
 import { StyleSheet, Text, type TextProps } from 'react-native';
 import { Colors, Constants } from '@/theme';
 
-type FontSize = 'main' | 'header' | 'title' | 'big' | 'giant'; 
+type FontSize = 'small' | 'main' | 'header' | 'title' | 'big' | 'giant'; 
 
 export type MainTextProps = TextProps & {
   type?: 'light' | 'dark';
   bold?: boolean;
-  fontSize?: 'main' | 'header' | 'title' | 'big' | 'giant';
+  fontSize?: FontSize;
 };
 
 export function MainText({
@@ -18,6 +18,7 @@ export function MainText({
 }: MainTextProps) {
 
   const fontSizeMap: Record<FontSize, number> = {
+    small: Constants.fontSizes.small,
     main: Constants.fontSizes.mainText,
     header: Constants.fontSizes.header,
     title: Constants.fontSizes.title,

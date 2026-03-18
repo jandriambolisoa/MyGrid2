@@ -3,6 +3,7 @@ export * from './home/ChampionshipWidget';
 export * from './home/EventCalendar';
 export * from './home/PagerTabBar';
 export * from './home/RankingsWidget';
+export * from './home/RecordsWidget';
 
 export * from './ui/MyGridBackground';
 export * from './ui/SpotLight';
@@ -40,6 +41,5 @@ export * from './lists/RankingsList';
 export * from './lists/RankingsUserWidget';
 export * from './lists/UserPredictionsList';
 export * from './lists/SessionsList';
-export * from './lists/RecordsUserWidget';
 
 

@@ -57,7 +57,10 @@
       "records": "Records",
       "tapWeekend": "Tap to see this weekend's rankings",
       "tapMygrid": "Tap to see the overall rankings",
-      "tapRecords": "Tap to see the point records"
+      "tapRecords": "Tap to see the point records",
+      "pts": "Pts",
+      "sessionRecords": "Session records",
+      "eventRecords": "Event records"
     }
   },
   "index": {
