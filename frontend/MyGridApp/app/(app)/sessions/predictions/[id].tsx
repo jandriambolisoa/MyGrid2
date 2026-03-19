@@ -7,6 +7,7 @@ import { Header, PredictionsList, PredictionsFooter, ListsLabels } from "@/compo
 import { scopedI18n } from "@/translations/i18n";
 import { DateTime } from "luxon";
 import { Colors } from "@/theme";
+import * as SecureStore from "expo-secure-store";
 import { useToast } from "@/contexts/ToastContext";
 
 export default function Predictions () {
@@ -18,8 +19,8 @@ export default function Predictions () {
   const router = useRouter();
 
   const { id, hasProno, hasStarted, datetime } = useLocalSearchParams();
-  const { datas, error, loading, api: getPredictions } = useApi(true);
-  const { error: makeError, status: makeStatus, loading: makeLoading, api: makePrediction } = useApi();
+  const { datas, loading, api: getPredictions } = useApi(true);
+  const { status: makeStatus, loading: makeLoading, api: makePrediction } = useApi();
   const { datas: paramsDatas, api: getParams } = useApi();
 
   const time = useTimer(String(datetime));
@@ -92,6 +93,29 @@ export default function Predictions () {
     }
   }
 
+  async function handleCopy () {
+    await SecureStore.setItemAsync('clipboard', JSON.stringify(listDatas.map(item => item.driver.id)));
+    showToast({
+      title: t('predictionCopied')
+    })
+  }
+
+  async function handlePaste () {
+    const clipboard = await SecureStore.getItemAsync('clipboard');
+    if (clipboard) {
+      const ids = JSON.parse(clipboard);
+      const pastedDatas = ids.map((number: number) => listDatas.find(item => item.driver.id === number)).filter((item: any) => item);
+      const missingDrivers = listDatas.filter((item) => !ids.find((number: any) => number === item.driver.id));
+      pastedDatas.push(...missingDrivers);
+      setListDatas(pastedDatas);
+      return;
+    }
+    showToast({
+      type: 'error',
+      title: t('noDatasToPaste')
+    })
+  }
+
   const color1 = datas?.session?.event_colors?.[0]
   const color2 = datas?.session?.event_colors?.length > 1 ? datas.session.event_colors[1] : color1
 
@@ -113,6 +137,16 @@ export default function Predictions () {
         subtitle={hasStarted === 'true' ? t('onGoing') : time}
         {...(hasStarted === 'true' && { subtitleColor: Colors.light.live })}
         spotColor={color1}
+        menu={[
+          {
+            title: t('copyPrediction'),
+            onPress: handleCopy
+          },
+          {
+            title: t('pastePrediction'),
+            onPress: handlePaste
+          }
+        ]}
       >
         <ListsLabels points={hasProno === 'true' || hasStarted === 'false'} noGrid={hasStarted === 'true' && hasProno === 'false'}/>
       </Header>

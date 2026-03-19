@@ -113,7 +113,11 @@
       "potentialScore": "Potential score: ",
       "pts": "Pts",
       "onGoing": "Ongoing",
-      "predictionSent": "Prediction sent!"
+      "predictionSent": "Prediction sent!",
+      "noDatasToPaste": "No datas to paste",
+      "copyPrediction": "Copy prediction",
+      "pastePrediction": "Paste prediction",
+      "predictionCopied": "Prediction copied"
     },
     "results": {
       "f1": "F1",
