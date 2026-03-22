@@ -1,8 +1,11 @@
 from pydantic import BaseModel
 from typing import List, Optional
 
+from pydantic_core.core_schema import computed_field
+
 from backend.src.drivers.schemas import Driver, Team
 from backend.src.events.schemas import Session
+from backend.src.reactions.schemas import UserReaction
 from backend.src.users.schemas import User
 
 
@@ -16,6 +19,7 @@ class PredictionSessionPost(BaseModel):
 class SessionWithPotential(Session):
     potential: int
     score: Optional[int] = 0
+    reactions: Optional[List[UserReaction]] = None
 
 class PredictionPreview(BaseModel):
     user: User
