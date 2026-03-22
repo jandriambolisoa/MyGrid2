@@ -20,6 +20,7 @@ from backend.src.nav import router as nav_router
 from backend.src.notifications import router as notifications_router
 from backend.src.predictions import router as predictions_router
 from backend.src.ranks import router as ranks_router
+from backend.src.reactions import router as reactions_router
 from backend.src.registrations import router as registrations_router
 from backend.src.results import router as results_router
 from backend.src.scores import router as scores_router
@@ -71,6 +72,7 @@ app.include_router(nav_router.router)
 app.include_router(notifications_router.router)
 app.include_router(predictions_router.router)
 app.include_router(ranks_router.router)
+app.include_router(reactions_router.router)
 app.include_router(results_router.router)
 app.include_router(scores_router.router)
 app.include_router(social_router.router)

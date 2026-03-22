@@ -1,4 +1,4 @@
-\restrict B7NTgt8z9ZKBxFuJA8w2t6pBTsQLayFNuhWtRYnvFfIRv4ees2QcP7tgvXQrNZQ
+\restrict pY7D5G5k2U0cOgF0cliq1NbasYfQgLNRqRutiTa2gv6fk0l28phtWr1dODSly5P
 
 -- Dumped from database version 18.1
 -- Dumped by pg_dump version 18.1
@@ -633,6 +633,19 @@ CREATE TABLE public.sessionspredictions (
 
 
 --
+-- Name: sessionsreactions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.sessionsreactions (
+    user_id integer NOT NULL,
+    session_id integer NOT NULL,
+    by integer NOT NULL,
+    reaction character varying NOT NULL,
+    created timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
 -- Name: sessionsregistrations; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1144,6 +1157,14 @@ ALTER TABLE ONLY public.sessionspredictions
 
 
 --
+-- Name: sessionsreactions sessionsreactions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sessionsreactions
+    ADD CONSTRAINT sessionsreactions_pkey PRIMARY KEY (user_id, session_id, by);
+
+
+--
 -- Name: sessionsregistrations sessionsregistrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1455,6 +1476,30 @@ ALTER TABLE ONLY public.sessionspredictions
 
 
 --
+-- Name: sessionsreactions sessionsreactions_sessions_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sessionsreactions
+    ADD CONSTRAINT sessionsreactions_sessions_fkey FOREIGN KEY (session_id) REFERENCES public.sessions(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: sessionsreactions sessionsreactions_users_fkey1; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sessionsreactions
+    ADD CONSTRAINT sessionsreactions_users_fkey1 FOREIGN KEY (user_id) REFERENCES public.users(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: sessionsreactions sessionsreactions_users_fkey2; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.sessionsreactions
+    ADD CONSTRAINT sessionsreactions_users_fkey2 FOREIGN KEY (by) REFERENCES public.users(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
 -- Name: sessionsregistrations sessionsregistrations_drivers_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1586,7 +1631,7 @@ ALTER TABLE ONLY public.wdcpredictions
 -- PostgreSQL database dump complete
 --
 
-\unrestrict B7NTgt8z9ZKBxFuJA8w2t6pBTsQLayFNuhWtRYnvFfIRv4ees2QcP7tgvXQrNZQ
+\unrestrict pY7D5G5k2U0cOgF0cliq1NbasYfQgLNRqRutiTa2gv6fk0l28phtWr1dODSly5P
 
 
 --
@@ -1631,4 +1676,5 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20260222162507'),
     ('20260225212055'),
     ('20260304221356'),
-    ('20260306231602');
+    ('20260306231602'),
+    ('20260322144230');
