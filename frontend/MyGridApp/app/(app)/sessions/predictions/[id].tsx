@@ -9,6 +9,7 @@ import { DateTime } from "luxon";
 import { Colors } from "@/theme";
 import * as SecureStore from "expo-secure-store";
 import { useToast } from "@/contexts/ToastContext";
+import { pasteDatas } from "@/utils";
 
 export default function Predictions () {
 
@@ -101,19 +102,7 @@ export default function Predictions () {
   }
 
   async function handlePaste () {
-    const clipboard = await SecureStore.getItemAsync('clipboard');
-    if (clipboard) {
-      const ids = JSON.parse(clipboard);
-      const pastedDatas = ids.map((number: number) => listDatas.find(item => item.driver.id === number)).filter((item: any) => item);
-      const missingDrivers = listDatas.filter((item) => !ids.find((number: any) => number === item.driver.id));
-      pastedDatas.push(...missingDrivers);
-      setListDatas(pastedDatas);
-      return;
-    }
-    showToast({
-      type: 'error',
-      title: t('noDatasToPaste')
-    })
+    pasteDatas(listDatas, setListDatas, showToast);
   }
 
   const color1 = datas?.session?.event_colors?.[0]
