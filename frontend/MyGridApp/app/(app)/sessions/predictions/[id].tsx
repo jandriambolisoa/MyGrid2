@@ -95,10 +95,13 @@ export default function Predictions () {
   }
 
   async function handleCopy () {
-    await SecureStore.setItemAsync('clipboard', JSON.stringify(listDatas.map(item => item.driver.id)));
-    showToast({
-      title: t('predictionCopied')
-    })
+    if (listDatas?.length) {
+      await SecureStore.setItemAsync('clipboard', JSON.stringify(listDatas.map(item => item.driver.id)));
+      showToast({
+        title: t('predictionCopied'),
+        duration: 2500
+      })
+    }
   }
 
   async function handlePaste () {
@@ -126,7 +129,7 @@ export default function Predictions () {
         subtitle={hasStarted === 'true' ? t('onGoing') : time}
         {...(hasStarted === 'true' && { subtitleColor: Colors.light.live })}
         spotColor={color1}
-        menu={[
+        menu={hasStarted !== 'true' ? [
           {
             title: t('copyPrediction'),
             onPress: handleCopy
@@ -135,7 +138,7 @@ export default function Predictions () {
             title: t('pastePrediction'),
             onPress: handlePaste
           }
-        ]}
+        ] : null}
       >
         <ListsLabels points={hasProno === 'true' || hasStarted === 'false'} noGrid={hasStarted === 'true' && hasProno === 'false'}/>
       </Header>
