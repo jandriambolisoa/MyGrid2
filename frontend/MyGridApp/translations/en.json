@@ -57,7 +57,10 @@
       "records": "Records",
       "tapWeekend": "Tap to see this weekend's rankings",
       "tapMygrid": "Tap to see the overall rankings",
-      "tapRecords": "Tap to see the point records"
+      "tapRecords": "Tap to see the point records",
+      "pts": "Pts",
+      "sessionRecords": "Session records",
+      "eventRecords": "Event records"
     }
   },
   "index": {
@@ -95,7 +98,11 @@
     "8events": "Score of 8 best events",
     "feature": "See others' prediction - Coming soon.",
     "f1": "F1",
-    "notRankedYet": "Not ranked yet"
+    "notRankedYet": "Not ranked yet",
+    "records": "Records",
+    "pointRecords": "Single-session point records",
+    "copyPrediction": "Copy prediction",
+    "predictionCopied": "Prediction copied"
   },
   "serverError": {
     "oops": "Oops!",
@@ -108,11 +115,19 @@
       "potentialScore": "Potential score: ",
       "pts": "Pts",
       "onGoing": "Ongoing",
-      "predictionSent": "Prediction sent!"
+      "predictionSent": "Prediction sent!",
+      "noDatasToPaste": "No datas to paste",
+      "copyPrediction": "Copy prediction",
+      "pastePrediction": "Paste prediction",
+      "predictionCopied": "Prediction copied"
     },
     "results": {
       "f1": "F1",
-      "loading": "Loading..."
+      "loading": "Loading...",
+      "copyResults": "Copy results",
+      "resultsCopied": "Results copied",
+      "copyPrediction": "Copy prediction",
+      "predictionCopied": "Prediction copied"
     }
   },
   "verify": {

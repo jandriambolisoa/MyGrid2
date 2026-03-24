@@ -7,7 +7,9 @@ import { Header, PredictionsList, PredictionsFooter, ListsLabels } from "@/compo
 import { scopedI18n } from "@/translations/i18n";
 import { DateTime } from "luxon";
 import { Colors } from "@/theme";
+import * as SecureStore from "expo-secure-store";
 import { useToast } from "@/contexts/ToastContext";
+import { pasteDatas } from "@/utils";
 
 export default function Predictions () {
 
@@ -18,8 +20,8 @@ export default function Predictions () {
   const router = useRouter();
 
   const { id, hasProno, hasStarted, datetime } = useLocalSearchParams();
-  const { datas, error, loading, api: getPredictions } = useApi(true);
-  const { error: makeError, status: makeStatus, loading: makeLoading, api: makePrediction } = useApi();
+  const { datas, loading, api: getPredictions } = useApi(true);
+  const { status: makeStatus, loading: makeLoading, api: makePrediction } = useApi();
   const { datas: paramsDatas, api: getParams } = useApi();
 
   const time = useTimer(String(datetime));
@@ -92,6 +94,20 @@ export default function Predictions () {
     }
   }
 
+  async function handleCopy () {
+    if (listDatas?.length) {
+      await SecureStore.setItemAsync('clipboard', JSON.stringify(listDatas.map(item => item.driver.id)));
+      showToast({
+        title: t('predictionCopied'),
+        duration: 2500
+      })
+    }
+  }
+
+  async function handlePaste () {
+    pasteDatas(listDatas, setListDatas, showToast);
+  }
+
   const color1 = datas?.session?.event_colors?.[0]
   const color2 = datas?.session?.event_colors?.length > 1 ? datas.session.event_colors[1] : color1
 
@@ -113,6 +129,16 @@ export default function Predictions () {
         subtitle={hasStarted === 'true' ? t('onGoing') : time}
         {...(hasStarted === 'true' && { subtitleColor: Colors.light.live })}
         spotColor={color1}
+        menu={hasStarted !== 'true' ? [
+          {
+            title: t('copyPrediction'),
+            onPress: handleCopy
+          },
+          {
+            title: t('pastePrediction'),
+            onPress: handlePaste
+          }
+        ] : null}
       >
         <ListsLabels points={hasProno === 'true' || hasStarted === 'false'} noGrid={hasStarted === 'true' && hasProno === 'false'}/>
       </Header>

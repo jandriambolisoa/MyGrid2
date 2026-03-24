@@ -125,5 +125,6 @@ export const GlobalStyles = StyleSheet.create({
     alignSelf: 'stretch',
     padding: Constants.spacing.buttonPadding,
     marginHorizontal: Constants.spacing.buttonMargin - 6
-  }
+  },
+   
 });

@@ -7,3 +7,5 @@ export * from "./checkVersion";
 export * from './getPushTokenAsync';
 export * from './randomNumber';
 export * from './rankNumber';
+export * from './userScore';
+export * from './pasteDatas';

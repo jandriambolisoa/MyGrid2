@@ -6,15 +6,17 @@ import { useApi } from "@/hooks";
 import { View, StyleSheet, ActivityIndicator } from "react-native";
 import { ResultsList, ScrollContainer, Header, ResultsFooter, ListsLabels } from "@/components/widgets";
 import { Colors } from "@/theme";
-import { niceDatetime } from "@/utils";
-
+import { userScore } from "@/utils";
+import { useToast } from "@/contexts/ToastContext";
+import * as SecureStore from "expo-secure-store";
 
 export default function UserResults () {
   const auth = useAuth();
-  const t = scopedI18n('rankings')
+  const t = scopedI18n('rankings');
 
   const { userId, sessionId } = useLocalSearchParams();
-  const { datas, error, loading, api: getResults } = useApi(true);
+  const { datas, loading, api: getResults } = useApi(true);
+  const { showToast } = useToast();
 
   const [headerHeight, setHeaderHeight] = useState(0);
   const [footerHeight, setFooterHeight] = useState(0);
@@ -25,6 +27,16 @@ export default function UserResults () {
       auth: auth
     })
   }, [auth])
+
+  async function handleCopy () {
+    if (datas?.predictions.length) {
+      await SecureStore.setItemAsync('clipboard', JSON.stringify(datas.predictions.map((item: any) => item.driver.id)));
+      showToast({
+        title: t('predictionCopied'),
+        duration: 2500
+      })
+    }
+  }
 
   const color1 = datas?.session.event_colors[0]
   const color2 = datas?.session.event_colors.length > 1 ? datas?.session.event_colors[1] : color1
@@ -41,8 +53,14 @@ export default function UserResults () {
       <Header
         onLayout={(e: any) => setHeaderHeight(e.nativeEvent.layout.height)}
         title={datas?.session.name ? datas.session.name : t('loading')}
-        subtitle={datas?.session?.datetime && niceDatetime(datas.session.datetime, false)}
+        subtitle={userScore(datas?.user?.username ?? '')}
         spotColor={color1}
+        menu={[
+          {
+            title: t('copyPrediction'),
+            onPress: handleCopy
+          }
+        ]}
       >
         
         <ListsLabels points={true} leftLabel={t('f1')} self={true}/>

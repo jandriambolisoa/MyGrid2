@@ -15,7 +15,8 @@ export const Constants = {
     androidPadding: 20,
     listNumber: 50,
     backButtonSize: 60,
-    wideMargin: 44
+    wideMargin: 44,
+    recordWidgetHeight: 84
   },
   shadow: {
     topThickness: 11,
@@ -29,6 +30,7 @@ export const Constants = {
     swipeThreshold: 70
   },
   fontSizes: {
+    small: 12,
     mainText: 16,
     header: 20,
     title: 28,

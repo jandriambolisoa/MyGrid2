@@ -1,5 +1,15 @@
 {
   "auth": {
+    "forgotPassword": {
+      "forgotPassword": "Mot de passe oublié?",
+      "pleaseEnter": "Merci de renseigner votre adresse email",
+      "email": "Adresse email",
+      "weWillSend": "Nous allons vous envoyer un email pour changer votre mot de passe",
+      "sendEmail": "Envoyer l'email",
+      "confirm": "Confirmer",
+      "pleaseEnterCode": "Merci d'entrer le code à 6 chiffres reçu par email",
+      "missingEmail": "Email manquant"
+    },
     "login": {
       "signInGoogle": "Se connecter avec Google",
       "signInApple": "Se connecter avec Apple",
@@ -7,7 +17,8 @@
       "password": "Mot de passe",
       "login": "Se connecter",
       "missingInfo": "Informations manquantes",
-      "signup": "Pas de compte? S'inscrire"
+      "signup": "Pas de compte? S'inscrire",
+      "forgotPassword": "Mot de passe oublié?"
     },
     "signup": {
       "username": "Nom d'utilisateur",
@@ -46,7 +57,10 @@
       "records": "Records",
       "tapWeekend": "Cliquez pour voir le classement du week-end",
       "tapMygrid": "Cliquez pour voir le classement général",
-      "tapRecords": "Cliquez pour voir les records de points"
+      "tapRecords": "Cliquez pour voir les records de points",
+      "pts": "Pts",
+      "sessionRecords": "Records de session",
+      "eventRecords": "Records d'évènement"
     }
   },
   "index": {
@@ -84,7 +98,11 @@
     "8events": "Score des 8 meilleurs évenements",
     "feature": "Voir la prédiction des autres - Bientôt dispo.",
     "f1": "F1",
-    "notRankedYet": "Pas encore classé"
+    "notRankedYet": "Pas encore classé",
+    "records": "Records",
+    "pointRecords": "Records de points sur une seule session",
+    "copyPrediction": "Copier le prono",
+    "predictionCopied": "Prono copié"
   },
   "serverError": {
     "oops": "Oups!",
@@ -97,11 +115,19 @@
       "potentialScore": "Score potentiel: ",
       "pts": "Pts",
       "onGoing": "En cours",
-      "predictionSent": "Prono envoyé!"
+      "predictionSent": "Prono envoyé!",
+      "noDatasToPaste": "Rien à coller",
+      "copyPrediction": "Copier le prono",
+      "pastePrediction": "Coller le prono",
+      "predictionCopied": "Prono copié"
     },
     "results": {
       "f1": "F1",
-      "loading": "Chargement..."
+      "loading": "Chargement...",
+      "copyResults": "Copier les résultats",
+      "resultsCopied": "Résultats copiés",
+      "copyPrediction": "Copier le prono",
+      "predictionCopied": "Prono copié"
     }
   },
   "verify": {

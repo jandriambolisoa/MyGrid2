@@ -8,7 +8,7 @@ export type ProfilePictureProps = ImageProps & {
 }
 
 export function ProfilePicture ({
-  borders=false,
+  borders=true,
   link=null,
   size=50,
   style,
