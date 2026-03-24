@@ -5,7 +5,7 @@ const config: ExpoConfig = {
   slug: "MyGridApp",
   version: "2.2.0",
   orientation: "portrait",
-  icon: "./assets/images/app/mygrid2_icon_v001.png",
+  icon: "./assets/images/app/mygrid2_icon.png",
   scheme: "mygridapp",
   userInterfaceStyle: "automatic",
   newArchEnabled: true,
@@ -22,9 +22,8 @@ const config: ExpoConfig = {
   android: {
     icon: "./assets/images/app/mygrid2_icon_v001.png",
     adaptiveIcon: {
-      foregroundImage: "./assets/images/app/mygrid2_adaptive-icon-foreground.png",
       backgroundImage: "./assets/images/app/mygrid2_adaptive-icon-background.png",
-      backgroundColor: "#ffffff"
+      backgroundColor: "#dddddd"
     },
     edgeToEdgeEnabled: true,
     package: "com.theoduh.mygridapp",
