@@ -41,5 +41,6 @@ export * from './lists/RankingsList';
 export * from './lists/RankingsUserWidget';
 export * from './lists/UserPredictionsList';
 export * from './lists/SessionsList';
+export * from './lists/ChampionshipList';
 
 

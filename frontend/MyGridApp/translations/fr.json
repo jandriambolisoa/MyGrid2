@@ -34,6 +34,11 @@
       "youMust": "Vous devez accepter la politique de confidentialité"
     }
   },
+  "championship": {
+    "pts": "Pts",
+    "driversChamp": "Championnat pilotes",
+    "constructorsChamp": "Championnat constructeurs"
+  },
   "error": {
     "maintenance": {
       "back": "Nous serons bientôt de retour!",

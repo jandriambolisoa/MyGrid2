@@ -2,6 +2,7 @@ import { GlobalStyles, Constants } from "@/theme"
 import { ViewProps, View, Dimensions, StyleSheet } from "react-native"
 import { LiteButton, MainText, ShadowSetup, SpotLight } from "@/components/widgets"
 import { scopedI18n } from "@/translations/i18n"
+import { useRouter } from "expo-router"
 
 export type ChampionshipWidgetProps = ViewProps & {
   datas: any
@@ -13,17 +14,15 @@ export function ChampionshipWidget ({
 }: ChampionshipWidgetProps) {
 
   const t = scopedI18n('widgets.championshipWidget')
+  const router = useRouter();
   const fontSize = Constants.fontSizes.header
-
-  // Temporary disable -> should be removed after championships page creation
-  const disabled = true;
 
   return (
     <View style={[GlobalStyles.button, GlobalStyles.mainWidget]}>
       <ShadowSetup/>
       <MainText bold={true} style={{ marginTop: Constants.spacing.buttonPadding, fontSize: fontSize }}>{t('championship')}</MainText>
       <View style={GlobalStyles.rowWidget}>
-        <LiteButton style={style.button} disabled={disabled}>
+        <LiteButton style={style.button} onPress={() => router.push({pathname: '/championship', params: { drivers: 'true' }})}>
           <SpotLight cx='45%' cy='45%' fx='20%' fy='20%' radius='60%' color={datas.wdc.leaderboard.ranks[0].team.color}/>
           <MainText style={{ marginBottom: 10 }}>{t('drivers')}</MainText>
           {datas.wdc.leaderboard.ranks.map((item: any) => (
@@ -33,7 +32,7 @@ export function ChampionshipWidget ({
             </View>
           ))}
         </LiteButton>
-        <LiteButton style={style.button} disabled={disabled}>
+        <LiteButton style={style.button} onPress={() => router.push({pathname: '/championship', params: { drivers: 'false' }})}>
           <SpotLight cx='55%' cy='55%' fx='80%' fy='80%' radius='60%' color={datas.wcc.leaderboard.ranks[0].team.color}/>
           <MainText style={{ marginBottom: 10 }}>{t('constructors')}</MainText>
           <MainText bold={true} style={{ fontSize: Constants.fontSizes.header }}>{datas.wcc.leaderboard.ranks[0].team.name}</MainText>
