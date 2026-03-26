@@ -11,6 +11,7 @@ import { useToast } from "@/contexts/ToastContext";
 import * as SecureStore from "expo-secure-store";
 
 export default function UserResults () {
+  
   const auth = useAuth();
   const t = scopedI18n('rankings');
 
