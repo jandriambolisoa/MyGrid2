@@ -20,11 +20,13 @@ export function Reaction ({
   const randScale = useRef(new Animated.Value(0)).current;
   const randRot = useRef(new Animated.Value(0)).current;
 
+  const mountedRef = useRef(false);
+
 useEffect(() => {
-  let mounted = true;
+  let cancelled = false;
 
   const animate = () => {
-    if (!mounted) return;
+    if (cancelled) return;
 
     // reset Y
     translateY.setValue(startY);
@@ -38,20 +40,18 @@ useEffect(() => {
     Animated.timing(translateY, {
       toValue: endY,
       duration: duration + Math.random() * duration / 2,
+      delay: mountedRef.current ? 0 : Math.random() * duration,
       useNativeDriver: true,
     }).start(() => {
+      mountedRef.current = true;
       animate(); // relance la boucle
     });
   };
 
-  const initialDelay = Math.random() * duration;
-  const timeout = setTimeout(() => {
-    animate();
-  }, initialDelay);
+  animate();
 
   return () => {
-    mounted = false; // stoppe la boucle si le composant se démonte
-    clearTimeout(timeout);
+    cancelled = true; // stoppe la boucle si le composant se démonte
   };
 }, []);
 

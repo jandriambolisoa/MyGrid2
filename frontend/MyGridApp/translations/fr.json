@@ -158,6 +158,12 @@
     }
   },
   "widgets": {
+    "reactionsPopup": {
+      "addReaction": "Ajouter une réaction",
+      "modifyReaction": "Modifier ma réaction",
+      "deleteReaction": "Supprimer ma réaction",
+      "reactions": "Réactions"
+    },
     "mainWidget": {
       "showResults": "Voir les résultats",
       "live": "En direct",

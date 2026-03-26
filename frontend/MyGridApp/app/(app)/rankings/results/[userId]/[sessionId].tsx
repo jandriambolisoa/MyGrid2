@@ -22,7 +22,7 @@ export default function UserResults () {
   const [footerHeight, setFooterHeight] = useState(0);
   const [showReactions, setShowReactions] = useState(false);
 
-  const [reactions, setReactions] = useState([]);
+  const [reactions, setReactions] = useState<any[]>([]);
 
   useEffect(() => {
     auth && getResults({

@@ -158,6 +158,12 @@
     }
   },
   "widgets": {
+    "reactionsPopup": {
+      "addReaction": "Add reaction",
+      "modifyReaction": "Modify reaction",
+      "deleteReaction": "Delete reaction",
+      "reactions": "Reactions"
+    },
     "mainWidget": {
       "showResults": "Show results",
       "live": "Live",
