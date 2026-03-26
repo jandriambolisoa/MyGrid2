@@ -3,6 +3,7 @@ export * from './home/ChampionshipWidget';
 export * from './home/EventCalendar';
 export * from './home/PagerTabBar';
 export * from './home/RankingsWidget';
+export * from './home/RecordsWidget';
 
 export * from './ui/MyGridBackground';
 export * from './ui/SpotLight';
@@ -14,6 +15,7 @@ export * from './ui/Sticker';
 export * from './ui/MainLoading';
 export * from './ui/PasswordInput';
 export * from './ui/Toast';
+export * from './ui/Reaction';
 
 export * from './buttons/ShadowButton';
 export * from './buttons/LiteButton';
@@ -27,6 +29,7 @@ export * from './layout/Container';
 export * from './layout/PredictionsFooter';
 export * from './layout/ListLabels';
 export * from './layout/RankingsFooter';
+export * from './layout/ReactionsPopup';
 
 export * from './lists/ResultsDriverWidget';
 export * from './lists/ResultsAloneList';
@@ -40,5 +43,6 @@ export * from './lists/RankingsList';
 export * from './lists/RankingsUserWidget';
 export * from './lists/UserPredictionsList';
 export * from './lists/SessionsList';
+export * from './lists/ChampionshipList';
 
 

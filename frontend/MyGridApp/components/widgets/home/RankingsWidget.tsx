@@ -12,7 +12,6 @@ export function RankingsWidget ({
   score=0,
   color1,
   color2,
-  mode='diagonal',
   path,
   style,
 }: {
@@ -22,7 +21,6 @@ export function RankingsWidget ({
   score?: number;
   color1?: string | null;
   color2?: string | null;
-  mode?: 'diagonal' | 'horizontal';
   path?: string;
   style?: StyleProp<ViewStyle>; 
 }) {
@@ -38,27 +36,24 @@ export function RankingsWidget ({
 
   return (
     <TouchableOpacity
-    
-      style={[GlobalStyles.button, style]}
+      style={[GlobalStyles.button, { flex: 1, height: 240 }, style]}
       onPress={handlePress}
     >
-      {color1 && mode === 'diagonal' && <SpotLight color={color1} cx="35%" cy="35%" fx="5%" fy="5%" radius="60%"/>}
-      {color2 && mode === 'diagonal' && <SpotLight color={color2} cx="70%" cy="70%" fx="95%" fy="95%" radius="60%"/>}
-      {color1 && mode === 'horizontal' && <SpotLight color={color1} cx="35%" cy="35%" fx="5%" fy="5%" radius="60%"/>}
-      {color2 && mode === 'horizontal' && <SpotLight color={color2} cx="70%" cy="70%" fx="95%" fy="95%" radius="60%"/>}
+      {color1 && <SpotLight color={color1} cx="35%" cy="35%" fx="5%" fy="5%" radius="60%"/>}
+      {color2 && <SpotLight color={color2} cx="70%" cy="70%" fx="95%" fy="95%" radius="60%"/>}
       <ShadowSetup/>
       <View style={{ padding: Constants.spacing.mainWidgetMargin }}>
-        {title && <MainText fontSize='title' style={{ marginBottom: Constants.spacing.wideMargin}}>{title}</MainText>}
-        {rank > 0 && <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6, alignSelf: 'center' }}>
+        {title && <MainText bold={true} fontSize='header' style={{ marginBottom: Constants.spacing.wideMargin}}>{title}</MainText>}
+        {rank > 0 && <View style={{ flexDirection: 'column', alignItems: 'center', marginBottom: 6, alignSelf: 'center' }}>
           <MainText fontSize="header" style={{ marginEnd: 6 }}>{self ? t('yourRank') : t('rank')}</MainText>
           <MainText fontSize="title" bold={true}>{rankNumber(rank)}</MainText>
         </View>}
-        {score > 0 && <View style={{ flexDirection: 'row', alignItems: 'center', alignSelf: 'center', marginBottom: Constants.spacing.wideMargin }}>
+        {score > 0 && <View style={{ flexDirection: 'column', alignItems: 'center', alignSelf: 'center' }}>
           <MainText fontSize="main" style={{ marginEnd: 6 }}>{self ? t('yourScore') : t('score')}</MainText>
           <MainText fontSize="header" bold={true}>{score} {t('pts')}</MainText>
         </View>}
-        {score < 1 && <MainText style={{ marginBottom: Constants.spacing.wideMargin }} fontSize="header">{t('notRankedYet')}</MainText>}
-        {subtitle && <MainText style={{ maxWidth: '80%' }}>{subtitle}</MainText>}
+        {score < 1 && <MainText fontSize="header">{t('notRankedYet')}</MainText>}
+        {subtitle && <MainText style={{ maxWidth: '80%', marginTop: Constants.spacing.wideMargin }}>{subtitle}</MainText>}
       </View>
     </TouchableOpacity>
   )

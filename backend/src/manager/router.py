@@ -95,7 +95,7 @@ async def send_global_push_notification(to_send: PushNotification, language: str
                 print(f"Error report:\n{token.token}\nAttempt: {attempt}\n{error.push_response._asdict()}")
                 await asyncio.sleep(await exponential_backoff(attempt, PUSH_NOTIFICATION_BACKOFF_CAP, PUSH_NOTIFICATION_BACKOFF_BASE)) # Retry
 
-        print("# PUSH NOTIFICATIONS: end")
+    print("# PUSH NOTIFICATIONS: end")
 
 
 @router.post("/notification/mail/simple/send", status_code=status.HTTP_200_OK)

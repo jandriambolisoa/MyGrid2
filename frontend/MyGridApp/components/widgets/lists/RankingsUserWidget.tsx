@@ -8,7 +8,7 @@ export function RankingsUserWidget ({
   item=null,
   spotColor=null,
   you=false,
-  event=null
+  event=null,
 } : {
   item: any | null;
   spotColor?: string | null;

@@ -101,16 +101,17 @@ export const GlobalStyles = StyleSheet.create({
     top: 0
   },
   authLink: {
-    padding: 2,
-    marginTop: Constants.spacing.buttonMargin
+    padding: 10,
+    marginTop: Constants.spacing.buttonMargin,
+    position: 'absolute',
+    bottom: Constants.spacing.wideMargin,
+    alignSelf: 'center'
   },
   warning: {
-    position: 'absolute',
-    bottom: '10%',
+    marginTop: Constants.spacing.wideMargin,
     color: Colors.light.warning,
-    left: '10%',
-    right: '10%',
-    textAlign: 'center'
+    textAlign: 'center',
+    maxWidth: '80%'
   },
 
   mainWidgetButton: {
@@ -124,5 +125,6 @@ export const GlobalStyles = StyleSheet.create({
     alignSelf: 'stretch',
     padding: Constants.spacing.buttonPadding,
     marginHorizontal: Constants.spacing.buttonMargin - 6
-  }
+  },
+   
 });

@@ -1,4 +1,4 @@
-import { Header, ListsLabels, ResultsFooter, ResultsList, ScrollContainer } from "@/components/widgets";
+import { Header, ListsLabels, ResultsFooter, ResultsList, ScrollContainer, ReactionsPopup } from "@/components/widgets";
 import { useLocalSearchParams } from "expo-router";
 import { View, ActivityIndicator, StyleSheet } from "react-native"
 import { useEffect, useState } from "react"
@@ -7,6 +7,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import { niceDatetime } from "@/utils";
 import { scopedI18n } from "@/translations/i18n";
 import { Colors } from "@/theme";
+import { useToast } from "@/contexts/ToastContext";
+import * as SecureStore from "expo-secure-store";
 
 export default function Results () {
 
@@ -14,10 +16,13 @@ export default function Results () {
   const t = scopedI18n('sessions.results')
 
   const { id } = useLocalSearchParams();
-  const { datas, error, loading, api: getResults } = useApi(true)
+  const { datas, loading, api: getResults } = useApi(true);
+  const { showToast } = useToast();
 
   const [headerHeight, setHeaderHeight] = useState(0);
   const [footerHeight, setFooterHeight] = useState(0);
+  const [showReactions, setShowReactions] = useState(false);
+  const [reactions, setReactions] = useState([]);
 
   useEffect(() => {
     auth && getResults({
@@ -25,6 +30,38 @@ export default function Results () {
       auth: auth
     })
   }, [auth])
+
+  useEffect(() => {
+    if (datas?.session?.reactions) {
+      setReactions(datas.session.reactions);
+    }
+  }, [datas])
+
+  function handleShowReactions () {
+    setShowReactions(!showReactions);
+  }
+
+  async function handleCopyPredictions () {
+    if (datas?.predictions.length) {
+      await SecureStore.setItemAsync('clipboard', JSON.stringify(datas.predictions.map((item: any) => item.driver.id)));
+      showToast({
+        title: t('predictionCopied'),
+        duration: 2500
+      })
+    }
+  }
+
+  async function handleCopyResults () {
+    if (datas?.predictions.length) {
+      await SecureStore.setItemAsync('clipboard', JSON.stringify([...datas.predictions].sort((a: any, b: any) => {
+        return a.result - b.result
+      }).map((item: any) => item.driver.id)));
+      showToast({
+        title: t('resultsCopied'),
+        duration: 2500
+      })
+    }
+  }
 
   const color1 = datas?.session.event_colors[0]
   const color2 = datas?.session.event_colors.length > 1 ? datas?.session.event_colors[1] : color1
@@ -43,6 +80,16 @@ export default function Results () {
         title={datas?.session.name ? datas.session.name : t('loading')}
         subtitle={datas?.session?.datetime && niceDatetime(datas.session.datetime, false)}
         spotColor={color1}
+        menu={[
+          {
+            title: t('copyPrediction'),
+            onPress: handleCopyPredictions
+          },
+          {
+            title: t('copyResults'),
+            onPress: handleCopyResults
+          }
+        ]}
       >
         
         <ListsLabels points={true} leftLabel={t('f1')}/>
@@ -52,8 +99,10 @@ export default function Results () {
         score={datas?.session.score}
         potentialScore={datas?.session.potential}
         spotColor={color2}
+        reactions={reactions}
+        toggleReactions={handleShowReactions}
       />
-      
+      {showReactions && <ReactionsPopup toggleReactions={handleShowReactions} reactions={reactions} setReactions={setReactions} session={datas?.session}/>}
     </View>
   )
 }

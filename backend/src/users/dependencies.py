@@ -4,7 +4,7 @@ from backend.db.database import get_db, Database
 from backend.oauth2 import get_current_user
 from backend.src.users.exceptions import NotAUserError
 from backend.src.users.privileges import is_user_banned
-from backend.src.users.schemas import UserSelf
+from backend.src.users.schemas import UserSelf, User
 
 
 async def valid_user_id(user_id: int = None, current_user: UserSelf = Depends(get_current_user)) -> int or None:
@@ -74,3 +74,13 @@ async def is_user_have_obligation(user_id: int, obligation: str = None):
         return True
 
     return False
+
+async def get_user_from_id(user_id: int = Depends(valid_user_id)) -> User:
+    db = get_db()
+    db.cursor.execute("""\
+        SELECT id, username, created, image
+        FROM users
+        WHERE id = %s""", (user_id,))
+    user = db.cursor.fetchone()
+
+    return User(**user)

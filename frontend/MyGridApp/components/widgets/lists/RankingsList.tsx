@@ -8,13 +8,14 @@ export function RankingsList ({
   footerHeight=0,
   headerHeight=0,
   color=null,
-  event=null
+  event=null,
 }: {
   datas: any;
   footerHeight?: number;
   headerHeight?: number;
   color?: string | null;
   event?: any;
+  records?: boolean;
 }) {
 
   const { user } = useAuth()

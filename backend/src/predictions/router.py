@@ -13,6 +13,7 @@ from backend.src.auth.exceptions import UnverifiedUserError
 from backend.src.events.dependencies import valid_session_id, valid_session_id_not_started, is_session_over
 from backend.src.predictions.exceptions import DriverNotRegisteredForSessionError, PredictionNotAvailableError, \
     NoPredictionError
+from backend.src.reactions.dependencies import get_user_prediction_reactions
 from backend.src.scores.algorithms import compute_score
 from backend.src.scores.router import get_score_parameters_of_a_championship
 from backend.src.users.dependencies import valid_user_id, get_current_user_language
@@ -121,12 +122,13 @@ async def search_user_predictions(
     if not results:
         raise NoPredictionError(language=language)
 
+    session_response = [{key.removeprefix("session_"): result[key] for key in result.keys() if key.startswith("session_")} for result in results]
+    # Get reactions for each session
+    for response in session_response:
+        response["reactions"] = await get_user_prediction_reactions(user_id, response["id"])
+
     return {
-        "sessions": [
-            {
-                key.removeprefix("session_"): result[key] for key in result.keys() if key.startswith("session_")
-            } for result in results
-        ],
+        "sessions": session_response,
         "user": {key.removeprefix("user_"): results[0][key] for key in results[0].keys() if
                   key.startswith("user_")}
     }
@@ -289,6 +291,7 @@ async def get_user_prediction(session_id: int = Depends(valid_session_id), user_
     session = {key.removeprefix("session_"): results[0][key] for key in results[0].keys() if
                key.startswith("session_")}
     session["potential"] = session_potential
+    session["reactions"] = await get_user_prediction_reactions(user_id, session["id"])
 
     if not session_results:
         return {
