@@ -1,5 +1,5 @@
 import { FlatList, TouchableOpacity, View } from "react-native";
-import { MainText, SpotLight } from "@/components/widgets";
+import { MainText, Reaction, SpotLight } from "@/components/widgets";
 import { Constants, GlobalStyles } from "@/theme";
 import { scopedI18n } from "@/translations/i18n";
 import { useRouter } from "expo-router";
@@ -33,6 +33,11 @@ export function UserPredictionsList ({
         <SpotLight color={color} cx="60%" cy="65%" fx="85%" fy="85%" radius="70%"/>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignSelf: 'stretch', paddingHorizontal: Constants.spacing.buttonPadding }}>
           <MainText>{item?.name}</MainText>
+          <View style={{ flex: 1 }}>
+            {item?.reactions?.map((item: any, index: number) => 
+              <Reaction item={item} key={index}/>
+            )}
+          </View>
           <MainText>{item?.score} {t('pts')}</MainText>
         </View>
       </TouchableOpacity>
