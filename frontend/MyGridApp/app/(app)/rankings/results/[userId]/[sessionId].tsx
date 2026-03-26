@@ -4,7 +4,7 @@ import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { useApi } from "@/hooks";
 import { View, StyleSheet, ActivityIndicator } from "react-native";
-import { ResultsList, ScrollContainer, Header, ResultsFooter, ListsLabels } from "@/components/widgets";
+import { ResultsList, ScrollContainer, Header, ResultsFooter, ListsLabels, ReactionsPopup } from "@/components/widgets";
 import { Colors } from "@/theme";
 import { userScore } from "@/utils";
 import { useToast } from "@/contexts/ToastContext";
@@ -20,6 +20,9 @@ export default function UserResults () {
 
   const [headerHeight, setHeaderHeight] = useState(0);
   const [footerHeight, setFooterHeight] = useState(0);
+  const [showReactions, setShowReactions] = useState(false);
+
+  const [reactions, setReactions] = useState([]);
 
   useEffect(() => {
     auth && getResults({
@@ -27,6 +30,12 @@ export default function UserResults () {
       auth: auth
     })
   }, [auth])
+
+  useEffect(() => {
+    if (datas?.session?.reactions) {
+      setReactions(datas.session.reactions);
+    }
+  }, [datas])
 
   async function handleCopy () {
     if (datas?.predictions.length) {
@@ -36,6 +45,10 @@ export default function UserResults () {
         duration: 2500
       })
     }
+  }
+
+  function handleShowReactions () {
+    setShowReactions(!showReactions);
   }
 
   const color1 = datas?.session.event_colors[0]
@@ -70,8 +83,10 @@ export default function UserResults () {
         score={datas?.session.score}
         potentialScore={datas?.session.potential}
         spotColor={color2}
+        reactions={reactions}
+        toggleReactions={handleShowReactions}
       />
-      
+      {showReactions && <ReactionsPopup toggleReactions={handleShowReactions} reactions={reactions} setReactions={setReactions}/>}
     </View>
   )
 }

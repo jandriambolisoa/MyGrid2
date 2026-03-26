@@ -87,6 +87,7 @@ export default function Results () {
         score={datas?.session.score}
         potentialScore={datas?.session.potential}
         spotColor={color2}
+        reactions={datas?.session?.reactions}
       />
       
     </View>

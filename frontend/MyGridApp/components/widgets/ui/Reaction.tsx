@@ -1,7 +1,19 @@
 import { useEffect, useRef } from "react";
 import { Animated } from "react-native";
 
-export function Reaction ({item} : {item: any}) {
+export function Reaction ({
+  item,
+  startY=35,
+  endY=-35,
+  right='50%',
+  duration=2000,
+} : {
+  item: any;
+  startY?: number;
+  endY?: number;
+  right?: string;
+  duration?: number;
+}) {
 
   const translateX = useRef(new Animated.Value(0)).current;
   const translateY = useRef(new Animated.Value(0)).current;
@@ -15,7 +27,7 @@ useEffect(() => {
     if (!mounted) return;
 
     // reset Y
-    translateY.setValue(35);
+    translateY.setValue(startY);
 
     // nouvelles valeurs aléatoires
     translateX.setValue(Math.random() * 100 - 50);
@@ -24,15 +36,15 @@ useEffect(() => {
 
     // animation Y
     Animated.timing(translateY, {
-      toValue: -35,
-      duration: 3000 + Math.random() * 2000,
+      toValue: endY,
+      duration: duration + Math.random() * duration / 2,
       useNativeDriver: true,
     }).start(() => {
       animate(); // relance la boucle
     });
   };
 
-  const initialDelay = Math.random() * 3000; // entre 0 et 1 seconde
+  const initialDelay = Math.random() * duration;
   const timeout = setTimeout(() => {
     animate();
   }, initialDelay);
@@ -47,18 +59,17 @@ useEffect(() => {
     <Animated.Text
       style={{
         position: "absolute",
-        left: "45%",
+        right: right as any,
         transform: [
           { translateX: translateX },
           { translateY: translateY },
           { scale: randScale },
-          {
-            rotate: randRot.interpolate({
+          { rotate: randRot.interpolate({
               inputRange: [-10, 10],
-              outputRange: ["-10deg", "10deg"],
-            }),
-          },
-        ],
+              outputRange: ['-10deg', '10deg']
+            })
+          }
+        ]
       }}
     >
       {item.reaction}
