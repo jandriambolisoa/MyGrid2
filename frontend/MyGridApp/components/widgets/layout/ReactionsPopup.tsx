@@ -1,6 +1,6 @@
-import { Constants, GlobalStyles } from "@/theme";
+import { Constants, GlobalStyles, Colors } from "@/theme";
 import { BlurView } from "expo-blur";
-import { StyleSheet, TouchableWithoutFeedback, View, Text, ScrollView, FlatList, TouchableOpacity } from "react-native";
+import { StyleSheet, TouchableWithoutFeedback, View, Text, ScrollView, TouchableOpacity, Platform } from "react-native";
 import { MainText } from "../ui/MainText";
 import { ShadowButton } from "../buttons/ShadowButton";
 import { useAuth } from "@/contexts/AuthContext";
@@ -113,12 +113,20 @@ export function ReactionsPopup ({
     )
   }
 
+  const backgroundColor = Platform.OS === 'ios' ? 'transparent' : '#c2c2c2cc'
+
   return (
     <>
       <TouchableWithoutFeedback onPress={toggleReactions}>
         <View style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center' }]}>
           <TouchableWithoutFeedback>
-            <BlurView tint='dark' intensity={20} style={[GlobalStyles.button, { width: '80%', maxHeight: '50%', justifyContent: 'flex-start', padding: Constants.spacing.buttonPadding }]}>
+            <BlurView tint='dark' intensity={20} style={[GlobalStyles.button, {
+              width: '80%',
+              maxHeight: '50%',
+              justifyContent: 'flex-start',
+              padding: Constants.spacing.buttonPadding,
+              backgroundColor: backgroundColor
+            }]}>
               <MainText bold={true} fontSize="header">{t('reactions')}</MainText>
               {content()}
             </BlurView>

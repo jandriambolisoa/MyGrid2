@@ -56,7 +56,7 @@ export default function UserResults () {
   const color2 = datas?.session.event_colors.length > 1 ? datas?.session.event_colors[1] : color1
 
   return (
-    <View style={{ flex: 1, }}>
+    <View style={{ flex: 1, backgroundColor: Colors.light.background }}>
       {loading && <View style={[StyleSheet.absoluteFill, { justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.light.background }]}>
         <ActivityIndicator color={Colors.light.orangeLogo}/>
       </View>}

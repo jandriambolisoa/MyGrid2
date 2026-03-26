@@ -1,6 +1,6 @@
 import { BackButton, Frame, FrameProps, MainText, SpotLight } from '@/components/widgets';
 import { Constants, GlobalStyles, Colors } from '@/theme';
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View, Platform } from "react-native";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { useState } from 'react';
@@ -34,6 +34,8 @@ export function Header({
 
   const [showMenu, setShowMenu] = useState(false);
 
+  const backgroundColor = Platform.OS === 'ios' ? 'transparent' : Colors.light.androidBackground
+
   return (
     <Frame {...otherProps}>
       {spotColor && <View style={[StyleSheet.absoluteFill]}>
@@ -63,6 +65,7 @@ export function Header({
           top: Constants.spacing.backButtonSize + insets.top,
           right: Constants.spacing.buttonMargin,
           minWidth: '50%',
+          backgroundColor: backgroundColor
         }]}
         tint='light'
         intensity={20}
