@@ -3,7 +3,7 @@ import { ExpoConfig } from "expo/config";
 const config: ExpoConfig = {
   name: "MyGridApp",
   slug: "MyGridApp",
-  version: "2.2.0",
+  version: "2.3.0",
   orientation: "portrait",
   icon: "./assets/images/app/mygrid2_icon.png",
   scheme: "mygridapp",
@@ -20,9 +20,9 @@ const config: ExpoConfig = {
   },
 
   android: {
-    icon: "./assets/images/app/mygrid2_icon_v001.png",
+    icon: "./assets/images/app/mygrid2_icon.png",
     adaptiveIcon: {
-      backgroundImage: "./assets/images/app/mygrid2_adaptive-icon-background.png",
+      foregroundImage: "./assets/images/app/mygrid2_adaptive-icon-foreground.png",
       backgroundColor: "#dddddd"
     },
     edgeToEdgeEnabled: true,
