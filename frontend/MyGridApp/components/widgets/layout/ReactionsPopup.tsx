@@ -4,18 +4,39 @@ import { StyleSheet, TouchableWithoutFeedback, View, Text } from "react-native";
 import { MainText } from "../ui/MainText";
 import { ShadowButton } from "../buttons/ShadowButton";
 import { useAuth } from "@/contexts/AuthContext";
+import { useState } from "react";
+import EmojiPicker from 'rn-emoji-keyboard';
+import { useApi } from "@/hooks";
 
 export function ReactionsPopup ({
   reactions=[],
   setReactions,
   toggleReactions,
+  userId=0,
+  session=null,
 } : {
   reactions?: any[];
   setReactions?: (datas: any) => void;
   toggleReactions?: () => void;
+  userId?: number;
+  session?: any;
 }) {
 
-  const { user } = useAuth();
+  const auth = useAuth();
+
+  const { loading, api: addReaction } = useApi();
+
+  const [emojiOpen, setEmojiOpen] = useState(false);
+
+  function sendReaction(emoji: any) {
+    const id = userId ? userId : auth.user.id
+    addReaction({
+      endpoint: `/events/sessions/predictions/reaction/${session.id}?user_id=${id}`,
+      method: 'POST',
+      body: { reaction: emoji.emoji },
+      auth: auth
+    })
+  }
 
   function content () {
 
@@ -23,7 +44,7 @@ export function ReactionsPopup ({
       return (
         <View>
           <MainText style={{ marginVertical: Constants.spacing.mainWidgetMargin }}>No reactions yet</MainText>
-          <ShadowButton>
+          <ShadowButton onPress={() => setEmojiOpen(true)}>
             <MainText>Add reaction</MainText>
           </ShadowButton>
         </View>
@@ -31,7 +52,7 @@ export function ReactionsPopup ({
     }
 
     function buttons () {
-      if (reactions.find((item) => item.user.id === user.id)) {
+      if (reactions.find((item) => item.user.id === auth.user.id)) {
         return (
           <View>
             <ShadowButton style={{ marginTop: Constants.spacing.listMargin }}>
@@ -44,7 +65,7 @@ export function ReactionsPopup ({
         )
       }
       return (
-        <ShadowButton style={{ marginTop: Constants.spacing.listMargin }}>
+        <ShadowButton style={{ marginTop: Constants.spacing.listMargin }} onPress={() => setEmojiOpen(true)}>
           <MainText>Add reaction</MainText>
         </ShadowButton>
       )
@@ -66,15 +87,18 @@ export function ReactionsPopup ({
   }
 
   return (
-    <TouchableWithoutFeedback onPress={toggleReactions}>
-      <View style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center' }]}>
-        <TouchableWithoutFeedback>
-          <BlurView tint='dark' intensity={20} style={[GlobalStyles.button, { width: '80%', maxHeight: '60%', justifyContent: 'flex-start', padding: Constants.spacing.buttonPadding }]}>
-            <MainText bold={true} fontSize="header">Reactions</MainText>
-            {content()}
-          </BlurView>
-        </TouchableWithoutFeedback>
-      </View>
-    </TouchableWithoutFeedback>
+    <>
+      <TouchableWithoutFeedback onPress={toggleReactions}>
+        <View style={[StyleSheet.absoluteFill, { alignItems: 'center', justifyContent: 'center' }]}>
+          <TouchableWithoutFeedback>
+            <BlurView tint='dark' intensity={20} style={[GlobalStyles.button, { width: '80%', maxHeight: '60%', justifyContent: 'flex-start', padding: Constants.spacing.buttonPadding }]}>
+              <MainText bold={true} fontSize="header">Reactions</MainText>
+              {content()}
+            </BlurView>
+          </TouchableWithoutFeedback>
+        </View>
+      </TouchableWithoutFeedback>
+      <EmojiPicker onEmojiSelected={(e) => sendReaction(e)} open={emojiOpen} onClose={() => setEmojiOpen(false)}/>
+    </>
   )
 }

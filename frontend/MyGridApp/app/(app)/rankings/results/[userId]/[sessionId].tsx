@@ -86,7 +86,7 @@ export default function UserResults () {
         reactions={reactions}
         toggleReactions={handleShowReactions}
       />
-      {showReactions && <ReactionsPopup toggleReactions={handleShowReactions} reactions={reactions} setReactions={setReactions}/>}
+      {showReactions && <ReactionsPopup toggleReactions={handleShowReactions} reactions={reactions} setReactions={setReactions} session={datas?.session}/>}
     </View>
   )
 }
