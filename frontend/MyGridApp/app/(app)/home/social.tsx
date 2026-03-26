@@ -52,7 +52,7 @@ export default function Social ({
     }}>
       <View style={{ flexDirection: 'row', justifyContent: 'space-evenly', marginBottom: Constants.spacing.mainWidgetMargin }}>
         {eventDatas && <RankingsWidget
-          title={t('weekend')}
+          title={eventDatas.event?.name}
           rank={eventDatas.rank}
           score={eventDatas.score}
           color1={color1}

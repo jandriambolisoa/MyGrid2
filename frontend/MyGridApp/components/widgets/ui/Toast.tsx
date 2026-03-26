@@ -1,7 +1,7 @@
 import { Colors, GlobalStyles } from "@/theme";
 import { MainText } from "@/components/widgets";
 import { BlurView } from "expo-blur";
-import { StyleSheet, TouchableOpacity, Platform } from "react-native";
+import { StyleSheet, TouchableOpacity, Platform, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export function Toast ({
@@ -25,7 +25,7 @@ export function Toast ({
       backgroundColor: backgroundColor,
       borderColor: borderColor
     }]} disabled={true}>
-      {!android && <BlurView intensity={30} tint='light' style={StyleSheet.absoluteFill}/>}
+      {android ? <View style={[StyleSheet.absoluteFill, { backgroundColor: '#00000088' }]}/> : <BlurView intensity={30} tint='light' style={StyleSheet.absoluteFill}/>}
         {title && <MainText fontSize='header' bold={true}>{title}</MainText>}
         {subtitle && <MainText>{subtitle}</MainText>}
     </TouchableOpacity>

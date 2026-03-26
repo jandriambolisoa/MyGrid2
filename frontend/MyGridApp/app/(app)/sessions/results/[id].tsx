@@ -1,4 +1,4 @@
-import { Header, ListsLabels, ResultsFooter, ResultsList, ScrollContainer } from "@/components/widgets";
+import { Header, ListsLabels, ResultsFooter, ResultsList, ScrollContainer, ReactionsPopup } from "@/components/widgets";
 import { useLocalSearchParams } from "expo-router";
 import { View, ActivityIndicator, StyleSheet } from "react-native"
 import { useEffect, useState } from "react"
@@ -21,6 +21,8 @@ export default function Results () {
 
   const [headerHeight, setHeaderHeight] = useState(0);
   const [footerHeight, setFooterHeight] = useState(0);
+  const [showReactions, setShowReactions] = useState(false);
+  const [reactions, setReactions] = useState([]);
 
   useEffect(() => {
     auth && getResults({
@@ -28,6 +30,16 @@ export default function Results () {
       auth: auth
     })
   }, [auth])
+
+  useEffect(() => {
+    if (datas?.session?.reactions) {
+      setReactions(datas.session.reactions);
+    }
+  }, [datas])
+
+  function handleShowReactions () {
+    setShowReactions(!showReactions);
+  }
 
   async function handleCopyPredictions () {
     if (datas?.predictions.length) {
@@ -87,8 +99,10 @@ export default function Results () {
         score={datas?.session.score}
         potentialScore={datas?.session.potential}
         spotColor={color2}
+        reactions={reactions}
+        toggleReactions={handleShowReactions}
       />
-      
+      {showReactions && <ReactionsPopup toggleReactions={handleShowReactions} reactions={reactions} setReactions={setReactions} session={datas?.session}/>}
     </View>
   )
 }

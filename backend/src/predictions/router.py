@@ -125,7 +125,7 @@ async def search_user_predictions(
     session_response = [{key.removeprefix("session_"): result[key] for key in result.keys() if key.startswith("session_")} for result in results]
     # Get reactions for each session
     for response in session_response:
-        response["reactions"] = await get_user_prediction_reactions(user_id, response["session_id"])
+        response["reactions"] = await get_user_prediction_reactions(user_id, response["id"])
 
     return {
         "sessions": session_response,

@@ -34,6 +34,11 @@
       "youMust": "You must accept the privacy policy"
     }
   },
+  "championship": {
+    "pts": "Pts",
+    "driversChamp": "Drivers championship",
+    "constructorsChamp": "Constructors championship"
+  },
   "error": {
     "maintenance": {
       "back": "We'll be back soon!",
@@ -153,6 +158,12 @@
     }
   },
   "widgets": {
+    "reactionsPopup": {
+      "addReaction": "Add reaction",
+      "modifyReaction": "Modify reaction",
+      "deleteReaction": "Delete reaction",
+      "reactions": "Reactions"
+    },
     "mainWidget": {
       "showResults": "Show results",
       "live": "Live",

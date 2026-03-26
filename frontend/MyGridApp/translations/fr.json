@@ -34,6 +34,11 @@
       "youMust": "Vous devez accepter la politique de confidentialité"
     }
   },
+  "championship": {
+    "pts": "Pts",
+    "driversChamp": "Championnat pilotes",
+    "constructorsChamp": "Championnat constructeurs"
+  },
   "error": {
     "maintenance": {
       "back": "Nous serons bientôt de retour!",
@@ -153,6 +158,12 @@
     }
   },
   "widgets": {
+    "reactionsPopup": {
+      "addReaction": "Ajouter une réaction",
+      "modifyReaction": "Modifier ma réaction",
+      "deleteReaction": "Supprimer ma réaction",
+      "reactions": "Réactions"
+    },
     "mainWidget": {
       "showResults": "Voir les résultats",
       "live": "En direct",
