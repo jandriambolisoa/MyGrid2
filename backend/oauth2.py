@@ -90,8 +90,11 @@ async def is_token_revoked(token: str) -> bool:
         SELECT *
         FROM revokedtokens
         WHERE token = %s""", (token,))
-    if db.cursor.fetchone():
+    is_revoked = db.cursor.fetchone()
+
+    if is_revoked:
         return True
+
     return False
 
 async def get_current_user(token: str = Depends(oauth2_scheme), db: Database = Depends(get_db)):
