@@ -1,9 +1,9 @@
 import { View } from "react-native";
 import { Colors } from "@/theme";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useFocusEffect } from "expo-router";
 import { useApi } from "@/hooks";
 import { useAuth } from "@/contexts/AuthContext";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Header, RankingsFooter, UserPredictionsList } from "@/components/widgets";
 import { scopedI18n } from "@/translations/i18n";
 
@@ -15,21 +15,25 @@ export default function Search () {
   const item = local.item ? JSON.parse(local.item as any): null;
   const t = scopedI18n('rankings')
 
-  const { datas, error, loading, api: getPredictions } = useApi(true);
+  const { datas, api: getPredictions } = useApi(true);
 
   const [headerHeight, setHeaderHeight] = useState(0);
   const [footerHeight, setFooterHeight] = useState(0);
   const [listDatas, setListDatas] = useState([]);
 
-  useEffect(() => {
-    auth && getPredictions({
-      endpoint: `/events/sessions/predictions/search?user_id=${item?.user?.id}`,
-      auth: auth
-    })
-  }, [auth])
+  useFocusEffect(
+    useCallback(() => {
+      if (auth) {
+        getPredictions({
+          endpoint: `/events/sessions/predictions/search?user_id=${item?.user?.id}`,
+          auth: auth
+        })
+      }
+    }, [auth])
+  );
 
   useEffect(() => {
-    if (datas?.sessions?.length && !listDatas.length) {
+    if (datas?.sessions?.length) {
       if (!event) {
         const newDatas = datas.sessions.filter(
           (item: any) => item.score !== null
