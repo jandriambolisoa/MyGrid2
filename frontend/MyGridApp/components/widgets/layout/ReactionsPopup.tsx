@@ -1,13 +1,13 @@
-import { Constants, GlobalStyles, Colors } from "@/theme";
+import { Colors, Constants, GlobalStyles } from "@/theme";
 import { BlurView } from "expo-blur";
-import { StyleSheet, TouchableWithoutFeedback, View, Text, ScrollView, TouchableOpacity, Platform } from "react-native";
+import { StyleSheet, TouchableWithoutFeedback, View, Text, ScrollView, TouchableOpacity, Platform, ActivityIndicator } from "react-native";
 import { MainText } from "../ui/MainText";
 import { ShadowButton } from "../buttons/ShadowButton";
 import { useAuth } from "@/contexts/AuthContext";
 import { useState } from "react";
-import EmojiPicker from 'rn-emoji-keyboard';
 import { useApi } from "@/hooks";
 import { scopedI18n } from "@/translations/i18n";
+import EmojiPicker from "rn-emoji-keyboard";
 
 export function ReactionsPopup ({
   reactions=[],
@@ -68,9 +68,9 @@ export function ReactionsPopup ({
     if (!reactions.length) {
       return (
         <View style={{ alignSelf: 'stretch' }}>
-          <MainText style={{ marginVertical: Constants.spacing.mainWidgetMargin }}>No reactions yet</MainText>
+          <MainText style={{ marginVertical: Constants.spacing.mainWidgetMargin }}>{t('noReactions')}</MainText>
           <ShadowButton onPress={() => setEmojiOpen(true)}>
-            <MainText>{t('addReaction')}</MainText>
+            {loading ? <ActivityIndicator color={Colors.light.lightText}/> : <MainText>{t('addReaction')}</MainText>}
           </ShadowButton>
         </View>
       )
@@ -81,17 +81,17 @@ export function ReactionsPopup ({
         return (
           <View style={{ alignSelf: 'stretch' }}>
             <ShadowButton style={{ marginTop: Constants.spacing.listMargin }} onPress={() => setEmojiOpen(true)}>
-              <MainText>{t('modifyReaction')}</MainText>
+              {loading ? <ActivityIndicator color={Colors.light.lightText}/> : <MainText>{t('modifyReaction')}</MainText>}
             </ShadowButton>
             <ShadowButton style={{ marginTop: Constants.spacing.listMargin }} onPress={deleteReaction}>
-              <MainText>{t('deleteReaction')}</MainText>
+              {delLoading ? <ActivityIndicator color={Colors.light.lightText}/> : <MainText style={{ color: Colors.light.warning }}>{t('deleteReaction')}</MainText>}
             </ShadowButton>
           </View>
         )
       }
       return (
         <ShadowButton style={{ marginTop: Constants.spacing.listMargin, alignSelf: 'stretch' }} onPress={() => setEmojiOpen(true)}>
-          <MainText>{t('addReaction')}</MainText>
+          {loading ? <ActivityIndicator color={Colors.light.lightText}/> : <MainText>{t('addReaction')}</MainText>}
         </ShadowButton>
       )
     }

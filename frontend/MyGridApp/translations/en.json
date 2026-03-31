@@ -162,7 +162,8 @@
       "addReaction": "Add reaction",
       "modifyReaction": "Modify reaction",
       "deleteReaction": "Delete reaction",
-      "reactions": "Reactions"
+      "reactions": "Reactions",
+      "noReactions": "No reactions yet"
     },
     "mainWidget": {
       "showResults": "Show results",
