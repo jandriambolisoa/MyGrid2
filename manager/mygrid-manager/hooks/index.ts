@@ -1,1 +1,2 @@
-export * from './useEmailLogin'
+export * from './useEmailLogin';
+export * from './useApi';
