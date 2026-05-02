@@ -15,7 +15,7 @@ export default function SessionResults () {
   const searchParams = useSearchParams();
   const results = searchParams.get('results');
 
-  const { datas, error, loading, api: getDrivers } = useApi(true);
+  const { datas, api: getDrivers } = useApi(true);
   const { error: sendError, loading: sendLoading, api: sendResults } = useApi();
 
   const [drivers, setDrivers] = useState([]);
@@ -29,7 +29,7 @@ export default function SessionResults () {
 
   useEffect(() => {
     getDrivers({
-      endpoint: results === 'true' ? `/api/events/sessions/results/${id}` : `/api/events/sessions/${id}/drivers`
+      endpoint: results === 'true' ? `/api/events/sessions/results/${id}` : `/api/events/sessions/registrations/${id}`
     })
   }, [])
 
@@ -39,7 +39,7 @@ export default function SessionResults () {
         setDrivers(datas.results);
         return;
       }
-      setDrivers(datas.drivers);
+      setDrivers(datas.registrations);
     }
   }, [datas])
 

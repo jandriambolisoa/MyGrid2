@@ -12,20 +12,20 @@ export default function SessionRegistrations () {
   const router = useRouter();
 
   const { id } = useParams();
-  const { datas, error, loading, api: getDrivers } = useApi(true);
+  const { datas, api: getDrivers } = useApi(true);
   const { error: sendError, loading: sendLoading, api: sendRegistrations } = useApi();
 
   const [drivers, setDrivers] = useState([]);
 
   useEffect(() => {
     getDrivers({
-      endpoint: `/api/events/sessions/${id}/drivers`
+      endpoint: `/api/events/sessions/registrations/${id}`
     })
   }, [])
 
   useEffect(() => {
-    if (datas?.drivers) {
-      setDrivers(datas.drivers)
+    if (datas?.registrations) {
+      setDrivers(datas.registrations)
     }
   }, [datas])
 
