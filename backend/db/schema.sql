@@ -1,7 +1,7 @@
-\restrict pY7D5G5k2U0cOgF0cliq1NbasYfQgLNRqRutiTa2gv6fk0l28phtWr1dODSly5P
+\restrict SCcsvGkeZtiMiCLIEkHPUvaM6TKCWyhcK0WKjweXjlIyD6HQ6cPVxaaqcSLj9GX
 
--- Dumped from database version 18.1
--- Dumped by pg_dump version 18.1
+-- Dumped from database version 18.3
+-- Dumped by pg_dump version 18.3
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -328,6 +328,64 @@ CREATE TABLE public.eventstranslations (
 CREATE TABLE public.googleids (
     user_id integer NOT NULL,
     google_id bigint NOT NULL
+);
+
+
+--
+-- Name: leagues; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.leagues (
+    id integer NOT NULL,
+    name character varying NOT NULL,
+    description character varying NOT NULL,
+    colors character varying[] NOT NULL,
+    created timestamp with time zone DEFAULT now() NOT NULL
+);
+
+
+--
+-- Name: leagues_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.leagues_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: leagues_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.leagues_id_seq OWNED BY public.leagues.id;
+
+
+--
+-- Name: leaguesinvites; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.leaguesinvites (
+    league_id integer NOT NULL,
+    code character varying NOT NULL,
+    password character varying,
+    created timestamp with time zone DEFAULT now() NOT NULL,
+    exp timestamp with time zone DEFAULT (now() + '01:00:00'::interval) NOT NULL
+);
+
+
+--
+-- Name: leaguesusers; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.leaguesusers (
+    league_id integer NOT NULL,
+    user_id integer NOT NULL,
+    organizer boolean DEFAULT false NOT NULL,
+    created timestamp with time zone DEFAULT now() NOT NULL
 );
 
 
@@ -867,6 +925,13 @@ ALTER TABLE ONLY public.events ALTER COLUMN id SET DEFAULT nextval('public.event
 
 
 --
+-- Name: leagues id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.leagues ALTER COLUMN id SET DEFAULT nextval('public.leagues_id_seq'::regclass);
+
+
+--
 -- Name: premiumhistory id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1034,6 +1099,30 @@ ALTER TABLE ONLY public.eventstranslations
 
 ALTER TABLE ONLY public.googleids
     ADD CONSTRAINT googleids_pkey PRIMARY KEY (user_id);
+
+
+--
+-- Name: leagues leagues_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.leagues
+    ADD CONSTRAINT leagues_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: leaguesinvites leaguesinvites_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.leaguesinvites
+    ADD CONSTRAINT leaguesinvites_pkey PRIMARY KEY (code);
+
+
+--
+-- Name: leaguesusers leaguesusers_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.leaguesusers
+    ADD CONSTRAINT leaguesusers_pkey PRIMARY KEY (league_id, user_id);
 
 
 --
@@ -1356,6 +1445,30 @@ ALTER TABLE ONLY public.googleids
 
 
 --
+-- Name: leaguesinvites leaguesinvites_leagues_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.leaguesinvites
+    ADD CONSTRAINT leaguesinvites_leagues_fkey FOREIGN KEY (league_id) REFERENCES public.leagues(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: leaguesusers leaguesusers_leagues_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.leaguesusers
+    ADD CONSTRAINT leaguesusers_leagues_fkey FOREIGN KEY (league_id) REFERENCES public.leagues(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: leaguesusers leaguesusers_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.leaguesusers
+    ADD CONSTRAINT leaguesusers_users_fkey FOREIGN KEY (user_id) REFERENCES public.users(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
 -- Name: lostpw lostpw_users_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1631,7 +1744,7 @@ ALTER TABLE ONLY public.wdcpredictions
 -- PostgreSQL database dump complete
 --
 
-\unrestrict pY7D5G5k2U0cOgF0cliq1NbasYfQgLNRqRutiTa2gv6fk0l28phtWr1dODSly5P
+\unrestrict SCcsvGkeZtiMiCLIEkHPUvaM6TKCWyhcK0WKjweXjlIyD6HQ6cPVxaaqcSLj9GX
 
 
 --
@@ -1677,4 +1790,7 @@ INSERT INTO public.schema_migrations (version) VALUES
     ('20260225212055'),
     ('20260304221356'),
     ('20260306231602'),
-    ('20260322144230');
+    ('20260322144230'),
+    ('20260502132337'),
+    ('20260502132446'),
+    ('20260502135452');
