@@ -4,7 +4,7 @@
 
 > **⚠️ Project in active development.**
 
-[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://choosealicense.com/licenses/mit/)
+[![Copyright](https://img.shields.io/badge/©️%202026%20All%20rights%20reserved-8888bb)](https://choosealicense.com/licenses/mit/)
 
 [Website](https://mygrid-app.com/) | [Contact](mailto:contact@mygrid-app.com)
 ## 🏗️ Project Structure
