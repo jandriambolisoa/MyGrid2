@@ -107,7 +107,7 @@ async def override_session_registrations(registrations: list[RegistrationPost], 
         db.conn.rollback()
         raise InvalidSessionRegistrationAttemptError(language=language)
 
-@router.post("/", status_code=status.HTTP_201_CREATED)
+@router.post("", status_code=status.HTTP_201_CREATED)
 async def override_upcoming_sessions_registrations(registrations: list[RegistrationPost], language: str = Depends(get_current_user_language), db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     if not await is_user_moderator_or_admin(current_user.id):
         raise app_exceptions.ForbiddenAccessException(language=language)
