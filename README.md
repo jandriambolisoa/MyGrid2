@@ -9,12 +9,8 @@
 [Website](https://mygrid-app.com/) | [Contact](mailto:contact@mygrid-app.com)
 
 <br>
-<a href="https://play.google.com/store/apps/details?id=com.theoduh.mygridapp">
-  <img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" width="110">
-</a>&nbsp;&nbsp;&nbsp;&nbsp;
-<a href="https://apps.apple.com/us/app/mygrid/id6739147623">
-  <img src="https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg" width="100">
-</a>
+
+Alvailable on [iOS](https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg) and [Android](https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg)
 
 ## 🏗️ Project Structure
 
