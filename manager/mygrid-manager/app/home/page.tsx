@@ -9,10 +9,10 @@ export default function Home () {
   return (
     <div className="container">
       <h1 className="title">MyGrid Manager</h1>
-      <div className="homeCategory">
+      <div className="homeCategory" style={{ alignSelf: 'center' }}>
         <h1 className="label">Events</h1>
         <button className="homeButton" onClick={() => router.push('/events')}>See events</button>
-        <button className="homeButton" style={{ opacity: 0.5 }} disabled={true}>Update predictions</button>
+        <button className="homeButton" onClick={() => router.push('/registrations')}>Update registrations for all events</button>
         <h1 className="label">Notifications</h1>
         <button className="homeButton" onClick={() => router.push('/notification/send')}>Send notification</button>
         <button className="homeButton" style={{ opacity: 0.5 }} disabled={true}>Send mail</button>

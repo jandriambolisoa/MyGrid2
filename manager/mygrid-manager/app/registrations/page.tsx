@@ -7,11 +7,10 @@ import { DragDropProvider } from "@dnd-kit/react";
 import { SortableDriver } from "@/components";
 import { isSortable } from "@dnd-kit/react/sortable";
 
-export default function SessionRegistrations () {
+export default function Registrations () {
 
   const router = useRouter();
 
-  const { id } = useParams();
   const { datas, api: getDrivers } = useApi(true);
   const { error: sendError, loading: sendLoading, api: sendRegistrations } = useApi();
 
@@ -19,13 +18,13 @@ export default function SessionRegistrations () {
 
   useEffect(() => {
     getDrivers({
-      endpoint: `/api/events/sessions/registrations/${id}`
+      endpoint: `/api/nav/standings/drivers?championship_id=1`
     })
   }, [])
 
   useEffect(() => {
-    if (datas?.registrations) {
-      setDrivers(datas.registrations)
+    if (datas?.ranks) {
+      setDrivers(datas.ranks)
     }
   }, [datas])
 
@@ -40,7 +39,7 @@ export default function SessionRegistrations () {
     })
 
     const success = await sendRegistrations({
-      endpoint: `/api/events/sessions/registrations/${id}`,
+      endpoint: `/api/events/sessions/registrations`,
       body: makeList,
       method: 'POST'
     })
@@ -54,7 +53,7 @@ export default function SessionRegistrations () {
 
   return (
     <div className="container">
-      <h1 className="title">Session registrations</h1>
+      <h1 className="title">Championship Registrations</h1>
       {drivers.length && <div style={{ display: 'flex', flexDirection: 'row', gap: 10}}>
         <ul>
           {drivers.map((item, index) => 
