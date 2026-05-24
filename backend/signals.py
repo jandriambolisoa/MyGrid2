@@ -18,3 +18,5 @@ class Signal:
 
         for func in self.listeners:
             await self.listeners[func](*args, **kwargs)
+
+        return True
