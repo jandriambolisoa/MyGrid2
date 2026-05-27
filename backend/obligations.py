@@ -60,6 +60,14 @@ def obligation_content(code: str, language: str = "en"):
                 "new_password": "str"
             }
         ),
+        "convertuser": ObligationResponse(
+            message= texts.obligation_convertuser[language],
+            redirection= f"{app_settings.api_url}/users/profile/edit/convert",
+            fields= {
+                "password": "str",
+                "email": "str"
+            }
+        ),
     }
     return obligations[code]
 

@@ -28,6 +28,10 @@ class UserCreate(BaseModel):
     email: str
     image: Optional[str] = None
 
+class UserConvertFromGhost(BaseModel):
+    password: str
+    email: str
+
 class UserSelf(BaseModel):
     id: int
     username: str

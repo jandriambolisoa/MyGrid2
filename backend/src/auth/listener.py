@@ -60,6 +60,9 @@ async def send_verification_email(user_id: int):
         WHERE id = %s""", (user_id,))
     user = db.cursor.fetchone()
 
+    if not user["email"]:
+        return
+
     token_datas = {
         "user_id": user["id"],
         "username": user["username"],

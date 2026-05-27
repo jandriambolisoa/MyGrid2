@@ -16,6 +16,7 @@ from backend.obligations import create_obligation
 from backend.db.database import get_db, Database
 from backend.config import settings as app_settings
 from backend.src.appstatus.server import get_latest_appstatus
+from backend.src.users.ghosts import ghost_user_validator
 from backend.utils import hash_password, verify, random_code
 from backend.oauth2 import create_jwt_token, get_current_token, get_current_user, verify_refresh_token, \
     verify_access_token
@@ -30,7 +31,7 @@ from backend.src.auth.security import get_login_cooldown_seconds, purge_user_log
 from backend.src.auth.syntax import valid_username, valid_password, valid_email
 from backend.src.users import signals as users_signals
 from backend.src.users import exceptions as user_exceptions
-from backend.src.users.privileges import is_user_banned
+from backend.src.users.privileges import is_user_banned, is_user_ghost
 from backend.src.users.schemas import UserCreate, UserSelf
 from backend.src.users.utils import get_user_id_from_email
 
@@ -231,6 +232,10 @@ async def login_refresh_token(request: Request, tokens: LoginRefreshTokenPost, l
 
     # Remove any temporary lost password
     await purge_user_lostpw(user_id=user["id"])
+
+    # Check if a ghost user is trying to login
+    if is_user_ghost(user["id"]):
+        await ghost_user_validator(user["id"], language)
     
     # Register new language
     db.cursor.execute("""

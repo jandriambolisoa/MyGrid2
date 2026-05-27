@@ -55,3 +55,10 @@ obligation_newpwd = defaultdict(
         "fr": "Vous devez créer un mot de passe avant de continuer.",
     }
 )
+
+obligation_convertuser = defaultdict(
+    lambda: "You have to create an account before continuing.",
+    {
+        "fr": "Vous devez créer un compte avant de continuer.",
+    }
+)

@@ -51,6 +51,13 @@ successful_password_update_message = defaultdict(
     }
 )
 
+successful_account_creation_message = defaultdict(
+    lambda: "You have successfully created an account.",
+    {
+        "fr": "Vous avez créé un compte."
+    }
+)
+
 email_verification_sent_message = defaultdict(
     lambda: f"Email verification sent. If you still can't verify your email, please contact us at {app_settings.contact_email}",
     {

@@ -14,6 +14,7 @@ class League(BaseModel):
     description: datetime
     colors: List[str]
     created: datetime
+    private: bool
 
     @computed_field
     @property
@@ -38,3 +39,15 @@ class League(BaseModel):
             WHERE league_id = %s
             AND organizer = true""", (self.id,))
         return db.cursor.fetchall()
+
+class LeagueCreate(BaseModel):
+    name: str
+    description: str
+    colors: List[str]
+    private: bool = True
+
+class LeagueUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    colors: Optional[List[str]] = None
+    private: Optional[bool] = None

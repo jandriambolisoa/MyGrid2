@@ -16,15 +16,18 @@ from backend.src.auth.exceptions import WrongCredentialsError
 from backend.src.auth.listener import send_verification_email
 from backend.src.auth.router import logout
 from backend.src.auth.schemas import ChangePassword, AccessToken
-from backend.src.auth.syntax import valid_username, valid_password
+from backend.src.auth.syntax import valid_username, valid_password, valid_email
 from backend.src.collectibles.constants import CHUNK_SIZE
 from backend.src.collectibles.dependencies import get_user_collectibles
 from backend.src.images.dependencies import generate_user_image_name
 from backend.src.users.dependencies import valid_user_username, get_current_user_language
 from backend.src.users.exceptions import NoUserFoundError, CannotUpdateUsernameError
-from backend.src.users.schemas import User, UserSelf, UserProfile
-from backend.src.users.texts import successful_password_update_message, email_verification_sent_message
+from backend.src.users.schemas import User, UserSelf, UserProfile, UserConvertFromGhost
+from backend.src.users import signals as users_signals
+from backend.src.users.texts import successful_password_update_message, email_verification_sent_message, \
+    successful_account_creation_message
 from backend.utils import verify, hash_password
+
 
 router = APIRouter(
     prefix="/users",
@@ -198,4 +201,35 @@ async def update_user_profile_reset_password(datas: ChangePassword, db:Database 
 
     return {
         "message": successful_password_update_message[this_user.language]
+    }
+
+
+@router.put("/profile/edit/convert", status_code=status.HTTP_202_ACCEPTED)
+async def update_user_profile_convert_ghost(datas: UserConvertFromGhost, db:Database = Depends(get_db), current_token: AccessToken = Depends(get_current_token)):
+    # Get current user
+    token_datas = await verify_access_token(current_token.access_token)
+    db.cursor.execute("""\
+        SELECT *
+        FROM users
+        WHERE id = %s""", (token_datas.user_id,))
+    this_user = db.cursor.fetchone()
+    this_user = UserSelf(**this_user)
+
+    await valid_password(datas.password, this_user.language)
+    await valid_email(datas.email, this_user.language)
+
+    this_user.password = hash_password(this_user.password)
+
+    db.cursor.execute("""\
+        UPDATE users
+        SET password = %s, email = %s
+        WHERE id = %s""", (this_user.password, this_user.email, this_user.id))
+    db.conn.commit()
+
+    await delete_obligation("convertuser", this_user.id)
+
+    await users_signals.created.send(this_user.id)
+
+    return {
+        "message": successful_account_creation_message[this_user.language]
     }

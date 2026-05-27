@@ -101,3 +101,21 @@ async def is_user_moderator_or_admin(user_id: int) -> bool:
         return True
     else:
         return False
+
+async def is_user_ghost(user_id: int) -> bool:
+    # Ignore privilege if the user is banned
+    if await is_user_banned(user_id):
+        return False
+
+    db = get_db()
+
+    db.cursor.execute("""\
+        SELECT user_id
+        FROM ghostusers
+        WHERE id = %s""", (user_id,))
+    user = db.cursor.fetchone()
+
+    if not user:
+        return False
+
+    return True
