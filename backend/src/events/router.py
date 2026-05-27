@@ -54,7 +54,7 @@ async def create_championship(championship: ChampionshipCreate, language: str = 
     return created
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED, response_model=Event)
+@router.post("", status_code=status.HTTP_201_CREATED, response_model=Event)
 async def create_event(to_create: EventCreate, language: str = Depends(get_current_user_language), db: Database = Depends(get_db), current_user: UserSelf = Depends(get_current_user)):
     if not await is_user_moderator_or_admin(current_user.id):
         raise ForbiddenAccessException(language=language)
