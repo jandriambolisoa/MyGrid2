@@ -14,7 +14,7 @@
 
 <br>
 
-Alvailable on [iOS](https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg) and [Android](https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg)
+Available on [iOS](https://developer.apple.com/assets/elements/badges/download-on-the-app-store.svg) and [Android](https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg)
 
 ## 🏗️ Project Structure
 
@@ -27,7 +27,7 @@ This is a monorepo containing both the logic and the interface:
 
 ## ⚙️ Backend Features
 
-- **User Management**: Profile creation, SSO integration, and moderation tools.
+- **User Management**: Profile creation, SSO integration and moderation tools.
 - **Micro-services Architecture**: Multiple FastAPI instances for workload optimization.
 - **Containerized**: Fully Dockerized for seamless deployment via `docker-compose`.
 - **Security First**: Implementation of JWT tokens and Argon2 hashing.
