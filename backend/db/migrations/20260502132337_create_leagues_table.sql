@@ -6,6 +6,7 @@ CREATE TABLE public.leagues
     description character varying NOT NULL,
     colors character varying[] NOT NULL,
     created timestamp with time zone NOT NULL DEFAULT NOW(),
+    private boolean NOT NULL DEFAULT true,
     PRIMARY KEY (id)
 );
 

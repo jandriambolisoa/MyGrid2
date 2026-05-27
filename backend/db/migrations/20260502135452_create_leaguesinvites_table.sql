@@ -15,4 +15,4 @@ CREATE TABLE public.leaguesinvites
 );
 
 -- migrate:down
-DROP TABLE IF EXISTS public.leaguesusers;
+DROP TABLE IF EXISTS public.leaguesinvites;
