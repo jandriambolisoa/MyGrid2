@@ -1471,6 +1471,21 @@ files = [
 windows-terminal = ["colorama (>=0.4.6)"]
 
 [[package]]
+name = "pyqrcodeng"
+version = "1.3.6"
+description = "PyQRCode New Generation -- A QR code generator written purely in Python with SVG, EPS, PNG and terminal output."
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "PyQRCodeNG-1.3.6-py2.py3-none-any.whl", hash = "sha256:40ac27bae84139cdbbe72ef80ee20c1506452af4458ef5305cf02ad19ac7787e"},
+    {file = "PyQRCodeNG-1.3.6.tar.gz", hash = "sha256:b84cd27cbf973593686d38b5a002464fbeb6e8dbd16aea293e6092eea0dc462b"},
+]
+
+[package.extras]
+png = ["pypng (>=0.0.13)"]
+
+[[package]]
 name = "pytest"
 version = "9.0.2"
 description = "pytest: simple powerful testing with Python"
@@ -2222,4 +2237,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.11"
-content-hash = "ccd7cfe0c8c76ce406363f7614d018119a7aef40fc4dcc743ae180de51d1767d"
+content-hash = "ffe8abdf70961339dd79f529f999d22c3023f48d418b500caa5946b160d9add0"
