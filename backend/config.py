@@ -33,6 +33,7 @@ class Settings (BaseSettings):
 
     # Redirections related settings
     api_url: str
+    join_url: str
     website_url: str
     confirmed_email_url: str
     confirmed_email_redirect_url: str

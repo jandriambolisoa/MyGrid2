@@ -1,6 +1,10 @@
+import pyqrcodeng
+import segno
 from fastapi.params import Depends
 
 from backend.db.database import get_db
+from backend.config import settings as app_settings
+from backend.src.leagues.dependencies import valid_league_id
 from backend.src.users.dependencies import valid_user_id
 from backend.utils import random_code
 
@@ -21,6 +25,9 @@ async def create_unique_invite_code():
         new_invite_code = random_code(9)
 
     return new_invite_code
+
+def create_league_invite_qr_code(league_id: int = Depends(valid_league_id)) -> segno.QRCode:
+    pass
 
 async def get_users_leagues_count(user_id: int) -> int:
     db = get_db()
