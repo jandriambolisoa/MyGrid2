@@ -141,6 +141,8 @@ async def login_email(request: Request, language: str = "en", db: Database = Dep
             await purge_user_lostpw(user_id=user["id"], force=True)
             await create_obligation(code="newpwd", user_id=user["id"], language=language)
             # Generate a new temporary pw for obligation
+        else:
+            raise auth_exceptions.WrongCredentialsError(language=language)
 
     else:
         await purge_user_login_attempts(user["id"], request.client.host)
