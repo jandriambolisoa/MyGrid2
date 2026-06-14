@@ -33,7 +33,7 @@ LEFT JOIN championships ON championships.id = events.championship_id
 WHERE ranked_scores.session_rank <= 8
 GROUP BY championships.id, users.id
 ORDER BY score DESC
-WITH NO DATA;
+WITH DATA;
 
 
 -- migrate:down
